@@ -100,6 +100,8 @@ jobs:
     name: Documentation and repository formatting
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      RUSTC_WRAPPER: ""
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -121,6 +123,9 @@ jobs:
             printf 'ZOLA_VERSION=%s\n' "$ZOLA_VERSION"
             printf 'ZIZMOR_VERSION=%s\n' "$ZIZMOR_VERSION"
           } >> "$GITHUB_ENV"
+      - name: Install Rust formatter toolchain
+        run: rustup toolchain install "$RUSTFMT_VERSION" --profile minimal --component rustfmt
+        shell: bash
       - name: Install cargo-binstall
         run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
         shell: bash
