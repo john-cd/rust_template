@@ -48,7 +48,7 @@ cache wrapper or remove the project setting. In PowerShell use
 Optional hooks use the same checks as Cargo Make: install `prek` 0.5.6 or newer,
 run `prek install`, then `prek run --all-files`. Hooks do not replace CI. Rust
 Analyzer's format-on-save uses the build toolchain; the authoritative formatter
-check remains `cargo make fmt` with the pinned nightly.
+check remains `cargo make format-rust-check` with the pinned nightly.
 
 ## Validation and release
 

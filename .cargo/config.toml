@@ -129,4 +129,3 @@ opt-level = 2
 #
 # [profile.test.package."*"]
 # opt-level = <profile default: 0>
-
