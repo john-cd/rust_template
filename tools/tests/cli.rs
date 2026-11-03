@@ -1,4 +1,5 @@
 //! Executable-level checks for development command failures.
+
 #![allow(missing_docs)]
 
 use std::process::Command;

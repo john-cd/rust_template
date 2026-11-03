@@ -1,6 +1,9 @@
 # tools
 
-Development binary for this checkout. Run from anywhere inside the workspace:
+Development binary for this checkout. The `tools/` package is a starter stub for project-specific
+development-only and compile-time utilities such as code generators and build helpers; extend it
+for the adopting project rather than adding these utilities to application runtime crates. Run the
+current binary from anywhere inside the workspace:
 
 ```sh
 cargo tools --help

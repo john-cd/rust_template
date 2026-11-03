@@ -1,16 +1,27 @@
 # Keep source, documentation, and website assets visible; skip generated/local state.
+# Version control and worktrees
 .git/
 .worktrees/
+
+# Build output
 **/target/
 **/build/
+
+# Package and runtime caches
 **/node_modules/
 **/.venv/
 **/__pycache__/
+
+# Compiler, link, and generated website caches
 .sccache/
-website/public/
-website/.zola*/
 .lycheecache
 *.log
+
+# Generated website output
+website/public/
+website/.zola*/
+
+# Local environment files and secrets
 .env
 .env.*
 secrets/

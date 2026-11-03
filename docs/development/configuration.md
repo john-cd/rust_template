@@ -8,7 +8,8 @@ This page describes the checked-in files that control the workspace, tools, CI, 
 
 - [`Cargo.toml`](../../Cargo.toml) defines workspace members, shared package metadata, shared dependencies, and workspace-wide Rust and Clippy lints. Crate manifests inherit these values.
 - [`Cargo.lock`](../../Cargo.lock) records the resolved versions for reproducible workspace builds. Update it with dependency changes; do not edit it by hand.
-- [`.cargo/config.toml`](../../.cargo/config.toml) configures `sccache` as the compiler wrapper, sets its cache size, enables quiet Cargo output, and sets the network retry count. Cargo's default target directory applies unless overridden by `CARGO_TARGET_DIR`; the sample `.sccache` paths are commented examples. `dev` and `test` tune local builds; `ci` is the fast, repeatable profile used by CI; `debugging` retains full debug information; `tools` optimizes developer utilities. Install the pinned development tools from [CONTRIBUTING.md](../../CONTRIBUTING.md) before building.
+- [`cargo-generate.toml`](../../cargo-generate.toml) limits Liquid expansion to the generated project note and excludes local worktrees and build output from generated projects.
+- [`.cargo/config.toml`](../../.cargo/config.toml) configures `sccache` as the compiler wrapper, quiet Cargo output, the `cargo tools` alias, and development, CI, debug, and tools profiles. Cargo uses the checkout-relative `target/` directory by default. Set `CARGO_TARGET_DIR` to move direct Cargo build output outside the checkout; set `SCCACHE_DIR` and `SCCACHE_BASEDIRS` in the environment to configure external/shared compiler-cache storage. For Cargo Make on Windows, `CARGO_TARGET_DIR` defaults to `D:/target/<project>` and `CARGO_BUILD_BUILD_DIR` to `C:/code_build/<project>`. Set `CARGO_TARGET_ROOT` or `CARGO_BUILD_ROOT` to change those roots; explicit output-directory variables take precedence. The shared-cache worktree slots are `.worktrees/a`, `.worktrees/b`, and `.worktrees/c`. `dev` tunes local builds; `ci` uses the same quick-compile settings; `debug` enables full debug information for workspace crates; `tools` optimizes the repository-local developer binary. Install the pinned development tools from [CONTRIBUTING.md](../../CONTRIBUTING.md) before building.
 - [`.config/nextest.toml`](../../.config/nextest.toml) defines default and CI test-runner behavior, including retries, timeouts, output, and the CI JUnit report.
 - [`clippy.toml`](../../clippy.toml) holds Clippy thresholds and configuration shared by workspace packages.
 - [`deny.toml`](../../deny.toml) defines dependency advisory, license, duplicate-version, and source policies for cargo-deny.
@@ -21,7 +22,9 @@ This page describes the checked-in files that control the workspace, tools, CI, 
 - [`prek.toml`](../../prek.toml) defines optional local Git hooks for file hygiene and formatter checks. Run `prek install` explicitly to enable them in a clone.
 - [`.vscode/settings.json`](../../.vscode/settings.json), [extensions](../../.vscode/extensions.json), and [tasks](../../.vscode/tasks.json) provide portable editor defaults and Cargo Make commands. They contain no machine-specific build paths.
 
-- [`Makefile.toml`](../../Makefile.toml) defines the `cargo make` tasks for formatting, checks, builds, Clippy, tests, doctests, dependency policy, and their combined CI task.
+  The extension recommendations include Bookmarks, Dependi, gitignore, Google Search, and markdownlint. CodeLLDB and Mermaid are optional recommendations. The devcontainer installs the core extensions; install the optional ones when debugging or editing diagrams.
+
+- [`Makefile.toml`](../../Makefile.toml) owns the `cargo make` task definitions for formatting, checks, builds, Clippy, tests, doctests, dependency policy, and their combined CI task. The `cargo tools` alias is a convenience frontend whose format/check commands delegate to Cargo Make and whose website command invokes Zola.
 - [dprint.jsonc](../../dprint.jsonc) configures formatting for Markdown, JSON/JSONC, TOML, and YAML; use dprint fmt to format these files and dprint check to verify them.
 - [`.editorconfig`](../../.editorconfig) sets text encoding, line endings, indentation, and trailing whitespace behavior for Rust, TOML, YAML, JSON, Markdown, and shell files.
 - [`.gitattributes`](../../.gitattributes) defines Git's repository-wide text and line-ending normalization behavior.
@@ -36,7 +39,7 @@ This page describes the checked-in files that control the workspace, tools, CI, 
 
 - [`.dockerignore`](../../.dockerignore) trims the devcontainer build context; [`.aiexclude`](../../.aiexclude) filters generated and local files from compatible AI indexing tools.
 - [`lychee.toml`](../../lychee.toml) configures documentation link checking. `cargo make links` checks local links; `links-online` also checks remote URLs. Zola validates its own content references.
-- [`tools/Cargo.toml`](../../tools/Cargo.toml) defines the workspace development binary, available through the `cargo tools` alias in Cargo configuration.
+- [`tools/Cargo.toml`](../../tools/Cargo.toml) defines the starter workspace development binary and is the home for project-specific development-only or compile-time utilities; the binary is available through the `cargo tools` alias, while `Makefile.toml` owns the underlying Cargo Make task definitions.
 - [`website/config.toml`](../../website/config.toml) sets the Zola site title, local base URL, and link-checking policy. Change the URL before deploying.
 
 - [`.github/dependabot.yml`](../../.github/dependabot.yml) schedules grouped monthly updates for Cargo dependencies, the Rust toolchain, GitHub Actions, and the devcontainer image and Compose setup.

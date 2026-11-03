@@ -5,7 +5,8 @@
 - The root `Cargo.toml` owns shared dependency versions, package metadata, and lint policy. Crates
   inherit shared dependencies and lints from the workspace.
 - `crates/my_lib` owns reusable library behavior; `crates/my_cli` owns command-line parsing and
-  process-level behavior. Keep development utilities in `tools/` and scripts in `scripts/`.
+  process-level behavior. Treat `tools/` as a starter home for project-specific development-only
+  and compile-time utilities; keep standalone maintenance scripts in `scripts/`.
 - Keep crate roots such as `lib.rs` declarative. Place implementation in child modules grouped by
   responsibility; use `modules/` when a cohesive module tree needs multiple child modules.
 - Preserve the library's public paths when reorganizing modules. Re-export public modules or items
@@ -26,9 +27,9 @@
 
 ## Commands and validation
 
-- Cargo uses the workspace `.cargo/config.toml` for sccache, target/build output, quiet output, and
-  development profiles. Keep local Cargo commands and `cargo make` tasks consistent with it.
-- Use `cargo tools format` for formatting and `cargo tools check` for the local CI task set.
+- Cargo uses `.cargo/config.toml` for sccache, quiet output, the `cargo tools` alias using the `tools` profile, and development profiles. Cargo Make overrides Windows build output to `D:/target/<project>` and `C:/code_build/<project>` by default; `CARGO_TARGET_ROOT` and `CARGO_BUILD_ROOT` change those roots, while explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR` values take precedence. `SCCACHE_DIR` and `SCCACHE_BASEDIRS` can configure external compiler-cache storage. The shared cache recognizes the `.worktrees/a`, `.worktrees/b`, and `.worktrees/c` worktree slots.
+- `Makefile.toml` owns Cargo Make task definitions. The `cargo tools` alias is a convenience
+  frontend: its format/check commands delegate to Cargo Make, and its website command invokes Zola. Keep local commands and CI tasks consistent with those definitions.
 - For focused validation, use `cargo check --workspace --all-targets --all-features --locked
   --profile ci`, `cargo test --workspace --all-targets --all-features --locked --profile ci`, and
   `cargo test --workspace --doc --all-features --locked --profile ci` as appropriate.

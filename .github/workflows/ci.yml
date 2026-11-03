@@ -119,17 +119,29 @@ jobs:
             printf 'DPRINT_VERSION=%s\n' "$DPRINT_VERSION"
             printf 'LYCHEE_VERSION=%s\n' "$LYCHEE_VERSION"
             printf 'ZOLA_VERSION=%s\n' "$ZOLA_VERSION"
+            printf 'ZIZMOR_VERSION=%s\n' "$ZIZMOR_VERSION"
           } >> "$GITHUB_ENV"
       - name: Install cargo-binstall
         run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
         shell: bash
       - name: Install documentation tools
-        run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "dprint@$DPRINT_VERSION" "lychee@$LYCHEE_VERSION" "zola@$ZOLA_VERSION"
+        run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "dprint@$DPRINT_VERSION" "lychee@$LYCHEE_VERSION" "zola@$ZOLA_VERSION" "zizmor@$ZIZMOR_VERSION"
+        shell: bash
+      - name: Install cargo-generate
+        run: cargo binstall --locked --no-confirm cargo-generate@0.24.0
+        shell: bash
+      - name: Smoke test generated workspace
+        run: |
+          cargo generate --path . --name workspace-smoke --destination "$RUNNER_TEMP" --silent --vcs none
+          grep -qx '# workspace-smoke' "$RUNNER_TEMP/workspace-smoke/PROJECT.md"
+          test ! -e "$RUNNER_TEMP/workspace-smoke/.worktrees"
+          cargo metadata --manifest-path "$RUNNER_TEMP/workspace-smoke/Cargo.toml" --no-deps --format-version 1 --locked > /dev/null
         shell: bash
       - run: cargo make format-check
       - run: cargo make links
       - name: Validate GitHub Actions workflow
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7 .github/workflows/ci.yml
+      - run: cargo make zizmor
       - name: Validate devcontainer Compose configuration
         run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml config --quiet
       - run: cargo make website-check

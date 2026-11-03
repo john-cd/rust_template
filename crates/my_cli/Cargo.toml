@@ -2,8 +2,10 @@
 
 [package]
 name = "my_cli"
-version = "0.1.0"
+version.workspace = true
+categories = ["command-line-utilities"]
 edition.workspace = true
+keywords.workspace = true
 license.workspace = true
 publish.workspace = true
 readme = "README.md"

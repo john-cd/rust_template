@@ -13,11 +13,11 @@ body:
       label: Steps to reproduce
       description: Include the smallest input and exact command that reproduce the issue.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: environment
     attributes:
       label: Environment
       description: Include OS, Rust version, relevant tool versions, and the commit being tested.
     validations:
-      required: true
+      required: false

@@ -12,4 +12,4 @@ body:
     attributes:
       label: Proposed behavior and alternatives
     validations:
-      required: true
+      required: false

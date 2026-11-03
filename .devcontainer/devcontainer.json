@@ -1,8 +1,8 @@
 {
-  "name": "rust_template",
+  "name": "Rust workspace",
   "dockerComposeFile": "compose.yaml",
   "service": "devcontainer",
-  "workspaceFolder": "/workspaces/rust_template",
+  "workspaceFolder": "/workspaces/project",
   "shutdownAction": "stopCompose",
   "forwardPorts": [1111],
   "customizations": {
@@ -11,7 +11,12 @@
         "rust-lang.rust-analyzer",
         "tamasfe.even-better-toml",
         "dprint.dprint",
-        "EditorConfig.EditorConfig"
+        "EditorConfig.EditorConfig",
+        "alefragnani.Bookmarks",
+        "fill-labs.dependi",
+        "codezombiech.gitignore",
+        "UtsavVaria.goog-search",
+        "DavidAnson.vscode-markdownlint"
       ],
       "settings": {
         "editor.formatOnSave": true,

@@ -1,22 +1,31 @@
 # Build context excludes adapted from plutus and nextcell.
+# Git metadata and worktrees
 .git
 **/.git
 .worktrees
+
+# Build output and dependencies
 **/target
 **/build
 **/node_modules
 **/.venv
 **/__pycache__
+
+# Local caches and editor state
 .sccache
 .idea
 .vscode
-website/public
-website/.zola*
 *.log
 *.pdb
 *.profraw
 *.profdata
 .lycheecache
+
+# Generated website output
+website/public
+website/.zola*
+
+# Local environment files and secrets
 **/.env
 **/.env.*
 !.devcontainer/.env

@@ -1,3 +1,4 @@
+# Rust and build output
 /target/
 /build/
 /.worktrees/
@@ -9,15 +10,21 @@ rustc-ice-*.txt
 *.log
 *.profraw
 *.profdata
+
+# Compiler and tool caches
 /.sccache/
 /.lycheecache
+
+# Generated website output
 /website/public/
 /website/.zola*/
+
+# Language and package caches
 **/node_modules/
 **/.venv/
 **/__pycache__/
 
-# Local environment files
+# Local environment files and secrets
 .env
 .env.*
 !.env.example
@@ -33,7 +40,7 @@ rustc-ice-*.txt
 !.vscode/tasks.json
 !.vscode/*.code-snippets
 
-# Linux
+# Linux desktop and temporary files
 *~
 *.swp
 *.swo
@@ -42,13 +49,13 @@ rustc-ice-*.txt
 .nfs*
 .Trash-*
 
-# Windows
+# Windows system files
 Thumbs.db:encryptable
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# macOS
+# macOS system files
 .DS_Store
 Thumbs.db
 .AppleDouble

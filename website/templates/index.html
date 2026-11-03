@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
 {% block content %}
 <h1>{{ section.title }}</h1>
 {{ section.content | safe }}

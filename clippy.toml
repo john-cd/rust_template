@@ -1,7 +1,7 @@
 # TODO Reviewed ??-??-????
 
 msrv = "1.85"
-# Shared thresholds adapted from the sibling Rust workspaces.
+
 cognitive-complexity-threshold = 25
 too-many-arguments-threshold = 7
 type-complexity-threshold = 250

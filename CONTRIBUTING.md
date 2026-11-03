@@ -5,15 +5,26 @@ resulting behavior, and validation in your pull request. Releases are promoted t
 
 ## Setup
 
+Install [Rust through rustup](https://rust-lang.org/tools/install/) first. On Linux or macOS, run
+`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh` and follow the prompts. On Windows,
+run the `rustup-init.exe` installer from that page and install the MSVC C++ build tools if prompted.
+Open a new terminal and verify `rustup --version` and `cargo --version`. Git is needed to clone the
+repository; the Linux installer also needs Bash and a supported package manager for GitHub CLI.
+Docker with Compose is needed only for the devcontainer or production image.
+
 Use rustup to install the build toolchain from `rust-toolchain.toml` and the formatter toolchain from
 `rustfmt-toolchain.toml`. The build pin and formatter pin also appear in CI and the devcontainer; keep
 them synchronized when updating. The declared Rust 1.85 minimum must be checked separately before
 claiming compatibility after dependency or language changes.
 
+From the repository root, install the pinned components with
+`rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt` and
+`rustup toolchain install nightly-2026-10-22 --profile minimal --component rustfmt`.
+
 The shared devcontainer versions are in `.devcontainer/.env`. Edit and commit version changes there;
 these values are not secrets. Compose requires these values and passes them to the Docker build.
-Store any credentials in a separate ignored secret file. The devcontainer uses the Debian Trixie Rust
-image. After changing versions, rebuild the container. The toolchain pins used by Cargo and CI remain in
+Store any credentials in a separate ignored secret file. The devcontainer uses the Debian suite named
+by `DEBIAN_VERSION`. After changing versions, rebuild the container. The toolchain pins used by Cargo and CI remain in
 `rust-toolchain.toml`, `rustfmt-toolchain.toml`, and the workflow; update those too when changing the
 workspace's compiler or formatter version.
 
@@ -23,6 +34,11 @@ tools with its prebuilt-binary support (CI and the devcontainer also install the
 ```sh
 cargo binstall --locked --no-confirm cargo-make@0.37.24 cargo-nextest@0.9.148 cargo-deny@0.20.2 dprint@0.64.3 lychee@0.24.2 sccache@0.19.0 zola@0.23.4
 ```
+
+On Linux, `bash scripts/install-tools.sh` installs the pinned Cargo tools and GitHub CLI. Use
+`bash scripts/install-tools.sh --dry-run` to inspect the commands first. On Windows, run
+`pwsh -NoProfile -File scripts/install-tools.ps1`; both scripts read `.devcontainer/.env`.
+The installers include cargo-machete, cargo-llvm-cov, zizmor, and `llvm-tools-preview`.
 
 Install [Zola 0.23.4](https://www.getzola.org/documentation/getting-started/installation/) for the website.
 On Windows, put developer tools under `C:/tools` and package caches under `D:/packages`.

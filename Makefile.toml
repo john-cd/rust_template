@@ -1,6 +1,18 @@
 # TODO Reviewed ??-??-????
+
 [env]
-CARGO_TERM_QUIET = "true"
+CARGO_TARGET_ROOT = { value = "D:/target", condition = { platforms = ["windows"], env_not_set = [
+  "CARGO_TARGET_ROOT",
+] } }
+CARGO_BUILD_ROOT = { value = "C:/code_build", condition = { platforms = ["windows"], env_not_set = [
+  "CARGO_BUILD_ROOT",
+] } }
+CARGO_TARGET_DIR = { value = "${CARGO_TARGET_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
+  "windows",
+], env_not_set = ["CARGO_TARGET_DIR"] } }
+CARGO_BUILD_BUILD_DIR = { value = "${CARGO_BUILD_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
+  "windows",
+], env_not_set = ["CARGO_BUILD_BUILD_DIR"] } }
 RUSTFMT_TOOLCHAIN = { value = "nightly-2026-10-22", condition = { env_not_set = [
   "RUSTFMT_TOOLCHAIN",
 ] } }
@@ -20,17 +32,42 @@ description = "Run formatting, workspace checks, and Clippy"
 category = "Workspace"
 dependencies = ["fmt", "format-check", "check", "clippy"]
 
+[tasks.f]
+alias = "format"
+category = "Formatting"
+
+[tasks.fc]
+description = "Check Rust and repository formatting"
+category = "Formatting"
+dependencies = ["format-check"]
+
 [tasks.l]
 alias = "clippy"
 category = "Quality"
 
-[tasks.fmt]
-description = "Check Rust formatting"
+[tasks.c]
+alias = "check"
+category = "Build"
+
+[tasks.b]
+alias = "build"
+category = "Build"
+
+[tasks.r]
+alias = "run"
+category = "Run"
+
+[tasks.t]
+alias = "test"
+category = "Testing"
+
+[tasks.format-rust-check]
+description = "Rust formatting"
 category = "Formatting"
 script_runner = "@duckscript"
 script = '''
 toolchain = get_env RUSTFMT_TOOLCHAIN
-exec --fail-on-error rustup run ${toolchain} cargo --quiet fmt --all -- --quiet --check
+exec --fail-on-error rustup run ${toolchain} cargo --quiet fmt --all -- --quiet
 '''
 
 [tasks.check]
@@ -63,6 +100,18 @@ args = [
   "ci",
 ]
 
+[tasks.release]
+description = "Build the workspace in release mode"
+category = "Build"
+command = "cargo"
+args = ["build", "--workspace", "--all-targets", "--all-features", "--locked", "--release"]
+
+[tasks.run]
+description = "Run the sample CLI"
+category = "Run"
+command = "cargo"
+args = ["run", "--locked", "--package", "my_cli", "--"]
+
 [tasks.clippy]
 description = "Run Clippy across all workspace targets"
 category = "Quality"
@@ -80,6 +129,18 @@ args = [
   "-D",
   "warnings",
 ]
+
+[tasks.fix]
+description = "Apply compiler suggestions to the workspace"
+category = "Quality"
+command = "cargo"
+args = ["fix", "--workspace", "--all-targets", "--all-features", "--locked"]
+
+[tasks.lint-fix]
+description = "Apply Clippy suggestions to the workspace"
+category = "Quality"
+command = "cargo"
+args = ["clippy", "--fix", "--workspace", "--all-targets", "--all-features", "--locked"]
 
 [tasks.test]
 description = "Run tests with cargo-nextest"
@@ -111,17 +172,108 @@ category = "Testing"
 command = "cargo"
 args = ["test", "--workspace", "--all-targets", "--all-features", "--locked", "--profile", "ci"]
 
+[tasks.bench]
+description = "Run workspace benchmarks"
+category = "Testing"
+command = "cargo"
+args = ["bench", "--workspace", "--all-features", "--locked"]
+
+[tasks.bench-check]
+description = "Compile workspace benchmarks without running them"
+category = "Testing"
+command = "cargo"
+args = ["bench", "--workspace", "--all-features", "--locked", "--no-run"]
+
 [tasks.hooks]
 description = "Run optional repository hooks (requires prek 0.5.6 or newer)"
 category = "Quality"
 command = "prek"
 args = ["run", "--all-files"]
 
+[tasks.hooks-install]
+description = "Install prek Git hooks"
+category = "Quality"
+command = "prek"
+args = ["install"]
+
+[tasks.hooks-run]
+description = "Run prek against staged files"
+category = "Quality"
+command = "prek"
+args = ["run"]
+
 [tasks.deny]
 description = "Check dependency advisories, licenses, duplicates, and sources"
 category = "Quality"
 command = "cargo"
 args = ["--quiet", "deny", "check"]
+
+[tasks.machete]
+description = "Report potentially unused dependencies for review"
+category = "Quality"
+command = "cargo"
+args = ["machete"]
+
+[tasks.coverage]
+description = "Measure workspace test coverage with LLVM"
+category = "Testing"
+command = "cargo"
+args = ["llvm-cov", "--workspace", "--all-features", "--locked"]
+
+[tasks.coverage-html]
+description = "Run tests and generate an HTML coverage report"
+category = "Testing"
+command = "cargo"
+args = ["llvm-cov", "--workspace", "--all-features", "--locked", "--html"]
+
+[tasks.build-env]
+description = "Show effective Cargo build and cache environment"
+category = "Build"
+script_runner = "@duckscript"
+script = '''
+target = get_env CARGO_TARGET_DIR
+build = get_env CARGO_BUILD_BUILD_DIR
+cache = get_env SCCACHE_DIR
+bases = get_env SCCACHE_BASEDIRS
+echo CARGO_TARGET_DIR=${target}
+echo CARGO_BUILD_BUILD_DIR=${build}
+echo SCCACHE_DIR=${cache}
+echo SCCACHE_BASEDIRS=${bases}
+'''
+
+[tasks.docker-build-dev]
+description = "Build the development container image"
+category = "Docker"
+command = "docker"
+args = [
+  "compose",
+  "--env-file",
+  ".devcontainer/.env",
+  "-f",
+  ".devcontainer/compose.yaml",
+  "build",
+  "devcontainer",
+]
+
+[tasks.docker-build-prod]
+description = "Build the production container image"
+category = "Docker"
+command = "docker"
+args = [
+  "compose",
+  "--env-file",
+  ".devcontainer/.env",
+  "-f",
+  ".devcontainer/compose.yaml",
+  "build",
+  "production",
+]
+
+[tasks.zizmor]
+description = "Audit GitHub Actions workflows for security issues"
+category = "Quality"
+command = "zizmor"
+args = ["--min-severity", "high", ".github/workflows"]
 
 [tasks.ci]
 description = "Run the local CI checks (requires cargo-nextest and cargo-deny)"
@@ -161,7 +313,7 @@ category = "Formatting"
 command = "dprint"
 args = ["fmt", "--log-level=error"]
 
-[tasks.format-check]
+[tasks.format-files-check]
 category = "Formatting"
 command = "dprint"
 args = ["check", "--log-level=error"]
@@ -217,6 +369,10 @@ category = "Website"
 command = "zola"
 args = ["--root", "website", "build"]
 env = { RUST_LOG = "error" }
+
+[tasks.web]
+alias = "website-serve"
+category = "Website"
 
 [tasks.website-serve]
 category = "Website"

@@ -1,57 +1,49 @@
 # TODO Reviewed ??-??-????
 
-# Configure shared build tools and the local compiler cache.
 [build]
 rustc-wrapper = "sccache"
 
+# By default, the environment variables specified will not override values that already exist in the environment.
+# This behavior can be changed by setting the force flag.
 [env]
-# Shared cache across main checkout and worktrees.
-# SCCACHE_DIR = "D:/code/rust_template/.sccache"
-# SCCACHE_BASEDIRS = "D:/code/rust_template;D:/code/rust_template/.worktrees/a;D:/code/rust_template/.worktrees/b;D:/code/rust_template/.worktrees/c"
-SCCACHE_CACHE_SIZE = "35G"
+# If not done otherwise, set a shared cache across main checkout and worktrees.
+# SCCACHE_DIR = "D:/sccache"
+# SCCACHE_BASEDIRS = "D:/code/my_project;D:/code/my_project/.worktrees/a;D:/code/my_project/.worktrees/b;D:/code/my_project/.worktrees/c"
+# SCCACHE_CACHE_SIZE = "35G"
 
 [term]
+# Less token usage and output clutter.
 quiet = true
 
-[net]
-retry = 2
-
 [alias]
-tools = "run --locked --package tools --"
+# Cargo aliases for common tasks. These can be used directly with cargo.
+tools = "run --profile tools --locked --package tools --"
 
-# Fast local iteration.
+# Profiles
+#
+# Favor compiler-cache reuse during local development by using the same settings for most profiles.
+
+# The "dev" profile is the default for local development, and the "ci" profile is used for CI builds.
 [profile.dev]
-debug = 0 # If you need debugger support, use "line-tables-only"
-incremental = false # Required for sccache
+debug = 0 # No debug to save space. If you need debugger support, use "line-tables-only".
+incremental = false # Required for sccache.
 
-# Compile dependencies with full optimization while keeping workspace crates fast to rebuild.
 [profile.dev.package."*"]
 debug = 0
-opt-level = 1
+opt-level = 1 # Some optimization to reduce size and improve performance, but still fast compile times. This should build once.
 
-# Keep full debug information available for local debugging sessions.
+# The "debug" profile is used for workspace crates when debugging is needed.
 [profile.debug]
 inherits = "dev"
 debug = 2
 
-# Same settings than "dev" for sccache reuse.
-[profile.debug.package."*"]
-debug = 0
-opt-level = 1
+# The standard "test" profile is used for running tests, and inherits from "dev" by default.
 
-[profile.test]
-inherits = "dev"
-
-# Same settings than "dev" for sccache reuse.
-[profile.test.package."*"]
-debug = 0
-opt-level = 1
-
-# A CI build profile with the same quick compile settings as development.
+# The CI profile uses the same quick compile settings as development.
 [profile.ci]
 inherits = "dev"
 
-# Optimized developer tools without changing the standard release profile.
+# The "tools" profile is used for building repository-local developer commands with modest optimization.
 [profile.tools]
 inherits = "dev"
 opt-level = 2
@@ -63,10 +55,7 @@ opt-level = 2
 # rustc-wrapper = <unset>            # invoke rustc directly
 #
 # [env]
-# CARGO_TARGET_DIR = <unset>
-# CARGO_BUILD_BUILD_DIR = <unset>
-# SCCACHE_BASEDIRS = <unset>
-# <other variables> = <unset>        # Cargo does not add project-specific environment variables
+# <variable> = <unset>
 #
 # [net]
 # retry = 3
@@ -140,7 +129,4 @@ opt-level = 2
 #
 # [profile.test.package."*"]
 # opt-level = <profile default: 0>
-#
-# [profile.ci], [profile.debugging], [profile.tools]
-# inherits = "dev"                   # when the profile-specific parent is omitted
-# remaining keys = <inherited from dev>
+
