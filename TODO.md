@@ -24,7 +24,7 @@ Linux validation against refreshed `origin/develop` and the review changes:
 - Installing Zola from its pinned 0.23.6 upstream release now verifies the SHA-256
   before installing. The Linux install test, Zola website check/build, and Compose
   configuration pass.
-- PR #2's Rust matrix passed at head `8ad5203`. The documentation job exposed two
-  setup gaps on later heads: Zola is a release binary, not a versioned Cargo package,
-  and the job must install the pinned nightly formatter. Both paths are fixed; verify
+- PR #2's Rust matrix passed at head `8ad5203`. The documentation job exposed setup
+  gaps: Zola is a release binary, not a versioned Cargo package, and the pinned nightly
+  formatter must be exported and installed in that job. Both paths are fixed; verify
   the documentation job on the next PR run.

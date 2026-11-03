@@ -116,6 +116,7 @@ jobs:
           test "$formatter_channel" = "$RUSTFMT_VERSION"
           grep -qF "value = \"$RUSTFMT_VERSION\"" Makefile.toml
           {
+            printf 'RUSTFMT_VERSION=%s\n' "$RUSTFMT_VERSION"
             printf 'CARGO_MAKE_VERSION=%s\n' "$CARGO_MAKE_VERSION"
             printf 'CARGO_BINSTALL_VERSION=%s\n' "$CARGO_BINSTALL_VERSION"
             printf 'DPRINT_VERSION=%s\n' "$DPRINT_VERSION"
