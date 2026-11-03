@@ -125,7 +125,10 @@ jobs:
         run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
         shell: bash
       - name: Install documentation tools
-        run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "dprint@$DPRINT_VERSION" "lychee@$LYCHEE_VERSION" "zola@$ZOLA_VERSION" "zizmor@$ZIZMOR_VERSION"
+        run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "dprint@$DPRINT_VERSION" "lychee@$LYCHEE_VERSION" "zizmor@$ZIZMOR_VERSION"
+        shell: bash
+      - name: Install Zola
+        run: bash scripts/install-zola.sh "$ZOLA_VERSION" "$HOME/.cargo/bin"
         shell: bash
       - name: Install cargo-generate
         run: cargo binstall --locked --no-confirm cargo-generate@0.24.0

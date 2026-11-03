@@ -96,8 +96,10 @@ run env RUSTC_WRAPPER= "$binstall" --locked --no-confirm \
   "sccache@${versions[SCCACHE_VERSION]}" \
   "dprint@${versions[DPRINT_VERSION]}" \
   "lychee@${versions[LYCHEE_VERSION]}" \
-  "zola@${versions[ZOLA_VERSION]}" \
   "typos-cli@${versions[TYPOS_VERSION]}"
+
+install_root=${CARGO_INSTALL_ROOT:-${CARGO_HOME:-$HOME/.cargo}}
+run bash "$repository_root/scripts/install-zola.sh" "${versions[ZOLA_VERSION]}" "$install_root/bin"
 
 if [[ $skip_gh == true ]]; then
   printf 'Skipping GitHub CLI.\n'

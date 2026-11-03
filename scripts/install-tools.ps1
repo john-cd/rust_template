@@ -114,6 +114,43 @@ function Invoke-ExternalCommand {
     }
 }
 
+function Install-ZolaRelease {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Version,
+        [Parameter(Mandatory)]
+        [string]$Destination
+    )
+
+    $checksum = switch ($Version) {
+        "0.23.6" { "79179284f816febc281adbedb27189806cf22f83e8be4d0fca6835fbeeb09587" }
+        default { throw "No pinned Zola release checksum for version $Version." }
+    }
+    $asset = "zola-v$Version-x86_64-pc-windows-msvc.zip"
+    $uri = "https://github.com/getzola/zola/releases/download/v$Version/$asset"
+    Write-Host "> Install verified Zola $Version to $Destination"
+    if ($DryRun) {
+        return
+    }
+
+    $temporaryDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
+    New-Item -ItemType Directory -Path $temporaryDirectory | Out-Null
+    try {
+        $archive = Join-Path $temporaryDirectory $asset
+        Invoke-WebRequest -Uri $uri -OutFile $archive
+        $actualChecksum = (Get-FileHash -Path $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($actualChecksum -ne $checksum) {
+            throw "Zola archive checksum mismatch for $asset."
+        }
+        Expand-Archive -Path $archive -DestinationPath $temporaryDirectory
+        New-Item -ItemType Directory -Force -Path $Destination | Out-Null
+        Copy-Item -Path (Join-Path $temporaryDirectory "zola.exe") -Destination (Join-Path $Destination "zola.exe") -Force
+    }
+    finally {
+        Remove-Item -Path $temporaryDirectory -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
 function Test-PathContainsDirectory {
     param(
         [AllowEmptyString()]
@@ -208,9 +245,9 @@ try {
         "sccache@$($versions.SCCACHE_VERSION)",
         "dprint@$($versions.DPRINT_VERSION)",
         "lychee@$($versions.LYCHEE_VERSION)",
-        "zola@$($versions.ZOLA_VERSION)",
         "typos-cli@$($versions.TYPOS_VERSION)"
     )
+    Install-ZolaRelease -Version $versions.ZOLA_VERSION -Destination $cargoBin
 
     if ($null -eq (Get-Command gh -ErrorAction SilentlyContinue)) {
         Invoke-ExternalCommand -FilePath $winget.Source -ArgumentList @(

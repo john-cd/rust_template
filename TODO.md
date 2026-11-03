@@ -8,29 +8,23 @@
 
 ## Repository review follow-up: November 2, 2026
 
-- [x] **P1: Repair Cargo Make formatting and CI tasks.** After refreshing to
-      `origin/develop` (`f0f8f50`), `pre` still referenced removed `fmt` and
-      `format-check` task definitions, while `format-rust-check` ran rustfmt in
-      write mode. The hook and adoption guide also invoked the nonexistent `fmt`
-      task. Grouped task definitions by topic, placed each short alias next to its
-      target, wired `format-check` to both read-only format checks, made
-      `format-rust-check` use `--check`, and updated the hook and guide references.
-- [ ] **P2: Validate hosted, container, and website acceptance separately.** Run the
-      three-OS workflow, non-root devcontainer build/start, and Zola build with the
-      updated description metadata. Record the exact revision and artifacts. Local
-      syntax and Rust tests do not establish those runtime results.
+- [ ] **P2: Complete devcontainer build and non-root startup acceptance.** Compose
+      configuration passes, but Docker's build network could not resolve
+      `deb.debian.org`; retry on a host with package-mirror access and record the
+      container identity and revision.
 
-Linux validation used refreshed revision `f0f8f50` plus the review edits:
+Linux validation against refreshed `origin/develop` and the review changes:
 
-- `cargo make format-check` and `cargo make ci-rust` passed with cargo-make 0.37.24:
-  workspace check/build, Clippy with warnings denied, nextest (11 passed), doctests,
-  rustdoc, and cargo-deny. Cargo deny reported unused license allowances in
-  `deny.toml` as warnings.
-- Pinned nightly rustfmt, `dprint check`, `git diff --check`, and TOML parsing passed.
-  Static inspection found all 47 Cargo Make task aliases and dependencies resolve;
-  the formatting task runs both Rust and repository checks in read-only mode.
-- Offline lychee checked 65 links with zero errors and 10 configured exclusions.
-  Docker Compose configuration passed. The devcontainer image build could not reach
-  `deb.debian.org` from Docker's build network; no container start was possible.
-- Hosted three-OS CI remains unrun. Zola and zizmor are not installed in this Linux
-  workspace, so website build/check and workflow security audit remain unverified.
+- `cargo make format-check`, `cargo make pre`, `cargo make ci-rust` (11 tests
+  passed), and `prek run --all-files` passed. Cargo deny emitted warnings for unused
+  license allowances in `deny.toml`.
+- Pinned nightly rustfmt, dprint, TOML parsing, and `git diff --check` passed. The
+  Makefile has 47 tasks; aliases and dependencies resolve, and format checks run in
+  read-only mode. Offline lychee checked 65 links with zero errors and 10 exclusions.
+- Installing Zola from its pinned 0.23.6 upstream release now verifies the SHA-256
+  before installing. The Linux install test, Zola website check/build, and Compose
+  configuration pass.
+- PR #2's Rust matrix passed at head `8ad5203`. Its documentation job failed before
+  formatting because `cargo-binstall` cannot resolve Zola as a versioned Cargo
+  package. CI, Docker, and both platform installers now use the verified release
+  binary; confirm the documentation job on the updated PR head.

@@ -32,7 +32,7 @@ Install `cargo-binstall` first with `cargo install --locked cargo-binstall --ver
 tools with its prebuilt-binary support (CI and the devcontainer also install these):
 
 ```sh
-cargo binstall --locked --no-confirm cargo-make@0.37.24 cargo-nextest@0.9.148 cargo-deny@0.20.2 dprint@0.64.3 lychee@0.24.2 sccache@0.19.0 zola@0.23.4
+cargo binstall --locked --no-confirm cargo-make@0.37.24 cargo-nextest@0.9.148 cargo-deny@0.20.2 dprint@0.64.3 lychee@0.24.2 sccache@0.19.0
 ```
 
 On Linux, `bash scripts/install-tools.sh` installs the pinned Cargo tools and GitHub CLI. Use
@@ -40,7 +40,8 @@ On Linux, `bash scripts/install-tools.sh` installs the pinned Cargo tools and Gi
 `pwsh -NoProfile -File scripts/install-tools.ps1`; both scripts read `.devcontainer/.env`.
 The installers include cargo-machete, cargo-llvm-cov, zizmor, and `llvm-tools-preview`.
 
-Install [Zola 0.23.4](https://www.getzola.org/documentation/getting-started/installation/) for the website.
+The platform installers download Zola 0.23.6 from its GitHub release and verify the archive checksum.
+To install it separately, use the official [Zola installation guide](https://www.getzola.org/documentation/getting-started/installation/).
 On Windows, put developer tools under `C:/tools` and package caches under `D:/packages`.
 The repository itself uses portable relative paths and requires no global compiler cache or linker.
 

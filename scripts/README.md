@@ -20,7 +20,8 @@ The script requires Rust/Cargo and WinGet. Open a new terminal after installatio
 ## Install local tools on Linux
 
 From the repository root, run `bash scripts/install-tools.sh`. The script reads the same pinned versions
-from `.devcontainer/.env`, installs Cargo tools with `cargo-binstall`, and installs GitHub CLI with
+from `.devcontainer/.env`, installs Cargo tools with `cargo-binstall`, verifies and installs the
+pinned Zola release binary, and installs GitHub CLI with
 the available apt, dnf, pacman, or zypper package manager. Rust/Cargo is required; GitHub CLI may
 require `sudo`. Use `--dry-run` to print commands without installing anything, or `--skip-gh` to
 manage GitHub CLI separately. Ensure Cargo's install-root `bin` directory is on `PATH` afterward.
