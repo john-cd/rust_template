@@ -26,5 +26,5 @@ Linux validation against refreshed `origin/develop` and the review changes:
   configuration pass.
 - PR #2's Rust matrix passed at head `8ad5203`. The documentation job exposed setup
   gaps: Zola is a release binary, not a versioned Cargo package, and the pinned nightly
-  formatter must be exported and installed in that job. Both paths are fixed; verify
-  the documentation job on the next PR run.
+  formatter must be exported and installed in that job. Both paths are fixed; the full
+  documentation job passed at head `c10f055`.
