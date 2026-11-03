@@ -1,0 +1,14 @@
+# Adapted from nextcell's maintained-documentation link policy.
+cache = true
+include_fragments = "full"
+include_verbatim = false
+max_concurrency = 8
+max_retries = 2
+no_progress = true
+timeout = 20
+
+exclude_path = [
+  "(^|/)(target|build|node_modules|\\.worktrees)(/|$)",
+  # Zola validates content references and template-generated links itself.
+  "(^|/)website/(public|templates|content)(/|$)",
+]

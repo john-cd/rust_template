@@ -1,0 +1,18 @@
+# Keep source, documentation, and website assets visible; skip generated/local state.
+.git/
+.worktrees/
+**/target/
+**/build/
+**/node_modules/
+**/.venv/
+**/__pycache__/
+.sccache/
+website/public/
+website/.zola*/
+.lycheecache
+*.log
+.env
+.env.*
+secrets/
+**/*.pem
+**/*.key

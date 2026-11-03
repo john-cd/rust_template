@@ -1,0 +1,12 @@
+# Replace this local preview URL with the project's public URL before deployment.
+base_url = "http://127.0.0.1:1111"
+title = "Rust workspace starter"
+description = "A foundation for Rust libraries, applications, and contributor tooling."
+default_language = "en"
+compile_sass = false
+build_search_index = false
+minify_html = true
+
+[link_checker]
+internal_level = "error"
+external_level = "error"

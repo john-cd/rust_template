@@ -1,0 +1,7 @@
+# TODO Reviewed ??-??-????
+
+# Formatter-only toolchain; keep CI and cargo make fmt on this pin.
+[toolchain]
+channel = "nightly-2026-10-22"
+profile = "minimal"
+components = ["rustfmt"]

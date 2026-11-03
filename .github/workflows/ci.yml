@@ -1,0 +1,136 @@
+# TODO Reviewed ??-??-????
+
+name: Rust CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 9 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: sccache
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Load shared tool versions
+        shell: bash
+        run: |
+          set -a
+          source .devcontainer/.env
+          set +a
+          workspace="$GITHUB_WORKSPACE"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            workspace="${workspace//\\//}"
+            separator=';'
+          else
+            separator=':'
+          fi
+          {
+            printf 'RUSTUP_TOOLCHAIN=%s\n' "$RUST_VERSION"
+            printf 'RUST_VERSION=%s\n' "$RUST_VERSION"
+            printf 'RUSTFMT_VERSION=%s\n' "$RUSTFMT_VERSION"
+            printf 'CARGO_MAKE_VERSION=%s\n' "$CARGO_MAKE_VERSION"
+            printf 'CARGO_BINSTALL_VERSION=%s\n' "$CARGO_BINSTALL_VERSION"
+            printf 'CARGO_NEXTEST_VERSION=%s\n' "$CARGO_NEXTEST_VERSION"
+            printf 'CARGO_DENY_VERSION=%s\n' "$CARGO_DENY_VERSION"
+            printf 'SCCACHE_VERSION=%s\n' "$SCCACHE_VERSION"
+            printf 'SCCACHE_BASEDIRS=%s%s%s/.worktrees/a%s%s/.worktrees/b%s%s/.worktrees/c\n' "$workspace" "$separator" "$workspace" "$separator" "$workspace" "$separator" "$workspace"
+          } >> "$GITHUB_ENV"
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal --component clippy,rustfmt
+        shell: bash
+      - name: Check minimum Rust version
+        env:
+          RUSTC_WRAPPER: ""
+        run: rustup toolchain install 1.85.0 --profile minimal && cargo +1.85.0 check -p my_lib -p my_cli --all-targets --locked
+        shell: bash
+
+      - name: Install Rust formatter toolchain
+        run: rustup toolchain install "$RUSTFMT_VERSION" --profile minimal --component rustfmt
+        shell: bash
+
+      - name: Configure sccache with GitHub Actions cache
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v${{ env.SCCACHE_VERSION }}"
+
+      - name: Install cargo-binstall
+        run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
+        shell: bash
+      - name: Install development tools
+        run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "cargo-nextest@$CARGO_NEXTEST_VERSION" "cargo-deny@$CARGO_DENY_VERSION"
+        shell: bash
+
+      - name: Check Rust formatting
+        run: cargo +"$RUSTFMT_VERSION" fmt --all -- --check
+        shell: bash
+      - run: cargo make ci-rust
+      - name: Upload nextest report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nextest-${{ matrix.os }}
+          path: target/nextest/ci/junit.xml
+          if-no-files-found: ignore
+
+  documentation:
+    name: Documentation and repository formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Load shared tool versions
+        shell: bash
+        run: |
+          set -a
+          source .devcontainer/.env
+          set +a
+          formatter_channel="$(sed -n 's/^channel = "\([^"]*\)"/\1/p' rustfmt-toolchain.toml)"
+          test "$formatter_channel" = "$RUSTFMT_VERSION"
+          grep -qF "value = \"$RUSTFMT_VERSION\"" Makefile.toml
+          {
+            printf 'CARGO_MAKE_VERSION=%s\n' "$CARGO_MAKE_VERSION"
+            printf 'CARGO_BINSTALL_VERSION=%s\n' "$CARGO_BINSTALL_VERSION"
+            printf 'DPRINT_VERSION=%s\n' "$DPRINT_VERSION"
+            printf 'LYCHEE_VERSION=%s\n' "$LYCHEE_VERSION"
+            printf 'ZOLA_VERSION=%s\n' "$ZOLA_VERSION"
+          } >> "$GITHUB_ENV"
+      - name: Install cargo-binstall
+        run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
+        shell: bash
+      - name: Install documentation tools
+        run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "dprint@$DPRINT_VERSION" "lychee@$LYCHEE_VERSION" "zola@$ZOLA_VERSION"
+        shell: bash
+      - run: cargo make format-check
+      - run: cargo make links
+      - name: Validate GitHub Actions workflow
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7 .github/workflows/ci.yml
+      - name: Validate devcontainer Compose configuration
+        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml config --quiet
+      - run: cargo make website-check
+      - run: cargo make website-build

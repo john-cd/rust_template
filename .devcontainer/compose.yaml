@@ -1,0 +1,25 @@
+# TODO Reviewed ??-??-????
+
+services:
+  devcontainer:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        RUST_VERSION: ${RUST_VERSION:?Set RUST_VERSION in .devcontainer/.env}
+        RUSTFMT_VERSION: ${RUSTFMT_VERSION:?Set RUSTFMT_VERSION in .devcontainer/.env}
+        CARGO_MAKE_VERSION: ${CARGO_MAKE_VERSION:?Set CARGO_MAKE_VERSION in .devcontainer/.env}
+        CARGO_BINSTALL_VERSION: ${CARGO_BINSTALL_VERSION:?Set CARGO_BINSTALL_VERSION in .devcontainer/.env}
+        CARGO_NEXTEST_VERSION: ${CARGO_NEXTEST_VERSION:?Set CARGO_NEXTEST_VERSION in .devcontainer/.env}
+        CARGO_DENY_VERSION: ${CARGO_DENY_VERSION:?Set CARGO_DENY_VERSION in .devcontainer/.env}
+        SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env}
+        DPRINT_VERSION: ${DPRINT_VERSION:?Set DPRINT_VERSION in .devcontainer/.env}
+        LYCHEE_VERSION: ${LYCHEE_VERSION:?Set LYCHEE_VERSION in .devcontainer/.env}
+        ZOLA_VERSION: ${ZOLA_VERSION:?Set ZOLA_VERSION in .devcontainer/.env}
+    volumes:
+      - ..:/workspaces/rust_template:cached
+    environment:
+      SCCACHE_BASEDIRS: /workspaces/rust_template:/workspaces/rust_template/.worktrees/a:/workspaces/rust_template/.worktrees/b:/workspaces/rust_template/.worktrees/c
+    working_dir: /workspaces/rust_template
+    command: sleep infinity
+    init: true

@@ -1,0 +1,25 @@
+# Portable hooks adapted from the Muz and NextCell workspaces.
+minimum_prek_version = "0.5.6"
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "check-added-large-files", args = ["--maxkb=1024"] },
+  { id = "check-case-conflict" },
+  { id = "check-illegal-windows-names" },
+  { id = "check-merge-conflict" },
+  { id = "check-toml" },
+  { id = "check-yaml" },
+  { id = "detect-private-key" },
+  { id = "end-of-file-fixer" },
+  { id = "trailing-whitespace", args = ["--markdown-linebreak-ext=md"] },
+]
+
+[[repos]]
+repo = "local"
+hooks = [
+  { id = "rust-format", name = "Rust formatting", entry = "cargo make fmt", language = "system", types = [
+    "rust",
+  ], pass_filenames = false },
+  { id = "repository-format", name = "Repository formatting", entry = "cargo make format-check", language = "system", files = '\.(md|mdx|json|jsonc|toml|yaml|yml)$', pass_filenames = false },
+]

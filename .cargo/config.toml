@@ -1,0 +1,146 @@
+# TODO Reviewed ??-??-????
+
+# Configure shared build tools and the local compiler cache.
+[build]
+rustc-wrapper = "sccache"
+
+[env]
+# Shared cache across main checkout and worktrees.
+# SCCACHE_DIR = "D:/code/rust_template/.sccache"
+# SCCACHE_BASEDIRS = "D:/code/rust_template;D:/code/rust_template/.worktrees/a;D:/code/rust_template/.worktrees/b;D:/code/rust_template/.worktrees/c"
+SCCACHE_CACHE_SIZE = "35G"
+
+[term]
+quiet = true
+
+[net]
+retry = 2
+
+[alias]
+tools = "run --locked --package tools --"
+
+# Fast local iteration.
+[profile.dev]
+debug = 0 # If you need debugger support, use "line-tables-only"
+incremental = false # Required for sccache
+
+# Compile dependencies with full optimization while keeping workspace crates fast to rebuild.
+[profile.dev.package."*"]
+debug = 0
+opt-level = 1
+
+# Keep full debug information available for local debugging sessions.
+[profile.debug]
+inherits = "dev"
+debug = 2
+
+# Same settings than "dev" for sccache reuse.
+[profile.debug.package."*"]
+debug = 0
+opt-level = 1
+
+[profile.test]
+inherits = "dev"
+
+# Same settings than "dev" for sccache reuse.
+[profile.test.package."*"]
+debug = 0
+opt-level = 1
+
+# A CI build profile with the same quick compile settings as development.
+[profile.ci]
+inherits = "dev"
+
+# Optimized developer tools without changing the standard release profile.
+[profile.tools]
+inherits = "dev"
+opt-level = 2
+
+# Cargo defaults reference (Cargo 1.99.1). These values are intentionally comments only.
+# [build]
+# target-dir = "target"              # workspace-root target directory
+# incremental = <profile default>    # profile-dependent; false in CI when CI is set
+# rustc-wrapper = <unset>            # invoke rustc directly
+#
+# [env]
+# CARGO_TARGET_DIR = <unset>
+# CARGO_BUILD_BUILD_DIR = <unset>
+# SCCACHE_BASEDIRS = <unset>
+# <other variables> = <unset>        # Cargo does not add project-specific environment variables
+#
+# [net]
+# retry = 3
+# git-fetch-with-cli = false
+# offline = false
+#
+# [term]
+# quiet = false
+# verbose = false
+# color = "auto"
+# hyperlinks = true
+# unicode = true
+# progress.when = "auto"
+# progress.width = 80
+# progress.term-integration = true
+#
+# [alias]
+# b = "build"
+# c = "check"
+# d = "doc"
+# t = "test"
+# r = "run"
+# rm = "remove"
+# <other aliases> = <unset>
+#
+# [profile.dev]
+# opt-level = 0
+# debug = true
+# strip = "none"
+# debug-assertions = true
+# overflow-checks = true
+# lto = false
+# panic = "unwind"
+# incremental = true
+# codegen-units = 256
+# rpath = false
+# split-debuginfo = <platform default>
+#
+# [profile.dev.package."*"]
+# opt-level = <profile default: 0>
+#
+# [profile.release]
+# opt-level = 3
+# debug = false
+# split-debuginfo = <platform default>
+# strip = "none"
+# debug-assertions = false
+# overflow-checks = false
+# lto = false
+# panic = "unwind"
+# incremental = false
+# codegen-units = 16
+# rpath = false
+#
+# [profile.release.package."*"]
+# opt-level = <profile default: 3>
+#
+# [profile.test]
+# inherits = "dev"
+# opt-level = 0
+# debug = true
+# strip = "none"
+# debug-assertions = true
+# overflow-checks = true
+# lto = false
+# panic = "unwind"
+# incremental = false
+# codegen-units = 256
+# rpath = false
+# split-debuginfo = <platform default>
+#
+# [profile.test.package."*"]
+# opt-level = <profile default: 0>
+#
+# [profile.ci], [profile.debugging], [profile.tools]
+# inherits = "dev"                   # when the profile-specific parent is omitted
+# remaining keys = <inherited from dev>

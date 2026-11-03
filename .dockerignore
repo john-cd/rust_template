@@ -1,0 +1,26 @@
+# Build context excludes adapted from plutus and nextcell.
+.git
+**/.git
+.worktrees
+**/target
+**/build
+**/node_modules
+**/.venv
+**/__pycache__
+.sccache
+.idea
+.vscode
+website/public
+website/.zola*
+*.log
+*.pdb
+*.profraw
+*.profdata
+.lycheecache
+**/.env
+**/.env.*
+!.devcontainer/.env
+!**/.env.example
+!**/.env.*.example
+**/*.pem
+**/*.key

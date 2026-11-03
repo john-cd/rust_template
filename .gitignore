@@ -1,0 +1,58 @@
+/target/
+/build/
+/.worktrees/
+**/target/
+**/build/
+*.rs.bk
+*.pdb
+rustc-ice-*.txt
+*.log
+*.profraw
+*.profdata
+/.sccache/
+/.lycheecache
+/website/public/
+/website/.zola*/
+**/node_modules/
+**/.venv/
+**/__pycache__/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.devcontainer/.env
+
+# JetBrains IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/*.code-snippets
+
+# Linux
+*~
+*.swp
+*.swo
+.directory
+.fuse_hidden*
+.nfs*
+.Trash-*
+
+# Windows
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100/
+.Trashes/
