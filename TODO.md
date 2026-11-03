@@ -1,5 +1,30 @@
 # TODO
 
+<!-- recommended-issue-order:start -->
+
+## Recommended work order
+
+Snapshot: November 3, 2026. No GitHub remote is configured. Links below point to local tasks; preserve concurrent staged and unstaged implementation work.
+Read top to bottom: quick wins, then priority work. Recheck source and prior
+validation before implementing. Existing acceptance details remain below.
+
+### Ready: quick wins
+
+- [Install the wrapper before the first CI Cargo check](#repository-review-follow-up-november-2-2026) — P1: verify current source first; another task may already have applied the correction.
+- [Align debug-symbol and portable-storage guidance](#repository-review-follow-up-november-2-2026) — P2/P3: reconcile the documented contract with effective configuration.
+
+### Ready: priority order
+
+- [Validate the declared Rust 1.85 target scope](#repository-review-follow-up-november-2-2026) — P2: use the declared library/CLI support scope; record toolchain prerequisites separately.
+- [Update adoption documentation, tests and local formatting](#todo) — Use the existing application-adoption checklist after the project purpose is selected.
+
+### Blocked or deferred
+
+- [Select the application name, metadata and replacement behavior](#todo) — Needs the owner's project/application decision before replacing the template.
+- [Hosted three-OS, devcontainer and website acceptance](#repository-review-follow-up-november-2-2026) — Needs a configured remote/Actions environment, container host and Zola; local checks do not prove these outcomes.
+
+<!-- recommended-issue-order:end -->
+
 - [ ] Rename the project and update package metadata in `Cargo.toml`.
 - [ ] Replace the template code with your application logic.
 - [ ] Add or update tests, then run `cargo test`.
