@@ -1,0 +1,3 @@
+//! Domain type used by the library.
+//!
+//! TODO Reviewed ??-??-????.

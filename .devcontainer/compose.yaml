@@ -1,0 +1,41 @@
+# TODO Reviewed ??-??-????
+
+services:
+  devcontainer:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      target: development
+      args:
+        RUST_VERSION: ${RUST_VERSION:?Set RUST_VERSION in .devcontainer/.env}
+        DEBIAN_VERSION: ${DEBIAN_VERSION:?Set DEBIAN_VERSION in .devcontainer/.env}
+        RUSTFMT_VERSION: ${RUSTFMT_VERSION:?Set RUSTFMT_VERSION in .devcontainer/.env}
+        CARGO_MAKE_VERSION: ${CARGO_MAKE_VERSION:?Set CARGO_MAKE_VERSION in .devcontainer/.env}
+        CARGO_BINSTALL_VERSION: ${CARGO_BINSTALL_VERSION:?Set CARGO_BINSTALL_VERSION in .devcontainer/.env}
+        CARGO_NEXTEST_VERSION: ${CARGO_NEXTEST_VERSION:?Set CARGO_NEXTEST_VERSION in .devcontainer/.env}
+        CARGO_DENY_VERSION: ${CARGO_DENY_VERSION:?Set CARGO_DENY_VERSION in .devcontainer/.env}
+        CARGO_MACHETE_VERSION: ${CARGO_MACHETE_VERSION:?Set CARGO_MACHETE_VERSION in .devcontainer/.env}
+        CARGO_LLVM_COV_VERSION: ${CARGO_LLVM_COV_VERSION:?Set CARGO_LLVM_COV_VERSION in .devcontainer/.env}
+        ZIZMOR_VERSION: ${ZIZMOR_VERSION:?Set ZIZMOR_VERSION in .devcontainer/.env}
+        SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env}
+        DPRINT_VERSION: ${DPRINT_VERSION:?Set DPRINT_VERSION in .devcontainer/.env}
+        LYCHEE_VERSION: ${LYCHEE_VERSION:?Set LYCHEE_VERSION in .devcontainer/.env}
+        ZOLA_VERSION: ${ZOLA_VERSION:?Set ZOLA_VERSION in .devcontainer/.env}
+    volumes:
+      - ..:/workspaces/project:cached
+    environment:
+      SCCACHE_BASEDIRS: /workspaces/project:/workspaces/project/.worktrees/a:/workspaces/project/.worktrees/b:/workspaces/project/.worktrees/c
+    working_dir: /workspaces/project
+    command: sleep infinity
+    init: true
+
+  production:
+    profiles: [production]
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      target: production
+      args:
+        RUST_VERSION: ${RUST_VERSION:?Set RUST_VERSION in .devcontainer/.env}
+        DEBIAN_VERSION: ${DEBIAN_VERSION:?Set DEBIAN_VERSION in .devcontainer/.env}
+        CARGO_CHEF_VERSION: ${CARGO_CHEF_VERSION:?Set CARGO_CHEF_VERSION in .devcontainer/.env}

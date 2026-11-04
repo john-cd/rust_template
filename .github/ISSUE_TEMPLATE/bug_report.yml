@@ -1,0 +1,23 @@
+name: Bug report
+description: Report a reproducible problem.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include the smallest input and exact command that reproduce the issue.
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, Rust version, relevant tool versions, and the commit being tested.
+    validations:
+      required: false

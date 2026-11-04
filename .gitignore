@@ -1,0 +1,65 @@
+# Rust and build output
+/target/
+/build/
+/.worktrees/
+**/target/
+**/build/
+*.rs.bk
+*.pdb
+rustc-ice-*.txt
+*.log
+*.profraw
+*.profdata
+
+# Compiler and tool caches
+/.sccache/
+/.lycheecache
+
+# Generated website output
+/website/public/
+/website/.zola*/
+
+# Language and package caches
+**/node_modules/
+**/.venv/
+**/__pycache__/
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.devcontainer/.env
+
+# JetBrains IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/*.code-snippets
+
+# Linux desktop and temporary files
+*~
+*.swp
+*.swo
+.directory
+.fuse_hidden*
+.nfs*
+.Trash-*
+
+# Windows system files
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS system files
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100/
+.Trashes/

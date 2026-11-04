@@ -1,0 +1,131 @@
+# TODO Reviewed ??-??-????
+
+[build]
+rustc-wrapper = "sccache"
+
+# By default, the environment variables specified will not override values that already exist in the environment.
+# This behavior can be changed by setting the force flag.
+[env]
+# If not done otherwise, set a shared cache across main checkout and worktrees.
+# SCCACHE_DIR = "D:/sccache"
+# SCCACHE_BASEDIRS = "D:/code/my_project;D:/code/my_project/.worktrees/a;D:/code/my_project/.worktrees/b;D:/code/my_project/.worktrees/c"
+# SCCACHE_CACHE_SIZE = "35G"
+
+[term]
+# Less token usage and output clutter.
+quiet = true
+
+[alias]
+# Cargo aliases for common tasks. These can be used directly with cargo.
+tools = "run --profile tools --locked --package tools --"
+
+# Profiles
+#
+# Favor compiler-cache reuse during local development by using the same settings for most profiles.
+
+# The "dev" profile is the default for local development, and the "ci" profile is used for CI builds.
+[profile.dev]
+debug = 0 # No debug to save space. If you need debugger support, use "line-tables-only".
+incremental = false # Required for sccache.
+
+[profile.dev.package."*"]
+debug = 0
+opt-level = 1 # Some optimization to reduce size and improve performance, but still fast compile times. This should build once.
+
+# The "debug" profile is used for workspace crates when debugging is needed.
+[profile.debug]
+inherits = "dev"
+debug = 2
+
+# The standard "test" profile is used for running tests, and inherits from "dev" by default.
+
+# The CI profile uses the same quick compile settings as development.
+[profile.ci]
+inherits = "dev"
+
+# The "tools" profile is used for building repository-local developer commands with modest optimization.
+[profile.tools]
+inherits = "dev"
+opt-level = 2
+
+# Cargo defaults reference (Cargo 1.99.1). These values are intentionally comments only.
+# [build]
+# target-dir = "target"              # workspace-root target directory
+# incremental = <profile default>    # profile-dependent; false in CI when CI is set
+# rustc-wrapper = <unset>            # invoke rustc directly
+#
+# [env]
+# <variable> = <unset>
+#
+# [net]
+# retry = 3
+# git-fetch-with-cli = false
+# offline = false
+#
+# [term]
+# quiet = false
+# verbose = false
+# color = "auto"
+# hyperlinks = true
+# unicode = true
+# progress.when = "auto"
+# progress.width = 80
+# progress.term-integration = true
+#
+# [alias]
+# b = "build"
+# c = "check"
+# d = "doc"
+# t = "test"
+# r = "run"
+# rm = "remove"
+# <other aliases> = <unset>
+#
+# [profile.dev]
+# opt-level = 0
+# debug = true
+# strip = "none"
+# debug-assertions = true
+# overflow-checks = true
+# lto = false
+# panic = "unwind"
+# incremental = true
+# codegen-units = 256
+# rpath = false
+# split-debuginfo = <platform default>
+#
+# [profile.dev.package."*"]
+# opt-level = <profile default: 0>
+#
+# [profile.release]
+# opt-level = 3
+# debug = false
+# split-debuginfo = <platform default>
+# strip = "none"
+# debug-assertions = false
+# overflow-checks = false
+# lto = false
+# panic = "unwind"
+# incremental = false
+# codegen-units = 16
+# rpath = false
+#
+# [profile.release.package."*"]
+# opt-level = <profile default: 3>
+#
+# [profile.test]
+# inherits = "dev"
+# opt-level = 0
+# debug = true
+# strip = "none"
+# debug-assertions = true
+# overflow-checks = true
+# lto = false
+# panic = "unwind"
+# incremental = false
+# codegen-units = 256
+# rpath = false
+# split-debuginfo = <platform default>
+#
+# [profile.test.package."*"]
+# opt-level = <profile default: 0>

@@ -1,0 +1,19 @@
+//! Benchmark the library greeting function.
+
+#![allow(missing_docs)]
+
+use std::hint::black_box;
+
+use criterion::Criterion;
+use criterion::criterion_group;
+use criterion::criterion_main;
+use my_lib::greeting;
+
+fn benchmark_greeting(criterion: &mut Criterion) {
+    criterion.bench_function("greeting", |bencher| {
+        bencher.iter(|| greeting(black_box("world")));
+    });
+}
+
+criterion_group!(benches, benchmark_greeting);
+criterion_main!(benches);

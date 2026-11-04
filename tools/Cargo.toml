@@ -1,0 +1,17 @@
+[package]
+name = "tools"
+version.workspace = true
+categories.workspace = true
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+publish.workspace = true
+readme = "README.md"
+rust-version.workspace = true
+description = "Development commands for the Rust workspace template"
+
+[dependencies]
+clap.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,20 @@
+# TODO Reviewed ??-??-????
+
+[package]
+name = "my_cli"
+version.workspace = true
+categories = ["command-line-utilities"]
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+publish.workspace = true
+readme = "README.md"
+rust-version.workspace = true
+description = "Starter command-line application for a Rust workspace"
+
+[dependencies]
+clap.workspace = true
+my_lib.workspace = true
+
+[lints]
+workspace = true

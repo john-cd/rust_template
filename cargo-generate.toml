@@ -1,0 +1,7 @@
+[template]
+cargo_generate_version = ">=0.24.0"
+# GitHub Actions and Zola use braces that are not Liquid placeholders.
+# Only the generated project note needs template expansion.
+include = ["PROJECT.md", "PROJECT.md.liquid"]
+# Keep local build output and auxiliary worktrees out of generated projects.
+ignore = [".worktrees", "target", ".lycheecache"]

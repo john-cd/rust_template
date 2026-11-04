@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "rust-lang.rust-analyzer",
+    "tamasfe.even-better-toml",
+    "dprint.dprint",
+    "EditorConfig.EditorConfig",
+    "alefragnani.Bookmarks",
+    "fill-labs.dependi",
+    "codezombiech.gitignore",
+    "UtsavVaria.goog-search",
+    "DavidAnson.vscode-markdownlint",
+    "vadimcn.vscode-lldb",
+    "mermaidchart.vscode-mermaid-chart"
+  ]
+}

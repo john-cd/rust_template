@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
+{% block content %}
+<h1>{{ section.title }}</h1>
+{{ section.content | safe }}
+<nav aria-label="Guides">
+  <ul>{% for page in section.pages %}<li><a href="{{ page.permalink }}">{{ page.title }}</a></li>{% endfor %}</ul>
+</nav>
+{% endblock content %}

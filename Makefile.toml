@@ -1,0 +1,403 @@
+# TODO Reviewed ??-??-????
+
+[env]
+CARGO_TARGET_ROOT = { value = "D:/target", condition = { platforms = ["windows"], env_not_set = [
+  "CARGO_TARGET_ROOT",
+] } }
+CARGO_BUILD_ROOT = { value = "C:/code_build", condition = { platforms = ["windows"], env_not_set = [
+  "CARGO_BUILD_ROOT",
+] } }
+CARGO_TARGET_DIR = { value = "${CARGO_TARGET_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
+  "windows",
+], env_not_set = ["CARGO_TARGET_DIR"] } }
+CARGO_BUILD_BUILD_DIR = { value = "${CARGO_BUILD_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
+  "windows",
+], env_not_set = ["CARGO_BUILD_BUILD_DIR"] } }
+RUSTFMT_TOOLCHAIN = { value = "nightly-2026-10-22", condition = { env_not_set = [
+  "RUSTFMT_TOOLCHAIN",
+] } }
+
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[tasks.default]
+description = "Show available project tasks"
+category = "Workspace"
+command = "cargo"
+args = ["make", "--list-all-steps"]
+
+[tasks.pre]
+description = "Run formatting checks, workspace checks, and Clippy"
+category = "Workspace"
+dependencies = ["format-check", "check", "clippy"]
+
+# Formatting
+
+[tasks.f]
+alias = "format"
+category = "Formatting"
+
+[tasks.format]
+description = "Format Rust, documentation, and configuration"
+category = "Formatting"
+dependencies = ["format-rust", "format-files"]
+
+[tasks.fc]
+alias = "format-check"
+category = "Formatting"
+
+[tasks.format-check]
+description = "Check Rust and repository formatting"
+category = "Formatting"
+dependencies = ["format-rust-check", "format-files-check"]
+
+[tasks.format-rust]
+category = "Formatting"
+script_runner = "@duckscript"
+script = '''
+toolchain = get_env RUSTFMT_TOOLCHAIN
+exec --fail-on-error rustup run ${toolchain} cargo --quiet fmt --all -- --quiet
+'''
+
+[tasks.format-rust-check]
+description = "Check Rust formatting"
+category = "Formatting"
+script_runner = "@duckscript"
+script = '''
+toolchain = get_env RUSTFMT_TOOLCHAIN
+exec --fail-on-error rustup run ${toolchain} cargo --quiet fmt --all -- --quiet --check
+'''
+
+[tasks.format-files]
+category = "Formatting"
+command = "dprint"
+args = ["fmt", "--log-level=error"]
+
+[tasks.format-files-check]
+category = "Formatting"
+command = "dprint"
+args = ["check", "--log-level=error"]
+
+# Build
+
+[tasks.c]
+alias = "check"
+category = "Build"
+
+[tasks.check]
+description = "Check all workspace targets"
+category = "Build"
+command = "cargo"
+args = [
+  "--quiet",
+  "check",
+  "--workspace",
+  "--all-targets",
+  "--all-features",
+  "--locked",
+  "--profile",
+  "ci",
+]
+
+[tasks.b]
+alias = "build"
+category = "Build"
+
+[tasks.build]
+description = "Build all workspace targets and features"
+category = "Build"
+command = "cargo"
+args = [
+  "--quiet",
+  "build",
+  "--workspace",
+  "--all-targets",
+  "--all-features",
+  "--locked",
+  "--profile",
+  "ci",
+]
+
+[tasks.release]
+description = "Build the workspace in release mode"
+category = "Build"
+command = "cargo"
+args = ["build", "--workspace", "--all-targets", "--all-features", "--locked", "--release"]
+
+[tasks.build-env]
+description = "Show effective Cargo build and cache environment"
+category = "Build"
+script_runner = "@duckscript"
+script = '''
+target = get_env CARGO_TARGET_DIR
+build = get_env CARGO_BUILD_BUILD_DIR
+cache = get_env SCCACHE_DIR
+bases = get_env SCCACHE_BASEDIRS
+echo CARGO_TARGET_DIR=${target}
+echo CARGO_BUILD_BUILD_DIR=${build}
+echo SCCACHE_DIR=${cache}
+echo SCCACHE_BASEDIRS=${bases}
+'''
+
+# Run
+
+[tasks.r]
+alias = "run"
+category = "Run"
+
+[tasks.run]
+description = "Run the sample CLI"
+category = "Run"
+command = "cargo"
+args = ["run", "--locked", "--package", "my_cli", "--"]
+
+# Quality
+
+[tasks.l]
+alias = "clippy"
+category = "Quality"
+
+[tasks.clippy]
+description = "Run Clippy across all workspace targets"
+category = "Quality"
+command = "cargo"
+args = [
+  "clippy",
+  "--quiet",
+  "--workspace",
+  "--all-targets",
+  "--all-features",
+  "--locked",
+  "--profile",
+  "ci",
+  "--",
+  "-D",
+  "warnings",
+]
+
+[tasks.fix]
+description = "Apply compiler suggestions to the workspace"
+category = "Quality"
+command = "cargo"
+args = ["fix", "--workspace", "--all-targets", "--all-features", "--locked"]
+
+[tasks.lint-fix]
+description = "Apply Clippy suggestions to the workspace"
+category = "Quality"
+command = "cargo"
+args = ["clippy", "--fix", "--workspace", "--all-targets", "--all-features", "--locked"]
+
+[tasks.hooks]
+description = "Run optional repository hooks (requires prek 0.5.6 or newer)"
+category = "Quality"
+command = "prek"
+args = ["run", "--all-files"]
+
+[tasks.hooks-install]
+description = "Install prek Git hooks"
+category = "Quality"
+command = "prek"
+args = ["install"]
+
+[tasks.hooks-run]
+description = "Run prek against staged files"
+category = "Quality"
+command = "prek"
+args = ["run"]
+
+[tasks.deny]
+description = "Check dependency advisories, licenses, duplicates, and sources"
+category = "Quality"
+command = "cargo"
+args = ["--quiet", "deny", "check"]
+
+[tasks.machete]
+description = "Report potentially unused dependencies for review"
+category = "Quality"
+command = "cargo"
+args = ["machete"]
+
+[tasks.zizmor]
+description = "Audit GitHub Actions workflows for security issues"
+category = "Quality"
+command = "zizmor"
+args = ["--min-severity", "high", ".github/workflows"]
+
+# Testing
+
+[tasks.t]
+alias = "test"
+category = "Testing"
+
+[tasks.test]
+description = "Run tests with cargo-nextest"
+category = "Testing"
+command = "cargo"
+args = [
+  "nextest",
+  "run",
+  "--workspace",
+  "--all-targets",
+  "--all-features",
+  "--locked",
+  "--profile",
+  "ci",
+  "--cargo-profile",
+  "ci",
+  "--cargo-quiet",
+]
+
+[tasks.test-cargo]
+description = "Run workspace tests with Cargo when nextest is unavailable"
+category = "Testing"
+command = "cargo"
+args = ["test", "--workspace", "--all-targets", "--all-features", "--locked", "--profile", "ci"]
+
+[tasks.doctest]
+description = "Run documentation tests"
+category = "Testing"
+command = "cargo"
+args = ["--quiet", "test", "--workspace", "--doc", "--all-features", "--locked", "--profile", "ci"]
+
+[tasks.bench]
+description = "Run workspace benchmarks"
+category = "Testing"
+command = "cargo"
+args = ["bench", "--workspace", "--all-features", "--locked"]
+
+[tasks.bench-check]
+description = "Compile workspace benchmarks without running them"
+category = "Testing"
+command = "cargo"
+args = ["bench", "--workspace", "--all-features", "--locked", "--no-run"]
+
+[tasks.coverage]
+description = "Measure workspace test coverage with LLVM"
+category = "Testing"
+command = "cargo"
+args = ["llvm-cov", "--workspace", "--all-features", "--locked"]
+
+[tasks.coverage-html]
+description = "Run tests and generate an HTML coverage report"
+category = "Testing"
+command = "cargo"
+args = ["llvm-cov", "--workspace", "--all-features", "--locked", "--html"]
+
+# Documentation
+
+[tasks.doc]
+description = "Build workspace API documentation with warnings denied"
+category = "Documentation"
+command = "cargo"
+args = ["--quiet", "doc", "--workspace", "--all-features", "--no-deps", "--locked"]
+env = { RUSTDOCFLAGS = "-D warnings" }
+
+[tasks.links]
+description = "Check local Markdown links without network requests"
+category = "Documentation"
+command = "lychee"
+args = [
+  "--offline",
+  "--quiet",
+  "--config",
+  "lychee.toml",
+  "*.md",
+  "crates/**/*.md",
+  "tools/**/*.md",
+  "docs/**/*.md",
+  "scripts/**/*.md",
+  "website/README.md",
+]
+
+[tasks.links-online]
+description = "Check local and external documentation links"
+category = "Documentation"
+command = "lychee"
+args = [
+  "--quiet",
+  "--config",
+  "lychee.toml",
+  "*.md",
+  "crates/**/*.md",
+  "tools/**/*.md",
+  "docs/**/*.md",
+  "scripts/**/*.md",
+  "website/README.md",
+]
+
+# Docker
+
+[tasks.docker-build-dev]
+description = "Build the development container image"
+category = "Docker"
+command = "docker"
+args = [
+  "compose",
+  "--env-file",
+  ".devcontainer/.env",
+  "-f",
+  ".devcontainer/compose.yaml",
+  "build",
+  "devcontainer",
+]
+
+[tasks.docker-build-prod]
+description = "Build the production container image"
+category = "Docker"
+command = "docker"
+args = [
+  "compose",
+  "--env-file",
+  ".devcontainer/.env",
+  "-f",
+  ".devcontainer/compose.yaml",
+  "build",
+  "production",
+]
+
+# Website
+
+[tasks.website-check]
+category = "Website"
+command = "zola"
+args = ["--root", "website", "check"]
+env = { RUST_LOG = "error" }
+
+[tasks.website-build]
+category = "Website"
+command = "zola"
+args = ["--root", "website", "build"]
+env = { RUST_LOG = "error" }
+
+[tasks.web]
+alias = "website-serve"
+category = "Website"
+
+[tasks.website-serve]
+category = "Website"
+command = "zola"
+args = ["--root", "website", "serve", "--interface", "0.0.0.0"]
+env = { RUST_LOG = "error" }
+
+# CI
+
+[tasks.ci]
+description = "Run the local CI checks (requires cargo-nextest and cargo-deny)"
+category = "CI"
+dependencies = [
+  "pre",
+  "build",
+  "test",
+  "doctest",
+  "doc",
+  "deny",
+  "links",
+  "website-check",
+  "website-build",
+]
+
+[tasks.ci-rust]
+description = "Run the Rust build, lint, test, documentation, and dependency checks"
+category = "CI"
+dependencies = ["check", "build", "clippy", "test", "doctest", "doc", "deny"]

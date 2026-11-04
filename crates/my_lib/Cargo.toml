@@ -1,0 +1,26 @@
+# TODO Reviewed ??-??-????
+
+[package]
+name = "my_lib"
+version.workspace = true
+categories.workspace = true
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+publish.workspace = true
+readme = "README.md"
+rust-version.workspace = true
+description = "Starter library crate for a Rust workspace"
+
+[dependencies]
+thiserror.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "greeting"
+harness = false
+
+[lints]
+workspace = true
