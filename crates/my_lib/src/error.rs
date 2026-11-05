@@ -1,8 +1,6 @@
 //! Errors returned by the library.
 //!
-//! TODO Reviewed ??-??-????.
-
-//
+//! TODO Reviewed ??-??-2026.
 
 /// The library's top-level error type.
 #[derive(Debug, thiserror::Error)]

@@ -1,4 +1,6 @@
 //! Executable-level checks for development command failures.
+//!
+//! TODO Reviewed ??-??-2026.
 
 #![allow(missing_docs)]
 

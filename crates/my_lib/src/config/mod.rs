@@ -1,3 +1,3 @@
 //! Configuration loading and application settings.
 //!
-//! TODO Reviewed ??-??-????.
+//! TODO Reviewed ??-??-2026.

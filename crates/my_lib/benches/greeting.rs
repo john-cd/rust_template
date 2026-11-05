@@ -1,4 +1,6 @@
 //! Benchmark the library greeting function.
+//!
+//! TODO Reviewed ??-??-2026.
 
 #![allow(missing_docs)]
 

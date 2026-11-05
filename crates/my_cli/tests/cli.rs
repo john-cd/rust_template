@@ -1,4 +1,6 @@
 //! Executable-level checks for the `my_cli` command-line contract.
+//!
+//! TODO Reviewed ??-??-2026.
 
 use std::process::Command;
 

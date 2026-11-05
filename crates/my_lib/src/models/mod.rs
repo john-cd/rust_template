@@ -1,6 +1,6 @@
 //! Domain types used by the library.
 //!
-//! TODO Reviewed ??-??-????.
+//! TODO Reviewed ??-??-2026.
 
 mod model1;
 

@@ -1,8 +1,6 @@
 //! A starting point for a Rust library crate.
 //!
-//! TODO Reviewed ??-??-????.
-
-//
+//! TODO Reviewed ??-??-2026.
 
 mod error;
 mod greeting;

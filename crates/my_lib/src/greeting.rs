@@ -1,6 +1,6 @@
 //! Greeting behavior.
 //!
-//! TODO Reviewed ??-??-????.
+//! TODO Reviewed ??-??-2026.
 
 /// Returns a greeting for the provided name.
 ///
