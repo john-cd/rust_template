@@ -8,10 +8,9 @@
 
 ## Repository review follow-up: November 2, 2026
 
-- [ ] **P2: Complete devcontainer build and non-root startup acceptance.** Compose
-      configuration passes, but Docker's build network could not resolve
-      `deb.debian.org`; retry on a host with package-mirror access and record the
-      container identity and revision.
+- [x] **P2: Devcontainer build and non-root startup accepted (2026-11-04).** Docker
+      Compose configuration and `docker compose build` passed at revision `9fd8935`;
+      the container runs as `uid=1000(vscode)` with rustc 1.99.1 and Zola 0.23.6.
 
 Linux validation against refreshed `origin/develop` and the review changes:
 
