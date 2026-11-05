@@ -1,5 +1,8 @@
 //! A starting point for a Rust library crate.
-// TODO Reviewed ??-??-????.
+//!
+//! TODO Reviewed ??-??-????.
+
+//
 
 mod error;
 mod greeting;
