@@ -8,7 +8,8 @@
 
 use std::path::Path;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::error::Result;
 
