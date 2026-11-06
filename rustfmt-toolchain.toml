@@ -2,6 +2,6 @@
 
 # Formatter-only toolchain; keep CI and cargo make format-rust-check on this pin.
 [toolchain]
-channel = "nightly-2026-10-22"
+channel = "nightly-2026-11-06"
 profile = "minimal"
 components = ["rustfmt"]

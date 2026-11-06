@@ -13,7 +13,7 @@ CARGO_TARGET_DIR = { value = "${CARGO_TARGET_ROOT}/${CARGO_MAKE_PROJECT_NAME}", 
 CARGO_BUILD_BUILD_DIR = { value = "${CARGO_BUILD_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
   "windows",
 ], env_not_set = ["CARGO_BUILD_BUILD_DIR"] } }
-RUSTFMT_TOOLCHAIN = { value = "nightly-2026-10-22", condition = { env_not_set = [
+RUSTFMT_TOOLCHAIN = { value = "nightly-2026-11-06", condition = { env_not_set = [
   "RUSTFMT_TOOLCHAIN",
 ] } }
 

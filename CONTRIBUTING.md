@@ -19,7 +19,7 @@ claiming compatibility after dependency or language changes.
 
 From the repository root, install the pinned components with
 `rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt` and
-`rustup toolchain install nightly-2026-10-22 --profile minimal --component rustfmt`.
+`rustup toolchain install nightly-2026-11-06 --profile minimal --component rustfmt`.
 
 The shared devcontainer versions are in `.devcontainer/.env`. Edit and commit version changes there;
 these values are not secrets. Compose requires these values and passes them to the Docker build.
