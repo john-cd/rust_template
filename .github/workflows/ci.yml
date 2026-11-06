@@ -65,7 +65,7 @@ jobs:
       - name: Check minimum Rust version
         env:
           RUSTC_WRAPPER: ""
-        run: rustup toolchain install 1.85.0 --profile minimal && cargo +1.85.0 check -p my_lib -p my_cli --all-targets --locked
+        run: rustup toolchain install 1.98.1 --profile minimal && cargo +1.98.1 check -p my_lib -p my_cli --all-targets --locked
         shell: bash
 
       - name: Install Rust formatter toolchain

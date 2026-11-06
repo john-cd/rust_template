@@ -44,7 +44,7 @@ exist (for example, request latency for a CLI with no server).
 
 ## Constraints
 
-- The workspace uses Rust edition 2024 and declares Rust 1.85 as its minimum supported version.
+- The workspace uses Rust edition 2024 and declares Rust 1.98.1 as its minimum supported version.
 - The project is licensed under MIT OR Apache-2.0 and is not published by default.
 - The full local CI task requires the external tools listed in `CONTRIBUTING.md`.
 

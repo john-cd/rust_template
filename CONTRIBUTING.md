@@ -14,7 +14,7 @@ Docker with Compose is needed only for the devcontainer or production image.
 
 Use rustup to install the build toolchain from `rust-toolchain.toml` and the formatter toolchain from
 `rustfmt-toolchain.toml`. The build pin and formatter pin also appear in CI and the devcontainer; keep
-them synchronized when updating. The declared Rust 1.85 minimum must be checked separately before
+them synchronized when updating. The declared Rust 1.98.1 minimum must be checked separately before
 claiming compatibility after dependency or language changes.
 
 From the repository root, install the pinned components with
