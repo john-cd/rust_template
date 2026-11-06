@@ -4,4 +4,4 @@
 
 mod service1;
 
-// pub use service1::Service1;
+pub use service1::Service1;

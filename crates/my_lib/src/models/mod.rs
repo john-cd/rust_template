@@ -4,4 +4,4 @@
 
 mod model1;
 
-// pub use model1::Model1;
+pub use model1::Model1;
