@@ -13,7 +13,10 @@ rust-version.workspace = true
 description = "Starter library crate for a Rust workspace"
 
 [dependencies]
+config.workspace = true
+serde.workspace = true
 thiserror.workspace = true
+toml.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true

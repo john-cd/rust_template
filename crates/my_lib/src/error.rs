@@ -8,6 +8,14 @@ pub enum MyError {
     /// An operating-system I/O operation failed.
     #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),
+
+    /// Loading or deserializing the configuration failed.
+    #[error("configuration error: {0}")]
+    Config(#[from] config::ConfigError),
+
+    /// Serializing the configuration failed.
+    #[error("cannot serialize configuration: {0}")]
+    Serialize(#[from] toml::ser::Error),
 }
 
 /// A result using the library's error type.
