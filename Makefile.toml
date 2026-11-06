@@ -28,9 +28,23 @@ command = "cargo"
 args = ["make", "--list-all-steps"]
 
 [tasks.pre]
-description = "Run formatting checks, workspace checks, and Clippy"
+alias = "check-all"
+
+[tasks.ca]
+alias = "check-all"
+
+[tasks.check-all]
+description = "Run all checks without modifying files: format, lint, check, test, deny"
 category = "Workspace"
-dependencies = ["format-check", "check", "clippy"]
+dependencies = ["format-check", "lint-check", "check", "test", "deny"]
+
+[tasks.p]
+alias = "prep"
+
+[tasks.prep]
+description = "Before committing: format everything, lint with autofix, then run all checks"
+category = "Workspace"
+dependencies = ["format-all", "lint", "check-all"]
 
 # Formatting
 
@@ -42,6 +56,14 @@ category = "Formatting"
 description = "Format Rust, documentation, and configuration"
 category = "Formatting"
 dependencies = ["format-rust", "format-files"]
+
+[tasks.fa]
+alias = "format-all"
+
+[tasks.format-all]
+description = "Format everything (Rust, documentation, configuration)"
+category = "Formatting"
+dependencies = ["format"]
 
 [tasks.fc]
 alias = "format-check"
@@ -119,11 +141,35 @@ args = [
   "ci",
 ]
 
+[tasks.br]
+alias = "build-release"
+
 [tasks.release]
+alias = "build-release"
+
+[tasks.build-release]
 description = "Build the workspace in release mode"
 category = "Build"
 command = "cargo"
 args = ["build", "--workspace", "--all-targets", "--all-features", "--locked", "--release"]
+
+[tasks.cl]
+alias = "clean"
+
+[tasks.clean]
+description = "Remove build artifacts"
+category = "Build"
+command = "cargo"
+args = ["clean"]
+
+[tasks.u]
+alias = "update"
+
+[tasks.update]
+description = "Update dependencies in Cargo.lock"
+category = "Build"
+command = "cargo"
+args = ["update"]
 
 [tasks.build-env]
 description = "Show effective Cargo build and cache environment"
@@ -154,12 +200,15 @@ args = ["run", "--locked", "--package", "my_cli", "--"]
 
 # Quality
 
-[tasks.l]
-alias = "clippy"
+[tasks.lc]
+alias = "lint-check"
 category = "Quality"
 
 [tasks.clippy]
-description = "Run Clippy across all workspace targets"
+alias = "lint-check"
+
+[tasks.lint-check]
+description = "Run Clippy across all workspace targets (no changes)"
 category = "Quality"
 command = "cargo"
 args = [
@@ -182,17 +231,40 @@ category = "Quality"
 command = "cargo"
 args = ["fix", "--workspace", "--all-targets", "--all-features", "--locked"]
 
+[tasks.l]
+alias = "lint"
+
+[tasks.lf]
+alias = "lint"
+
 [tasks.lint-fix]
-description = "Apply Clippy suggestions to the workspace"
+alias = "lint"
+
+[tasks.lint]
+description = "Lint with autofix: apply Clippy suggestions to the workspace"
 category = "Quality"
 command = "cargo"
-args = ["clippy", "--fix", "--workspace", "--all-targets", "--all-features", "--locked"]
+args = ["clippy", "--fix", "--allow-dirty", "--allow-staged", "--workspace", "--all-targets", "--all-features", "--locked"]
+
+[tasks.la]
+alias = "lint-all"
+
+[tasks.lint-all]
+description = "Lint with autofix, plus workflow security audit"
+category = "Quality"
+dependencies = ["lint", "zizmor"]
 
 [tasks.hooks]
 description = "Run optional repository hooks (requires prek 0.5.6 or newer)"
 category = "Quality"
 command = "prek"
 args = ["run", "--all-files"]
+
+[tasks.hi]
+alias = "hooks-install"
+
+[tasks.hr]
+alias = "hooks-run"
 
 [tasks.hooks-install]
 description = "Install prek Git hooks"
@@ -205,6 +277,9 @@ description = "Run prek against staged files"
 category = "Quality"
 command = "prek"
 args = ["run"]
+
+[tasks.de]
+alias = "deny"
 
 [tasks.deny]
 description = "Check dependency advisories, licenses, duplicates, and sources"
@@ -248,6 +323,14 @@ args = [
   "--cargo-quiet",
 ]
 
+[tasks.ta]
+alias = "test-all"
+
+[tasks.test-all]
+description = "Run all tests: nextest plus documentation tests"
+category = "Testing"
+dependencies = ["test", "doctest"]
+
 [tasks.test-cargo]
 description = "Run workspace tests with Cargo when nextest is unavailable"
 category = "Testing"
@@ -285,6 +368,9 @@ command = "cargo"
 args = ["llvm-cov", "--workspace", "--all-features", "--locked", "--html"]
 
 # Documentation
+
+[tasks.d]
+alias = "doc"
 
 [tasks.doc]
 description = "Build workspace API documentation with warnings denied"
@@ -372,7 +458,12 @@ env = { RUST_LOG = "error" }
 
 [tasks.web]
 alias = "website-serve"
-category = "Website"
+
+[tasks.s]
+alias = "website-serve"
+
+[tasks.serve]
+alias = "website-serve"
 
 [tasks.website-serve]
 category = "Website"
@@ -386,7 +477,9 @@ env = { RUST_LOG = "error" }
 description = "Run the local CI checks (requires cargo-nextest and cargo-deny)"
 category = "CI"
 dependencies = [
-  "pre",
+  "format-check",
+  "lint-check",
+  "check",
   "build",
   "test",
   "doctest",
@@ -400,4 +493,4 @@ dependencies = [
 [tasks.ci-rust]
 description = "Run the Rust build, lint, test, documentation, and dependency checks"
 category = "CI"
-dependencies = ["check", "build", "clippy", "test", "doctest", "doc", "deny"]
+dependencies = ["check", "build", "lint-check", "test", "doctest", "doc", "deny"]
