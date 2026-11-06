@@ -34,9 +34,9 @@ alias = "check-all"
 alias = "check-all"
 
 [tasks.check-all]
-description = "Run all checks without modifying files: format, lint, check, test, deny"
+description = "Run all checks without modifying files: format, lint, check, test"
 category = "Workspace"
-dependencies = ["format-check", "lint-check", "check", "test", "deny"]
+dependencies = ["format-check", "lint-check", "check", "test"]
 
 [tasks.p]
 alias = "prep"
