@@ -10,6 +10,9 @@ Create a project with `cargo-generate` 0.24 or newer:
 cargo generate --git https://github.com/john-cd/rust_template.git --branch develop --name myproject
 ```
 
+The setup-version prompts default to this template's pins. If you change one, update the matching
+toolchain or development-tool configuration in the generated project as well.
+
 Replace `myproject` with your project name. The template currently uses `develop` as the integration branch; the `main` branch is reserved for releases.
 
 The generated workspace names its CLI package after the selected project name
@@ -49,14 +52,14 @@ The library crate starts with `config`, `error`, `models`, and `services` module
 
 For local development, install Git, Rust through [rustup](https://rust-lang.org/tools/install/), and
 the repository tools. On Windows, install the MSVC C++ build tools if rustup prompts for them.
-The checked-in toolchain files pin Rust 1.99.1 for development and nightly rustfmt for formatting;
+The checked-in toolchain files pin Rust {{rust_version}} for development and rustfmt {{rustfmt_version}} for formatting;
 the declared MSRV is 1.98.1 and CI checks it separately.
 
 After cloning the repository, install both Rust toolchains:
 
 ```sh
-rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt
-rustup toolchain install nightly-2026-11-06 --profile minimal --component rustfmt
+rustup toolchain install {{rust_version}} --profile minimal --component clippy,rustfmt
+rustup toolchain install {{rustfmt_version}} --profile minimal --component rustfmt
 ```
 
 Install the pinned Cargo, formatting, link, spelling, and website tools from the repository root.

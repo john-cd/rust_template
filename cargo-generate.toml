@@ -32,3 +32,60 @@ include = [
 ]
 # Keep local build output and auxiliary worktrees out of generated projects.
 ignore = [".worktrees", "target", ".lycheecache"]
+
+# Keep setup instructions generated from the same version choices in CONTRIBUTING.md and README.md.
+# Defaults match the pins in .devcontainer/.env.liquid and the local toolchain files.
+[placeholders.rust_version]
+prompt = "Rust toolchain version"
+default = "1.99.1"
+type = "string"
+
+[placeholders.rustfmt_version]
+prompt = "Rustfmt toolchain version"
+default = "nightly-2026-11-06"
+type = "string"
+
+[placeholders.cargo_binstall_version]
+prompt = "cargo-binstall version"
+default = "1.26.2"
+type = "string"
+
+[placeholders.cargo_make_version]
+prompt = "cargo-make version"
+default = "0.37.24"
+type = "string"
+
+[placeholders.cargo_nextest_version]
+prompt = "cargo-nextest version"
+default = "0.9.148"
+type = "string"
+
+[placeholders.cargo_deny_version]
+prompt = "cargo-deny version"
+default = "0.20.2"
+type = "string"
+
+[placeholders.dprint_version]
+prompt = "dprint version"
+default = "0.64.3"
+type = "string"
+
+[placeholders.lychee_version]
+prompt = "lychee version"
+default = "0.24.2"
+type = "string"
+
+[placeholders.sccache_version]
+prompt = "sccache version"
+default = "0.19.0"
+type = "string"
+
+[placeholders.typos_version]
+prompt = "typos-cli version"
+default = "1.52.0"
+type = "string"
+
+[placeholders.zola_version]
+prompt = "Zola version"
+default = "0.23.6"
+type = "string"

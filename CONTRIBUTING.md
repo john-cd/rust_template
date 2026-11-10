@@ -18,8 +18,8 @@ them synchronized when updating. The declared Rust 1.98.1 minimum must be checke
 claiming compatibility after dependency or language changes.
 
 From the repository root, install the pinned components with
-`rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt` and
-`rustup toolchain install nightly-2026-11-06 --profile minimal --component rustfmt`.
+`rustup toolchain install {{rust_version}} --profile minimal --component clippy,rustfmt` and
+`rustup toolchain install {{rustfmt_version}} --profile minimal --component rustfmt`.
 
 The shared devcontainer settings are in `.devcontainer/.env`. It sets the Compose project prefix,
 production executable name, Rust version, and development-tool versions. Edit and commit changes
@@ -29,11 +29,11 @@ by `DEBIAN_VERSION`. After changing versions, rebuild the container. The toolcha
 `rust-toolchain.toml`, `rustfmt-toolchain.toml`, and the workflow; update those too when changing the
 workspace's compiler or formatter version.
 
-Install `cargo-binstall` first with `cargo install --locked cargo-binstall --version 1.26.2`, then install the development
+Install `cargo-binstall` first with `cargo install --locked cargo-binstall --version {{cargo_binstall_version}}`, then install the development
 tools with its prebuilt-binary support (CI and the devcontainer also install these):
 
 ```sh
-cargo binstall --locked --no-confirm cargo-make@0.37.24 cargo-nextest@0.9.148 cargo-deny@0.20.2 dprint@0.64.3 lychee@0.24.2 sccache@0.19.0 typos-cli@1.52.0
+cargo binstall --locked --no-confirm cargo-make@{{cargo_make_version}} cargo-nextest@{{cargo_nextest_version}} cargo-deny@{{cargo_deny_version}} dprint@{{dprint_version}} lychee@{{lychee_version}} sccache@{{sccache_version}} typos-cli@{{typos_version}}
 ```
 
 On Linux, `bash scripts/install-tools.sh` installs the pinned Cargo tools and GitHub CLI. Use
@@ -41,7 +41,7 @@ On Linux, `bash scripts/install-tools.sh` installs the pinned Cargo tools and Gi
 `pwsh -NoProfile -File scripts/install-tools.ps1`; both scripts read `.devcontainer/.env`.
 The installers include cargo-machete, cargo-llvm-cov, zizmor, and `llvm-tools-preview`.
 
-The platform installers download Zola 0.23.6 from its GitHub release and verify the archive checksum.
+The platform installers download Zola {{zola_version}} from its GitHub release and verify the archive checksum.
 To install it separately, use the official [Zola installation guide](https://www.getzola.org/documentation/getting-started/installation/).
 On Windows, put developer tools under `C:/tools` and package caches under `D:/packages`.
 The repository itself uses portable relative paths and requires no global compiler cache or linker.
