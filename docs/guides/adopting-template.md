@@ -18,8 +18,9 @@ package and executable use that name; the library package appends `_lib`.
    is intentional.
 2. Replace the sample greeting and the unused configuration/model/service stubs
    with application behavior. Keep crate roots declarative.
-3. Replace the requirements and website content. Set the website's deployment URL
-   and check a build with its real URL prefix before publishing.
+3. Replace the illustrative todo CLI requirements and the website content with the new
+   application's scope and quality targets. Set the website's deployment URL and check a build
+   with its real URL prefix before publishing.
 4. Review the branch workflow, issue forms, pull request template, dependency
    policy, test timeouts, MSRV, and tool pins. Enable the repository's Actions and
    dependency updates. Configure branch protection and security reporting in the
@@ -36,8 +37,9 @@ Install the tools listed in the contributor guide. Rustup reads the build pin
 automatically. The nightly formatter is separate; install the channel from
 `rustfmt-toolchain.toml` with the `rustfmt` component.
 
-Cargo selects sccache through `.cargo/config.toml` and writes build output to the
-checkout's `target/` directory by default. To use external storage, set
+Cargo selects sccache through `.cargo/config.toml`. Direct Cargo commands write build output to
+the checkout's `target/` directory by default; Cargo Make applies the repository's configured
+output paths, including external paths on Windows. To use external storage, set
 `CARGO_TARGET_DIR` for build output and `SCCACHE_DIR` for the compiler cache; set
 `SCCACHE_BASEDIRS` when sharing cache entries across checkout paths. The shared
 worktree slots are `.worktrees/a`, `.worktrees/b`, and `.worktrees/c`. To bootstrap

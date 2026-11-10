@@ -10,6 +10,8 @@ Create a project with `cargo-generate` 0.24 or newer:
 cargo generate --git https://github.com/john-cd/rust_template.git --branch develop --name myproject
 ```
 
+Replace `myproject` with your project name. The template currently uses `develop` as the integration branch; the `main` branch is reserved for releases.
+
 The generated workspace names its CLI package after the selected project name
 and its library package `<project-name>_lib`. Follow the [adoption guide](docs/guides/adopting-template.md)
 to replace the sample behavior and metadata.
@@ -45,13 +47,15 @@ The library crate starts with `config`, `error`, `models`, and `services` module
 
 ## Prerequisites
 
-- Rust 1.99.1 with `clippy` and `rustfmt`; rustup installs the pinned toolchain from `rust-toolchain.toml`.
+- Rust 1.99.1 with `clippy` and `rustfmt`; rustup installs the pinned development toolchain from
+  `rust-toolchain.toml`. The workspace separately declares Rust 1.98.1 as its MSRV, which CI checks
+  with locked dependencies.
 - `cargo-binstall` and `sccache`; Cargo uses `sccache` as the compiler wrapper for Rust builds. See [CONTRIBUTING.md](CONTRIBUTING.md) for pinned install commands.
 - [`cargo-make`](https://github.com/sagiegurari/cargo-make)
 - [`cargo-nextest`](https://nexte.st/)
 - [`cargo-deny`](https://embarkstudios.github.io/cargo-deny/)
 - [`cargo-machete`](https://github.com/bnjbvr/cargo-machete), [`cargo-llvm-cov`](https://github.com/taiki-e/cargo-llvm-cov), and [`zizmor`](https://zizmor.sh/) for optional dependency, coverage, and workflow checks.
-- dprint, lychee, and Zola; see [CONTRIBUTING.md](CONTRIBUTING.md) for installation and pinned versions.
+- dprint, lychee, typos, and Zola; see [CONTRIBUTING.md](CONTRIBUTING.md) for installation and pinned versions.
 
 ## Common commands
 
@@ -94,13 +98,23 @@ The CI task uses the `ci` Cargo profile. The `debug` profile is available with `
 `Makefile.toml` owns these Cargo Make tasks; `cargo tools format` and `cargo tools check` are
 convenience commands that delegate to Cargo Make, while `cargo tools website` invokes Zola.
 
+The sample CLI writes structured tracing events to stderr and daily rotating log files. Set
+`RUST_LOG` to change verbosity or `APP_LOG_DIR` to choose the log directory; see the
+[logging guide](docs/guides/logging.md).
+
+The sample library bounds TOML configuration reads to 1 MiB and saves configuration through a
+staged atomic file replacement. See the [configuration reference](docs/development/configuration.md)
+for the limits and file-replacement behavior.
+
 Cargo writes build output to the checkout-relative `target/` directory by default. Set
 `CARGO_TARGET_DIR` to use an external build directory, `SCCACHE_DIR` to relocate the sccache
 cache, or `SCCACHE_BASEDIRS` to share cache entries across checkout paths. The shared-cache
 worktree slots are `.worktrees/a`, `.worktrees/b`, and `.worktrees/c`.
 
-On Windows, Cargo Make defaults `CARGO_TARGET_DIR` to `D:/target/<project>` and
-`CARGO_BUILD_BUILD_DIR` to `C:/code_build/<project>`. Set `CARGO_TARGET_ROOT` or
+On Windows, Cargo Make defaults `CARGO_TARGET_DIR` to `D:/target/<project>/<slot>` and
+`CARGO_BUILD_BUILD_DIR` to `C:/code_build/<project>/<slot>`. The primary checkout uses the `main`
+slot by default; set `CODE_WORKTREE_SLOT` to `a`, `b`, or `c` in a linked worktree. Set
+`CARGO_TARGET_ROOT` or
 `CARGO_BUILD_ROOT` to change those roots; explicit `CARGO_TARGET_DIR` and
 `CARGO_BUILD_BUILD_DIR` values take precedence. Other platforms keep the direct-Cargo defaults.
 
@@ -130,7 +144,11 @@ Start a new project with the [template adoption guide](docs/guides/adopting-temp
 Shared VS Code settings/tasks and optional `prek` hooks provide the same checks as
 the command-line workflow.
 
-Start at [`docs/README.md`](docs/README.md). See the [configuration reference](docs/development/configuration.md) for the purpose of each repository configuration file. Add architecture notes, development instructions, and task guides in the corresponding section.
+Start at [`docs/README.md`](docs/README.md). The [requirements guide](docs/requirements.md)
+includes a fictional todo CLI example; replace its behavior and quality targets when adopting the
+template. See the [configuration reference](docs/development/configuration.md) for the purpose of
+each repository configuration file. Add architecture notes, development instructions, and task
+guides in the corresponding section.
 
 ## Contributing and license
 
