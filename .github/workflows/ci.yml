@@ -116,6 +116,7 @@ jobs:
           test "$formatter_channel" = "$RUSTFMT_VERSION"
           grep -qF "value = \"$RUSTFMT_VERSION\"" Makefile.toml
           {
+            printf 'RUST_VERSION=%s\n' "$RUST_VERSION"
             printf 'RUSTFMT_VERSION=%s\n' "$RUSTFMT_VERSION"
             printf 'CARGO_MAKE_VERSION=%s\n' "$CARGO_MAKE_VERSION"
             printf 'CARGO_BINSTALL_VERSION=%s\n' "$CARGO_BINSTALL_VERSION"
@@ -124,6 +125,9 @@ jobs:
             printf 'ZOLA_VERSION=%s\n' "$ZOLA_VERSION"
             printf 'ZIZMOR_VERSION=%s\n' "$ZIZMOR_VERSION"
           } >> "$GITHUB_ENV"
+      - name: Install project Rust toolchain
+        run: rustup toolchain install "$RUST_VERSION" --profile minimal
+        shell: bash
       - name: Install Rust formatter toolchain
         run: rustup toolchain install "$RUSTFMT_VERSION" --profile minimal --component rustfmt
         shell: bash
@@ -141,10 +145,31 @@ jobs:
         shell: bash
       - name: Smoke test generated workspace
         run: |
-          cargo generate --path . --name workspace-smoke --destination "$RUNNER_TEMP" --silent --vcs none
-          grep -qx '# workspace-smoke' "$RUNNER_TEMP/workspace-smoke/PROJECT.md"
-          test ! -e "$RUNNER_TEMP/workspace-smoke/.worktrees"
-          cargo metadata --manifest-path "$RUNNER_TEMP/workspace-smoke/Cargo.toml" --no-deps --format-version 1 --locked > /dev/null
+          project_name=workspace-smoke-app
+          generated_workspace="$RUNNER_TEMP/$project_name"
+          echo "Template revision:"
+          git rev-parse HEAD
+          echo "Pinned project toolchain: $RUST_VERSION"
+          cargo generate --path . --name "$project_name" --destination "$RUNNER_TEMP" --silent --vcs none
+          test -d "$generated_workspace"
+          test "$generated_workspace" != "$GITHUB_WORKSPACE"
+          case "$generated_workspace/" in
+            "$GITHUB_WORKSPACE/"*)
+              echo "Generated workspace must stay outside the source checkout" >&2
+              exit 1
+              ;;
+          esac
+          grep -qx "# $project_name" "$generated_workspace/PROJECT.md"
+          test ! -e "$generated_workspace/.worktrees"
+          (
+            cd "$generated_workspace"
+            test "$PWD" = "$generated_workspace"
+            rustc --version --verbose
+            cargo --version
+            cargo metadata --manifest-path "$generated_workspace/Cargo.toml" --no-deps --format-version 1 --locked > /dev/null
+            cargo check --manifest-path "$generated_workspace/Cargo.toml" --workspace --all-targets --locked
+            cargo test --manifest-path "$generated_workspace/Cargo.toml" --workspace --locked
+          )
         shell: bash
       - run: cargo make format-check
       - run: cargo make links
