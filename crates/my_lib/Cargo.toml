@@ -2,10 +2,12 @@
 
 # Reusable library crate; workspace metadata and lint settings are inherited from the root.
 [package]
+# Package name used by Cargo commands and dependency declarations.
 name = "my_lib"
 # Inherit release and compiler policy; categories describe this library package specifically.
 version.workspace = true
 categories.workspace = true
+# Inherit language edition, discovery keywords, license, publish policy, and MSRV from the root.
 edition.workspace = true
 keywords.workspace = true
 license.workspace = true

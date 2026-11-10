@@ -33,8 +33,8 @@ files; review the result before changing package names or source-folder paths.
 
 ## Replace the starter application
 
-- [ ] Replace the greeting in `crates/my_lib/src/greeting.rs` and the sample command in
-      `crates/my_cli/src/cli.rs` with application behavior. Remove unused model, service, example, and
+- [ ] Replace the greeting in `crates/{{lib_folder_name}}/src/greeting.rs` and the sample command in
+      `crates/{{cli_folder_name}}/src/cli.rs` with application behavior. Remove unused model, service, example, and
       benchmark stubs; add modules where responsibilities need a clear home.
 - [ ] Define command names, options, validation, help examples, exit codes, and which results and
       diagnostics go to stdout and stderr. Document behavior when a downstream pipe closes.

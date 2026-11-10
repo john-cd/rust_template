@@ -9,6 +9,7 @@ if lib_folder_name != "my_lib" {
     file::rename("crates/my_lib", "crates/" + lib_folder_name);
 }
 
-// The hook scripts are template implementation details, not generated project files.
+// Generator settings and hooks are template implementation details, not project setup files.
+file::delete("cargo-generate.toml");
 file::delete("scripts/cargo-generate-pre.rhai");
 file::delete("scripts/cargo-generate-post.rhai");

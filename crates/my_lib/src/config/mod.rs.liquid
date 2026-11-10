@@ -136,6 +136,7 @@ fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
 mod tests {
     use super::*;
 
+    /// Returns a uniquely named temporary directory path for one configuration test.
     fn test_directory(label: &str) -> std::path::PathBuf {
         std::env::temp_dir().join(format!(
             "{{crate_name}}_config_{label}_{}",

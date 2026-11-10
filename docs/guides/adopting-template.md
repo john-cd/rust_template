@@ -13,6 +13,19 @@ repository. The generated `PROJECT.md` records the chosen project name, package 
 folders. Accept `auto` for the CLI and library package prompts to derive the usual names from the
 project name. Folder names default to `my_cli` and `my_lib` and can be changed independently.
 
+For a non-interactive setup, provide the names directly:
+
+```sh
+cargo generate --path . --name todo-app \
+  --define cli_folder_name=todo_cli \
+  --define lib_folder_name=todo_core \
+  --define cli_package_name=todo-cli \
+  --define lib_package_name=todo-core
+```
+
+Package names accept lowercase letters, digits, hyphens, and underscores; generated Rust crate
+identifiers convert hyphens to underscores.
+
 1. Replace the shared version, keywords, categories, and other package metadata
    with values appropriate to the new project. Set package descriptions, authorship,
    repository URLs, and license notices. Keep `publish = false` until publication

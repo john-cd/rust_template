@@ -8,6 +8,7 @@ include = [
   "LICENSE-MIT",
   "README.md",
   "CONTRIBUTING.md",
+  "TODO.md",
   "PROJECT.md",
   "Makefile.toml",
   ".devcontainer/.env",

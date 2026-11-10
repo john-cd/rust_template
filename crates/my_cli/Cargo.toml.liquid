@@ -2,10 +2,12 @@
 
 # Command-line application crate; shared package metadata and lints come from the workspace.
 [package]
+# Generated Cargo package name; the crate folder can be customized independently.
 name = "{{cli_package_name}}"
 # Inherit release and compiler policy from the root; command-line crates add their own category.
 version.workspace = true
 categories = ["command-line-utilities"]
+# Inherit language edition, discovery keywords, license, publish policy, and MSRV from the root.
 edition.workspace = true
 keywords.workspace = true
 license.workspace = true

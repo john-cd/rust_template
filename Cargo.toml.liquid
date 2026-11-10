@@ -13,10 +13,12 @@ default-members = ["crates/{{cli_folder_name}}"]
 [workspace.package]
 # Starter release version; advance it when publishing an adopted project.
 version = "0.1.0"
-# crates.io discovery metadata shared by workspace packages.
+# crates.io discovery metadata shared by workspace packages; refine these for the adopted project.
 categories = ["development-tools"]
+# Use the Rust 2024 language edition across workspace packages.
 edition = "2024"
 keywords = ["workspace", "template"]
+# SPDX expression describing the dual-license terms shipped with this workspace.
 license = "MIT OR Apache-2.0"
 # Prevent publishing the starter packages until a project owner opts in.
 publish = false

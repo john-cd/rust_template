@@ -13,6 +13,7 @@ use tracing_subscriber::EnvFilter;
 use tracing_subscriber::layer::SubscriberExt as _;
 use tracing_subscriber::util::SubscriberInitExt as _;
 
+/// Error result shared by subscriber initialization helpers.
 type InitResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 
 /// Maximum number of log events buffered before the application waits for the file writer.

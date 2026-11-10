@@ -2,10 +2,12 @@
 
 # Command-line application crate; shared package metadata and lints come from the workspace.
 [package]
+# Package name used by Cargo commands and executable metadata.
 name = "my_cli"
 # Inherit release and compiler policy from the root; command-line crates add their own category.
 version.workspace = true
 categories = ["command-line-utilities"]
+# Inherit the language edition, discovery keywords, license, publish policy, and MSRV from the root.
 edition.workspace = true
 keywords.workspace = true
 license.workspace = true
