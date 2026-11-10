@@ -12,6 +12,7 @@ edition.workspace = true
 keywords.workspace = true
 license.workspace = true
 publish.workspace = true
+# Use this crate's README as its package description page.
 readme = "README.md"
 rust-version.workspace = true
 # Keep a package-specific summary for generated docs and package metadata.

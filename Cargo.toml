@@ -13,7 +13,7 @@ default-members = ["crates/my_cli"]
 [workspace.package]
 # Starter release version; advance it when publishing an adopted project.
 version = "0.1.0"
-# crates.io discovery metadata shared by workspace packages; refine these for the adopted project.
+# crates.io categories and keywords shared by workspace packages; refine them for discovery.
 categories = ["development-tools"]
 # Use the Rust 2024 language edition across workspace packages.
 edition = "2024"

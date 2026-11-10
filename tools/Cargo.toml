@@ -1,7 +1,7 @@
 # Workspace-local maintenance commands; this crate is for development use, not publication.
 [package]
 name = "tools"
-# Reuse workspace version, edition, license, and MSRV instead of maintaining duplicate values.
+# Reuse the workspace's package metadata instead of maintaining duplicate values.
 version.workspace = true
 categories.workspace = true
 edition.workspace = true
