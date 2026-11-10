@@ -21,7 +21,7 @@ rust-version = "1.98.1"
 clap = { version = "4.6.7", features = ["derive"] }
 config = { version = "0.15.27", default-features = false, features = ["toml"] }
 criterion = "0.8.2"
-my_lib = { path = "crates/my_lib" }
+{{crate_name}}_lib = { package = "{{project-name}}_lib", path = "crates/my_lib" }
 serde = { version = "1.0.229", features = ["derive"] }
 thiserror = "2.0.21"
 toml = "1.2.1"

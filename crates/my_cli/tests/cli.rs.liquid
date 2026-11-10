@@ -15,7 +15,7 @@ fn cli_greeting_smoke_test() {
     assert!(output.status.success());
     assert_eq!(
         output.stdout,
-        format!("Hello, Alice from {}!\n", env!("CARGO_PKG_NAME")).as_bytes()
+        format!("{}\n", {{crate_name}}_lib::greeting("Alice")).as_bytes()
     );
     assert_eq!(output.stderr, Vec::<u8>::new());
 }
@@ -30,7 +30,7 @@ fn cli_uses_documented_default_name() {
     assert!(output.status.success());
     assert_eq!(
         output.stdout,
-        format!("Hello, world from {}!\n", env!("CARGO_PKG_NAME")).as_bytes()
+        format!("{}\n", {{crate_name}}_lib::greeting("world")).as_bytes()
     );
 }
 

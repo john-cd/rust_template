@@ -10,7 +10,7 @@ Install the Rust toolchain pinned in the repository, then run:
 
 ```sh
 cargo check --workspace --all-targets --locked
-cargo run -p {{project-name}} -- Alice
+cargo run -p my_cli -- Alice
 ```
 
 ## Make it yours

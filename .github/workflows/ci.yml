@@ -169,9 +169,11 @@ jobs:
             test "$PWD" = "$generated_workspace"
             rustc --version --verbose
             cargo --version
-            cargo metadata --manifest-path "$generated_workspace/Cargo.toml" --no-deps --format-version 1 --locked > /dev/null
-            cargo check --manifest-path "$generated_workspace/Cargo.toml" --workspace --all-targets --locked
-            cargo test --manifest-path "$generated_workspace/Cargo.toml" --workspace --locked
+            cargo metadata --manifest-path "$generated_workspace/Cargo.toml" --format-version 1 --locked > /dev/null
+            cargo check --workspace --all-targets --all-features --locked --profile ci
+            cargo test --workspace --all-targets --all-features --locked --profile ci
+            cargo test --workspace --doc --all-features --locked --profile ci
+            zola --root "$generated_workspace/website" check
           )
         shell: bash
       - run: cargo make format-check
