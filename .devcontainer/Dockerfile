@@ -11,8 +11,6 @@ FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS base
 # -----------------------------------------------------------------------------
 FROM base AS development
 
-
-
 # Install native build dependencies and create the account used by editor sessions.
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends ca-certificates curl git sudo pkg-config libssl-dev \
@@ -21,6 +19,10 @@ RUN apt-get update \
     && echo "vscode ALL=(root) NOPASSWD:ALL" > "/etc/sudoers.d/vscode" \
     && chmod 0440 "/etc/sudoers.d/vscode" \
     && rm -rf /var/lib/apt/lists/*
+
+ARG ZOLA_VERSION
+# Reuse the checksum-verifying installer for the pinned Zola release.
+COPY scripts/install-zola.sh /usr/local/bin/install-zola
 
 RUN chmod 0755 /usr/local/bin/install-zola \
     && /usr/local/bin/install-zola "${ZOLA_VERSION}" /usr/local/bin \
@@ -59,7 +61,7 @@ USER vscode
 # -----------------------------------------------------------------------------
 # Production build stages: use cargo-chef to cache dependencies apart from application sources.
 # -----------------------------------------------------------------------------
-FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS chef
+FROM base AS chef
 
 ARG CARGO_CHEF_VERSION
 
