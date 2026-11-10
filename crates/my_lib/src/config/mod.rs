@@ -174,7 +174,11 @@ impl Drop for TemporaryFile {
 fn remove_temporary_file(path: &Path) {
     if std::fs::remove_file(path).is_err() {
         // A copied read-only destination mode can prevent cleanup after a failed rename.
-        let _ = std::fs::set_permissions(path, std::fs::Permissions::from_readonly(false));
+        if let Ok(metadata) = std::fs::metadata(path) {
+            let mut permissions = metadata.permissions();
+            permissions.set_readonly(false);
+            let _ = std::fs::set_permissions(path, permissions);
+        }
         let _ = std::fs::remove_file(path);
     }
 }
