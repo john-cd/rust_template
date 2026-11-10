@@ -30,7 +30,7 @@ jobs:
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: sccache
     strategy:
-        # Let every OS finish so platform-specific failures are visible together.
+      # Let every OS finish so platform-specific failures are visible together.
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]

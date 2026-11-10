@@ -17,10 +17,10 @@ State the chosen approach clearly. Describe its scope and any important conditio
 
 List the realistic alternatives, including the option to defer the decision when relevant.
 
-| Option | Benefits | Costs and risks |
-| --- | --- | --- |
-| Chosen approach |  |  |
-| Alternative |  |  |
+| Option          | Benefits | Costs and risks |
+| --------------- | -------- | --------------- |
+| Chosen approach |          |                 |
+| Alternative     |          |                 |
 
 ## Consequences
 
