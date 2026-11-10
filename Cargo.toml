@@ -2,31 +2,49 @@
 
 # Workspace members share package metadata, dependency versions, and lint policy below.
 [workspace]
+# Resolver v3 defaults dependency selection toward versions compatible with declared Rust MSRVs.
 resolver = "3"
+# Include every package under crates/ and the development-only tools package.
 members = ["crates/*", "tools"]
+# Bare Cargo commands at the workspace root target the CLI; CI selects the full workspace explicitly.
 default-members = ["crates/my_cli"]
 
 # Keep common crate metadata in one place so new members inherit the same defaults.
 [workspace.package]
+# Starter release version; advance it when publishing an adopted project.
 version = "0.1.0"
+# crates.io discovery metadata shared by workspace packages.
 categories = ["development-tools"]
 edition = "2024"
 keywords = ["workspace", "template"]
 license = "MIT OR Apache-2.0"
+# Prevent publishing the starter packages until a project owner opts in.
 publish = false
+# Minimum supported compiler, checked separately by CI.
 rust-version = "1.98.1"
 
 # Centralize dependency versions while allowing each crate to select only what it uses.
+# Members inherit these declarations with `workspace = true`; they can still add local features.
 [workspace.dependencies]
+# Derive the CLI argument parser.
 clap = { version = "4.6.7", features = ["derive"] }
+# Select TOML configuration support without enabling unrelated configuration backends.
 config = { version = "0.15.27", default-features = false, features = ["toml"] }
+# Used by the library's benchmark target.
 criterion = "0.8.2"
+# Share the reusable library with the CLI and development tools.
 my_lib = { path = "crates/my_lib" }
+# Derive serialization and deserialization implementations for config and model types.
 serde = { version = "1.0.229", features = ["derive"] }
+# Derive typed error implementations.
 thiserror = "2.0.21"
+# Parse and serialize TOML configuration files.
 toml = "1.2.1"
+# Use tracing's core std support; output and filtering are configured by the subscriber.
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+# Write rolling log files without blocking application threads.
 tracing-appender = "0.2.5"
+# Add environment-filter support for RUST_LOG-style runtime filtering.
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 # Common crates:
@@ -55,26 +73,42 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 # Apply safety and correctness checks consistently to every workspace member.
 [workspace.lints.rust]
+# Ban unsafe code unless a project documents and deliberately changes this policy.
 unsafe_code = "forbid"
+# Require handling of values annotated with `#[must_use]`.
 unused_must_use = "deny"
+# Report missing documentation on public API items.
 missing_docs = "warn"
+# Report public items that cannot be reached through the crate's public module tree.
 unreachable_pub = "warn"
+# Keep the lint group below direct settings so individual lint levels can override it.
 rust_2018_idioms = { level = "warn", priority = -1 }
 
 [workspace.lints.rustdoc]
+# Enable rustdoc's documentation-quality checks.
 all = "warn"
+# Treat broken intra-doc links as errors.
 broken_intra_doc_links = "deny"
+# Ask each library crate to describe its crate-level documentation.
 missing_crate_level_docs = "warn"
 
 [workspace.lints.clippy]
+# Start with the standard and broader Clippy groups as warnings; direct rules below take precedence.
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
+# Catch leftover debug output in committed code.
 dbg_macro = "warn"
+# Discourage `expect()` in production paths; Clippy config permits it in tests.
 expect_used = "warn"
+# Require a safety explanation on each unsafe block if the policy is later relaxed.
 undocumented_unsafe_blocks = "deny"
+# Catch locks held across async suspension points.
 await_holding_lock = "warn"
+# Flag bounds-checked indexing where explicit error handling may be clearer.
 indexing_slicing = "warn"
+# Flag explicit panics and unfinished implementation markers for review.
 panic = "warn"
 todo = "warn"
 unimplemented = "warn"
+# Discourage panic-on-error `unwrap()` in application and library code.
 unwrap_used = "warn"

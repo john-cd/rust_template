@@ -1,9 +1,9 @@
 {% comment %}cargo-generate renders this note with the generated project's name.{% endcomment %}
 # {{project-name}}
 
-This project was created from the Rust workspace starter. Its CLI package and
-executable are named `{{project-name}}`, and its library package is named
-`{{project-name}}_lib`.
+This project was created from the Rust workspace starter. Its CLI package is
+`{{cli_package_name}}` and its library package is `{{lib_package_name}}`.
+Their source folders are `crates/{{cli_folder_name}}` and `crates/{{lib_folder_name}}`.
 
 Follow the [adoption guide](docs/guides/adopting-template.md) to replace the sample
 behavior and documentation, and review the toolchain and CI settings. Keep

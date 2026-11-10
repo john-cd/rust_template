@@ -8,10 +8,11 @@ to a daily rotating log file. Standard output stays reserved for command results
 Set `RUST_LOG` to change the event filter. For example, from the repository root:
 
 ```sh
-RUST_LOG=my_cli=debug,my_lib=debug cargo run -p my_cli -- Alice
+RUST_LOG={{cli_package_name | replace: "-", "_"}}=debug,{{lib_package_name | replace: "-", "_"}}=debug cargo run -p {{cli_package_name}} -- Alice
 ```
 
-Replace `my_cli` and `my_lib` with the generated crate names after adopting the template. Use
+Replace the filter targets with the generated Rust crate identifiers and the Cargo package after
+adopting the template. Use
 `RUST_LOG=warn` to show warnings and errors only. Invalid filter values produce a stderr diagnostic
 and fall back to `info`.
 
@@ -28,8 +29,8 @@ directory, in a subdirectory named after the CLI package:
 Set `APP_LOG_DIR` to choose another directory. For example, in PowerShell:
 
 ```powershell
-$env:APP_LOG_DIR = 'D:\temp\my_cli-logs'
-cargo run -p my_cli -- Alice
+$env:APP_LOG_DIR = 'D:\temp\{{cli_package_name}}-logs'
+cargo run -p {{cli_package_name}} -- Alice
 ```
 
 The appender rotates files daily and retains up to seven matching log files. The file writer buffers

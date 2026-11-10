@@ -2,12 +2,14 @@
 
 name: Container smoke
 
+# Keep this workflow manual because building images is slower than the regular validation job.
 on:
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# Verify the development image's pinned tools separately from the production image's CLI entry point.
 jobs:
   production:
     runs-on: ubuntu-latest
@@ -18,10 +20,14 @@ jobs:
         with:
           persist-credentials: false
       - name: Build development image
+        # Include the local override so this matches the developer container setup.
         run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml build devcontainer
       - name: Smoke test pinned development tools
+        # Confirm representative tools are present and launchable inside the built image.
         run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml run --rm --no-deps devcontainer bash -lc 'rustc --version && cargo nextest --version && sccache --version && dprint --version && lychee --version && typos --version'
       - name: Build production image
+        # Build only the production service from the base Compose file.
         run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production build app
       - name: Smoke test production executable
+        # Verify the image entry point starts and returns its help text.
         run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production run --rm app --help

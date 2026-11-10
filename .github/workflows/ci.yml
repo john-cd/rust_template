@@ -1,8 +1,9 @@
 # TODO Reviewed ??-??-????
-# Validate Rust across supported operating systems and check repository tooling on Linux.
+# Validate Rust on the supported operating systems and run repository-specific checks on Linux.
 
 name: Rust CI
 
+# Run for contributions, direct updates, manual checks, and a weekly dependency/tooling sweep.
 on:
   push:
   pull_request:
@@ -10,9 +11,11 @@ on:
   schedule:
     - cron: "23 9 * * 1"
 
+# Keep CI read-only; workflows do not need repository write access.
 permissions:
   contents: read
 
+# Cancel stale runs for the same branch or pull request after a newer commit arrives.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -27,6 +30,7 @@ jobs:
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: sccache
     strategy:
+        # Let every OS finish so platform-specific failures are visible together.
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -37,6 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Load shared tool versions
+        # Read the same pins used by local setup and container development.
         shell: bash
         run: |
           set -a
@@ -65,6 +70,7 @@ jobs:
         run: rustup toolchain install "$RUST_VERSION" --profile minimal --component clippy,rustfmt
         shell: bash
       - name: Check minimum Rust version
+        # Compile against the advertised MSRV without the main toolchain's sccache wrapper.
         env:
           RUSTC_WRAPPER: ""
         run: rustup toolchain install 1.98.1 --profile minimal && cargo +1.98.1 check --workspace --all-targets --locked
@@ -75,6 +81,7 @@ jobs:
         shell: bash
 
       - name: Configure sccache with GitHub Actions cache
+        # Share compiler artifacts between CI runs while isolating cache use per workflow job.
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v${{ env.SCCACHE_VERSION }}"
@@ -83,6 +90,7 @@ jobs:
         run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
         shell: bash
       - name: Install development tools
+        # Install pinned prebuilt tools used by the Rust task aliases.
         run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "cargo-nextest@$CARGO_NEXTEST_VERSION" "cargo-deny@$CARGO_DENY_VERSION"
         shell: bash
 
@@ -91,6 +99,7 @@ jobs:
         shell: bash
       - run: cargo make ci-rust
       - name: Upload nextest report
+        # Preserve the JUnit report even when validation fails, when one was produced.
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -148,6 +157,7 @@ jobs:
         run: cargo binstall --locked --no-confirm cargo-generate@0.24.0
         shell: bash
       - name: Smoke test generated workspace
+        # Exercise cargo-generate outside the checkout so templates cannot hide self-containment errors.
         run: |
           project_name=workspace-smoke-app
           generated_workspace="$RUNNER_TEMP/$project_name"
@@ -177,6 +187,7 @@ jobs:
             zola --root "$generated_workspace/website" check
           )
         shell: bash
+      # Keep documentation and repository formatting checks out of the OS matrix.
       - run: cargo make format-check
       - run: cargo make typos
       - run: cargo make links

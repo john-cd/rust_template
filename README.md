@@ -15,9 +15,10 @@ toolchain or development-tool configuration in the generated project as well.
 
 Replace `myproject` with your project name. The template currently uses `develop` as the integration branch; the `main` branch is reserved for releases.
 
-The generated workspace names its CLI package after the selected project name
-and its library package `<project-name>_lib`. Follow the [adoption guide](docs/guides/adopting-template.md)
-to replace the sample behavior and metadata.
+By default, the generated workspace names its CLI package after the selected project and
+appends `_lib` to form the library package. cargo-generate also prompts for the crate folders and
+package names; accept `auto` for package names to keep these defaults. Follow the
+[adoption guide](docs/guides/adopting-template.md) to replace the sample behavior and metadata.
 
 ## Branch workflow
 
@@ -28,8 +29,8 @@ Use `develop` as the integration branch. Integrate reviewed work there, then pro
 ```text
 .
 ├── crates/
-│   ├── my_lib/           # Sample library crate
-│   └── my_cli/           # Sample Clap binary
+│   ├── {{lib_folder_name}}/ # Sample library crate
+│   └── {{cli_folder_name}}/ # Sample Clap binary
 ├── docs/                 # Project documentation
 ├── scripts/              # Repository maintenance and development scripts
 ├── tools/                # Stub for project-specific development and compile-time tools
@@ -46,7 +47,7 @@ Add workspace packages under `crates/`. Shared package metadata and lint policy 
 such as code generators, schema checks, or build helpers. Extend or replace the sample `cargo tools`
 commands as needed; keep application runtime behavior in the application crates.
 
-The library crate starts with `config`, `error`, `models`, and `services` modules. The companion CLI uses Clap derive and calls the library greeting: `cargo run -p {{project-name}} -- Alice`.
+The library crate starts with `config`, `error`, `models`, and `services` modules. The companion CLI uses Clap derive and calls the library greeting: `cargo run -p {{cli_package_name}} -- Alice`.
 
 ## Prerequisites
 
@@ -158,7 +159,7 @@ set +a
 docker build -f .devcontainer/Dockerfile --target production \
   --build-arg RUST_VERSION --build-arg DEBIAN_VERSION --build-arg CARGO_BINSTALL_VERSION \
   --build-arg CARGO_CHEF_VERSION \
-  --build-arg CARGO_PACKAGE_NAME={{project-name}} -t {{project-name}} .
+  --build-arg CARGO_PACKAGE_NAME={{cli_package_name}} -t {{project-name}} .
 docker run --rm {{project-name}} Alice
 ```
 

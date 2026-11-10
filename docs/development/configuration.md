@@ -25,9 +25,9 @@ initialize a global subscriber. See the [logging guide](../guides/logging.md) fo
 rotation, queue behavior, and stderr-only fallback behavior.
 
 The sample library reads at most 1 MiB from a TOML configuration file before parsing it. Adjust
-`MAX_CONFIG_FILE_BYTES` in `crates/my_lib/src/config/mod.rs` to fit the application's expected input
+`MAX_CONFIG_FILE_BYTES` in `crates/{{lib_folder_name}}/src/config/mod.rs` to fit the application's expected input
 size. Configuration read and parse errors include the file path. `Config::save` uses the reusable
-atomic replacement helper in `crates/my_lib/src/atomic_file.rs` so a failed staging write leaves the
+atomic replacement helper in `crates/{{lib_folder_name}}/src/atomic_file.rs` so a failed staging write leaves the
 previous file intact.
 
 ## Development and editor settings

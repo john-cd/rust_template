@@ -48,6 +48,7 @@ pub fn run() -> ExitCode {
     }
 }
 
+/// Reports a failed stdout write through tracing or directly to stderr when filtered out.
 fn report_greeting_error(
     error: &std::io::Error,
     tracing_enabled: bool,

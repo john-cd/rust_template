@@ -74,6 +74,7 @@ pub(crate) fn init() -> InitResult<Option<WorkerGuard>> {
     Ok(Some(guard))
 }
 
+/// Installs a stderr-only subscriber when persistent logging is unavailable.
 fn init_stderr_only(filter: EnvFilter) -> InitResult<()> {
     let stderr_layer = tracing_subscriber::fmt::layer()
         .with_writer(std::io::stderr)
@@ -87,6 +88,7 @@ fn init_stderr_only(filter: EnvFilter) -> InitResult<()> {
     Ok(())
 }
 
+/// Reads `RUST_LOG`, falling back to `info` when it is missing or invalid.
 fn env_filter() -> EnvFilter {
     let Some(directives) = env::var_os("RUST_LOG") else {
         return EnvFilter::new("info");
@@ -104,6 +106,7 @@ fn env_filter() -> EnvFilter {
     }
 }
 
+/// Returns the explicit log directory or the platform's default location.
 fn log_directory() -> Option<PathBuf> {
     if let Some(directory) = env::var_os("APP_LOG_DIR").filter(|value| !value.is_empty()) {
         return Some(PathBuf::from(directory));
@@ -113,6 +116,7 @@ fn log_directory() -> Option<PathBuf> {
 }
 
 #[cfg(windows)]
+/// Places Windows logs under the current user's local application data directory.
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("LOCALAPPDATA")
         .map(PathBuf::from)
@@ -121,6 +125,7 @@ fn default_log_directory() -> Option<PathBuf> {
 }
 
 #[cfg(target_os = "macos")]
+/// Places macOS logs under the user's standard Library/Logs directory.
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("HOME")
         .map(PathBuf::from)
@@ -133,6 +138,7 @@ fn default_log_directory() -> Option<PathBuf> {
 }
 
 #[cfg(not(any(windows, target_os = "macos")))]
+/// Places Unix logs under XDG state storage or the user's local state directory.
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)

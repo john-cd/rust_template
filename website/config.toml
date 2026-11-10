@@ -1,12 +1,19 @@
 # Replace this local preview URL with the project's public URL before deployment.
 base_url = "http://127.0.0.1:1111"
+# Site title and description appear in browser metadata and generated page metadata.
 title = "Rust workspace starter"
 description = "A foundation for Rust libraries, applications, and contributor tooling."
+# Use English for language metadata and localized URL conventions.
 default_language = "en"
+# Keep Sass processing disabled until the site includes Sass stylesheets.
 compile_sass = false
+# Enable this when the site has enough content to benefit from Zola's search index.
 build_search_index = false
+# Reduce generated HTML size for deployment.
 minify_html = true
 
 [link_checker]
+# Fail the site check for broken internal links.
 internal_level = "error"
+# Also fail on unavailable external links; review transient failures before changing this policy.
 external_level = "error"

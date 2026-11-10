@@ -1,8 +1,8 @@
 //! Configuration loading and application settings.
 //!
 //! Settings are layered, from lowest to highest priority: built-in defaults, an optional TOML
-//! file, then `{{crate_name | upcase}}_LIB_*` environment variables (for example
-//! `{{crate_name | upcase}}_LIB_NAME=Ada`).
+//! file, then `{{lib_package_name | upcase | replace: "-", "_"}}_*` environment variables (for example
+//! `{{lib_package_name | upcase | replace: "-", "_"}}_NAME=Ada`).
 //!
 //! TODO Reviewed ??-??-2026.
 
@@ -16,7 +16,7 @@ use serde::Serialize;
 use crate::error::Result;
 
 /// Prefix of the environment variables that override file settings.
-const ENV_PREFIX: &str = "{{crate_name | upcase}}_LIB";
+const ENV_PREFIX: &str = "{{lib_package_name | upcase | replace: "-", "_"}}";
 /// Maximum configuration file size read into memory.
 const MAX_CONFIG_FILE_BYTES: usize = 1024 * 1024;
 

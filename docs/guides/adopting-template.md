@@ -9,8 +9,9 @@ cargo generate --git https://github.com/john-cd/rust_template.git --branch devel
 ```
 
 For local development, use `cargo generate --path . --name my-project` from this
-repository. The generated `PROJECT.md` records the chosen project name. The CLI
-package and executable use that name; the library package appends `_lib`.
+repository. The generated `PROJECT.md` records the chosen project name, package names, and source
+folders. Accept `auto` for the CLI and library package prompts to derive the usual names from the
+project name. Folder names default to `my_cli` and `my_lib` and can be changed independently.
 
 1. Replace the shared version, keywords, categories, and other package metadata
    with values appropriate to the new project. Set package descriptions, authorship,
@@ -26,8 +27,9 @@ package and executable use that name; the library package appends `_lib`.
    dependency updates. Configure branch protection and security reporting in the
    hosting service; those settings are not created by these files.
 
-The source folders remain `crates/my_lib` and `crates/my_cli`; package names are
-independent of those paths. Use `rg -n 'rust_template|Rust workspace starter'`
+The source folders default to `crates/my_lib` and `crates/my_cli`; choose different folder names
+when cargo-generate prompts if that better fits the project. Package names are independent of those
+paths. Use `rg -n 'rust_template|Rust workspace starter'`
 from the root to find remaining template branding. Keep `Cargo.lock` synchronized
 with manifest edits.
 

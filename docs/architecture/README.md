@@ -4,6 +4,8 @@
 
 Record the workspace structure, important design constraints, and decisions that affect multiple crates here.
 
-For decisions that need a durable rationale, add a dated or numbered record under `decisions/` using a short title and the sections: Context, Decision, and Consequences.
+For decisions that need a durable rationale, copy the [ADR template](decisions/0000-template.md)
+into `decisions/`, assign the next number, and record the context, decision, alternatives,
+consequences, and follow-up actions.
 
 - [Architecture decisions](decisions/README.md)

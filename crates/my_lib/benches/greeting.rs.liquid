@@ -9,7 +9,7 @@ use std::hint::black_box;
 use criterion::Criterion;
 use criterion::criterion_group;
 use criterion::criterion_main;
-use {{crate_name}}_lib::greeting;
+use {{lib_package_name | replace: "-", "_"}}::greeting;
 
 /// Measures the cost of producing a greeting for a short name.
 fn benchmark_greeting(criterion: &mut Criterion) {

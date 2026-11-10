@@ -85,6 +85,7 @@ fi
 
 # ---- Selection ----
 # Resolve requested groups first, so --only, --with, and --skip compose predictably.
+# Selection precedence is defaults, then additions, then removals.
 declare -A selected=()
 split() { local IFS=,; read -r -a _out <<<"$1"; printf '%s\n' "${_out[@]}"; }
 add_group() {
@@ -103,6 +104,7 @@ while IFS= read -r g; do [[ -n $g ]] && unset "selected[$g]"; done < <(split "$s
 want() { [[ -n ${selected[$1]:-} ]]; }
 
 # ---- Version overrides: env file, then environment ----
+# Explicit process variables take precedence over both the env file and the built-in pins.
 env_file=${ENV_FILE:-}
 if [[ -z $env_file && -f ./.devcontainer/.env ]]; then env_file=./.devcontainer/.env; fi
 if [[ -n $env_file && -f $env_file ]]; then
@@ -115,6 +117,7 @@ for k in "${!V[@]}"; do if [[ -n ${!k:-} ]]; then V[$k]=${!k}; fi; done
 ver() { printf '%s' "${V[$1]:-${!1:-}}"; }
 
 # ---- Helpers ----
+# Keep each external command visible so --dry-run output can be copied and reviewed.
 log() { printf '\n==> %s\n' "$*"; }
 run() {
   printf '> '; printf '%q ' "$@"; printf '\n'

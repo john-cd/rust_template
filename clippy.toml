@@ -1,10 +1,15 @@
 # TODO Reviewed ??-??-????
 
-# Keep lint thresholds low enough to flag unusually complex or hard-to-maintain code.
+# Match the minimum supported Rust version declared in the workspace manifest.
 msrv = "1.98.1"
 
+# Warn when a function's cognitive complexity exceeds this limit.
 cognitive-complexity-threshold = 25
+# Allow up to seven parameters before flagging a function signature.
 too-many-arguments-threshold = 7
+# Warn when Clippy considers a type's structure unusually complex.
 type-complexity-threshold = 250
+# Keep `unwrap()` discouraged in tests as well as production code.
 allow-unwrap-in-tests = false
+# Allow `expect()` in tests so failures can explain the violated test assumption.
 allow-expect-in-tests = true

@@ -1,6 +1,7 @@
 # Workspace-local maintenance commands; this crate is for development use, not publication.
 [package]
 name = "tools"
+# Reuse workspace version, edition, license, and MSRV instead of maintaining duplicate values.
 version.workspace = true
 categories.workspace = true
 edition.workspace = true
@@ -12,8 +13,9 @@ rust-version.workspace = true
 description = "Development commands for the Rust workspace template"
 
 [dependencies]
-# Clap provides the command and subcommand parser.
+# Clap parses the maintenance command and its subcommands.
 clap.workspace = true
 
 [lints]
+# Keep development tooling under the same lint policy as shipped crates.
 workspace = true

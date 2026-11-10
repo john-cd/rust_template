@@ -31,6 +31,7 @@ pub(crate) fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
     })
 }
 
+/// Stages a complete file and delegates the final replacement operation.
 fn write_atomic_with<F>(path: &Path, contents: &[u8], replace: F) -> Result<()>
 where
     F: FnOnce(&Path, &Path) -> std::io::Result<()>,
@@ -117,17 +118,20 @@ struct TemporaryFile {
 }
 
 impl TemporaryFile {
+    /// Returns the staging file path used for writing and replacement.
     fn path(&self) -> &Path {
         &self.path
     }
 }
 
 impl Drop for TemporaryFile {
+    /// Removes an unused staging file when the write exits before replacement.
     fn drop(&mut self) {
         remove_temporary_file(&self.path);
     }
 }
 
+/// Removes a temporary file, clearing its read-only attribute when necessary.
 #[cfg(windows)]
 #[expect(
     clippy::permissions_set_readonly_false,
@@ -144,6 +148,7 @@ fn remove_temporary_file(path: &Path) {
     }
 }
 
+/// Removes a temporary file and ignores cleanup errors during unwinding.
 #[cfg(not(windows))]
 fn remove_temporary_file(path: &Path) {
     let _ = std::fs::remove_file(path);
@@ -205,6 +210,7 @@ fn sync_parent_directory(parent: &Path) {
     let _ = parent;
 }
 
+/// Exercises atomic replacement behavior and temporary-file cleanup.
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
@@ -215,10 +221,13 @@ mod tests {
     use super::write_atomic;
     use super::write_atomic_with;
 
+    /// Temporary test directory removed automatically at the end of each case.
     struct TestDirectory(PathBuf);
 
     impl TestDirectory {
+        /// Creates a uniquely named directory path for one test case.
         fn new(label: &str) -> Self {
+            /// Generates unique suffixes for parallel test directories in this process.
             static NEXT_TEST_DIR_ID: AtomicU64 = AtomicU64::new(0);
             let id = NEXT_TEST_DIR_ID.fetch_add(1, Ordering::Relaxed);
             Self(std::env::temp_dir().join(format!(
@@ -230,11 +239,13 @@ mod tests {
     }
 
     impl Drop for TestDirectory {
+        /// Removes the test directory and its contents when the fixture is dropped.
         fn drop(&mut self) {
             let _ = std::fs::remove_dir_all(&self.0);
         }
     }
 
+    /// Leaves the prior destination intact and removes staging data when replacement fails.
     #[test]
     fn failed_replace_preserves_the_previous_file_and_cleans_staging() -> crate::Result<()> {
         let directory = TestDirectory::new("replace_failure");
@@ -264,6 +275,7 @@ mod tests {
         Ok(())
     }
 
+    /// Replaces a symbolic link without writing through to the link target.
     #[cfg(unix)]
     #[test]
     fn replacing_a_symlink_does_not_modify_its_target() -> crate::Result<()> {
@@ -283,6 +295,7 @@ mod tests {
         Ok(())
     }
 
+    /// Preserves the mode bits of an existing regular destination file.
     #[cfg(unix)]
     #[test]
     fn replacing_a_regular_file_preserves_its_permissions() -> crate::Result<()> {

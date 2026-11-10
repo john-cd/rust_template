@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Download a supported Zola release, verify its pinned checksum, and install it to the requested directory.
+# Arguments are the exact Zola version and destination bin directory; unsupported targets fail before download.
 set -euo pipefail
 
 version=${1:?Usage: install-zola.sh <version> <destination>}
@@ -30,6 +31,7 @@ trap 'rm -rf "$temp_dir"' EXIT
 archive="$temp_dir/$asset"
 
 curl --fail --location --silent --show-error "$archive_url" --output "$archive"
+# Verify the release archive before extracting or installing its executable.
 printf '%s  %s\n' "$checksum" "$archive" | sha256sum --check --status
 
 mkdir -p "$destination"

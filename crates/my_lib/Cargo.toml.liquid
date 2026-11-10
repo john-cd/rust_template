@@ -2,7 +2,8 @@
 
 # Reusable library crate; workspace metadata and lint settings are inherited from the root.
 [package]
-name = "{{project-name}}_lib"
+name = "{{lib_package_name}}"
+# Inherit release and compiler policy; categories describe this library package specifically.
 version.workspace = true
 categories.workspace = true
 edition.workspace = true
@@ -27,7 +28,9 @@ criterion.workspace = true
 
 [[bench]]
 name = "greeting"
+# Criterion supplies its own benchmark entry point instead of Rust's default harness.
 harness = false
 
 [lints]
+# Apply the workspace's Rust, rustdoc, and Clippy rules to this crate.
 workspace = true

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # Install pinned Rust development tools and, unless skipped, the GitHub CLI.
+# Read tool versions from .devcontainer/.env so local installs and CI use the same pins.
+# --dry-run prints commands without installing tools; --skip-gh limits this to Rust tooling.
 
 set -euo pipefail
 

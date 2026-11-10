@@ -1,10 +1,10 @@
 # {{project-name}}
 
-Clap-based example binary backed by the `{{crate_name}}_lib` library.
+Clap-based example binary backed by the `{{lib_package_name}}` library.
 
 ```sh
-cargo run -p {{project-name}} -- --help
-cargo run -p {{project-name}} -- Alice
+cargo run -p {{cli_package_name}} -- --help
+cargo run -p {{cli_package_name}} -- Alice
 ```
 
 The positional name defaults to `world`. See [CONTRIBUTING.md](../../CONTRIBUTING.md) for development

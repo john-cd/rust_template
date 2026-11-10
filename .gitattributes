@@ -1,7 +1,21 @@
-# Normalize text files to LF and prevent image assets from being treated as text.
+# Normalize text files to LF unless a more specific rule below says otherwise.
 * text=auto eol=lf
+
+# Windows command and PowerShell scripts use CRLF for native shell compatibility.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+
+# Treat common image and other binary assets as opaque bytes.
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.woff binary
+*.woff2 binary

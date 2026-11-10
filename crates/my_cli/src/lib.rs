@@ -4,6 +4,7 @@
 
 /// Argument parsing and process-level behavior for the command-line application.
 mod cli;
+/// Stderr and rotating-file tracing setup for the command-line application.
 mod logging;
 
 /// Parses arguments, runs the command, and returns its process exit code.

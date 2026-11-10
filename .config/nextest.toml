@@ -3,24 +3,35 @@
 # cargo-nextest configuration: https://nexte.st/book/configuration.html
 
 [profile.default]
-# Local runs stop on the first failure and keep successful test output quiet.
+# Local runs stop on the first failure so feedback stays focused.
 fail-fast = true
+# Do not repeat failures locally; fix or investigate them directly.
 retries = 0
+# Stop a test after 60 seconds, then allow two more seconds for termination.
 slow-timeout = { period = "60s", terminate-after = 2 }
+# Show each test only when it fails.
 status-level = "fail"
+# Include flaky tests in the final summary for local visibility.
 final-status-level = "flaky"
+# Print captured output for a failed test after the run completes.
 failure-output = "final"
+# Keep successful test output captured to reduce noise.
 success-output = "never"
 
 [profile.ci]
-# CI retries once and continues through failures to collect a complete report.
+# CI continues after failures to collect a full report, then retries each failure once.
 inherits = "default"
 fail-fast = false
 retries = 1
+# Suppress per-test progress lines in CI logs.
 status-level = "skip"
+# Keep the final test summary out of the main log; the JUnit artifact records results.
 final-status-level = "skip"
+# Print failure output as soon as a failure is seen and again in the final report.
 failure-output = "immediate-final"
 
 [profile.ci.junit]
+# Write machine-readable test results for CI artifact upload and reporting.
 path = "junit.xml"
+# Give the report a stable name independent of the workflow runner.
 report-name = "rust-template-ci"

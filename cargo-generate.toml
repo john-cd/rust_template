@@ -1,7 +1,7 @@
 [template]
 cargo_generate_version = ">=0.24.0"
-# Match generated output paths; the .liquid suffix is removed before this filter
-# is applied. GitHub Actions expressions and Zola template braces stay untouched.
+# Match checked-in template paths; .liquid is removed before this filter is applied.
+# A post hook renames the crate folders after these paths have been rendered.
 include = [
   "Cargo.toml",
   "Cargo.lock",
@@ -89,3 +89,33 @@ type = "string"
 prompt = "Zola version"
 default = "0.23.6"
 type = "string"
+
+# Keep the source directories buildable in this repository; cargo-generate renames them after rendering.
+[placeholders.cli_folder_name]
+prompt = "CLI crate folder name"
+default = "my_cli"
+regex = "^[A-Za-z][A-Za-z0-9_-]*$"
+type = "string"
+
+[placeholders.lib_folder_name]
+prompt = "Library crate folder name"
+default = "my_lib"
+regex = "^[A-Za-z][A-Za-z0-9_-]*$"
+type = "string"
+
+# Use `auto` to keep the existing project-name defaults; custom names are package names, not paths.
+[placeholders.cli_package_name]
+prompt = "CLI package name (use auto for the project name)"
+default = "auto"
+regex = "^(auto|[a-z][a-z0-9_-]*)$"
+type = "string"
+
+[placeholders.lib_package_name]
+prompt = "Library package name (use auto for the project name plus _lib)"
+default = "auto"
+regex = "^(auto|[a-z][a-z0-9_-]*)$"
+type = "string"
+
+[hooks]
+pre = ["scripts/cargo-generate-pre.rhai"]
+post = ["scripts/cargo-generate-post.rhai"]

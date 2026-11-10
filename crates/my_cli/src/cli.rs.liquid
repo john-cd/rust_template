@@ -9,7 +9,7 @@ use clap::Parser;
 use tracing::error;
 use tracing::info;
 
-/// Starter command-line application for the `{{project-name}}` workspace.
+/// Starter command-line application for the `{{cli_package_name}}` workspace.
 #[derive(Debug, Parser)]
 #[command(version, about)]
 struct Args {
@@ -48,6 +48,7 @@ pub fn run() -> ExitCode {
     }
 }
 
+/// Reports a failed stdout write through tracing or directly to stderr when filtered out.
 fn report_greeting_error(
     error: &std::io::Error,
     tracing_enabled: bool,
@@ -63,7 +64,7 @@ fn report_greeting_error(
 
 /// Writes the library greeting to the supplied output stream.
 fn write_greeting(mut writer: impl Write, name: &str) -> std::io::Result<()> {
-    writeln!(writer, "{}", {{crate_name}}_lib::greeting(name))
+    writeln!(writer, "{}", {{lib_package_name | replace: "-", "_"}}::greeting(name))
 }
 
 /// Exercises output handling when the destination writer fails.

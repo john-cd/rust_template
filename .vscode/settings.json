@@ -1,12 +1,15 @@
 {
   // Use consistent line endings and formatter settings in this workspace.
   "files.eol": "\n",
+  // Format supported files when they are saved to reduce formatting drift.
   "editor.formatOnSave": true,
   // Match editor analysis to the all-features checks run in CI.
   "rust-analyzer.cargo.features": "all",
   "rust-analyzer.check.command": "clippy",
+  // Load procedural macros and build-script generated metadata for editor analysis.
   "rust-analyzer.procMacro.enable": true,
   "rust-analyzer.cargo.buildScripts.enable": true,
+  // rust-analyzer owns Rust formatting; dprint formats the listed documentation/config formats.
   "[rust]": { "editor.defaultFormatter": "rust-lang.rust-analyzer" },
   "[markdown][json][jsonc][toml][yaml]": { "editor.defaultFormatter": "dprint.dprint" }
 }

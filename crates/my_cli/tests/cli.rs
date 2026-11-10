@@ -9,13 +9,17 @@ use std::process::Output;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
+/// Result type shared by executable-level test helpers.
 type TestResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
+/// Produces distinct log directories for concurrently running CLI tests.
 static NEXT_LOG_DIRECTORY: AtomicUsize = AtomicUsize::new(0);
 
+/// Temporary log directory removed when the test fixture is dropped.
 struct TestLogDirectory(PathBuf);
 
 impl Drop for TestLogDirectory {
+    /// Removes test logs and reports cleanup failures without hiding the test result.
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_dir_all(&self.0)
             && error.kind() != std::io::ErrorKind::NotFound
@@ -25,6 +29,7 @@ impl Drop for TestLogDirectory {
     }
 }
 
+/// Runs the built CLI with isolated logging and returns its output and log directory.
 fn run_cli(arguments: &[&str]) -> TestResult<(Output, TestLogDirectory)> {
     let sequence = NEXT_LOG_DIRECTORY.fetch_add(1, Ordering::Relaxed);
     let log_directory = TestLogDirectory(std::env::temp_dir().join(format!(
@@ -41,6 +46,7 @@ fn run_cli(arguments: &[&str]) -> TestResult<(Output, TestLogDirectory)> {
     Ok((output, log_directory))
 }
 
+/// Confirms the CLI emitted its startup event to stderr and a rotating log file.
 fn assert_logging(output: &Output, log_directory: &Path) -> TestResult<()> {
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("command started"), "{stderr}");

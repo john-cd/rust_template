@@ -1,4 +1,6 @@
 # Install pinned Cargo tools, Zola, and optionally GitHub CLI on Windows.
+# Read tool versions from .devcontainer/.env so local installs and CI use the same pins.
+# -DryRun shows the planned commands without installing tools or changing PATH.
 [CmdletBinding()]
 param(
     [switch]$DryRun
@@ -39,6 +41,7 @@ $requiredVersions = @(
     "ZOLA_VERSION",
     "TYPOS_VERSION"
 )
+# Validate every required pin up front so a partial tool installation cannot start with missing versions.
 foreach ($name in $requiredVersions) {
     if (-not $versions.ContainsKey($name)) {
         throw "Missing $name in $versionFile."

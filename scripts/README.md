@@ -57,6 +57,4 @@ variable overrides both (for example `CARGO_NEXTEST_VERSION=0.9.150`). uv, just,
 the extras use the latest release unless pinned the same way. Update the script's pins and Zola
 checksums together with `.devcontainer/.env`.
 
-Cargo's `bin` directory and `~/.local/bin` are appended to `~/.bashrc` and `~/.profile`. Verify
-locally with `bash -n`, `shellcheck`, and `--dry-run`; real installs need network access to
-GitHub, crates.io, static.rust-lang.org and astral.sh.
+Cargo's `bin` directory and `~/.local/bin` are appended to `~/.bashrc` and `~/.profile`. Verify locally with `bash -n`, `shellcheck`, and `--dry-run`; real installs need network access to GitHub, crates.io, static.rust-lang.org and astral.sh.

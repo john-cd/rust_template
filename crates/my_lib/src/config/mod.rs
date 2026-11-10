@@ -65,6 +65,7 @@ impl Config {
     ///
     /// Keeping the source injectable lets tests exercise configuration layering without reading
     /// unrelated `MY_LIB_*` values from the test runner's process environment.
+    /// Loads settings from an explicitly supplied environment source for deterministic callers.
     fn load_with_environment(
         file: Option<&Path>,
         environment: config::Environment,
@@ -109,6 +110,7 @@ impl Config {
 }
 
 /// Reads an optional TOML file without allowing an unbounded input allocation.
+/// Reads an optional UTF-8 TOML file with a fixed upper bound on allocated input.
 fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
     let file = match File::open(path) {
         Ok(file) => file,
@@ -143,7 +145,7 @@ fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
         })
 }
 
-/// Tests configuration defaults, loading, and round-trip persistence.
+/// Checks configuration defaults, source precedence, input limits, and persistence.
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
@@ -152,6 +154,7 @@ mod tests {
 
     use super::*;
 
+    /// Builds a prefixed environment source without consulting the process environment.
     fn environment_source(values: &[(&str, &str)]) -> config::Environment {
         let source = values
             .iter()
@@ -160,7 +163,9 @@ mod tests {
         config::Environment::with_prefix(ENV_PREFIX).source(Some(source))
     }
 
+    /// Returns a unique temporary directory path for one configuration test.
     fn test_directory(label: &str) -> PathBuf {
+        /// Allocates distinct suffixes for tests running in parallel in this process.
         static NEXT_TEST_DIR_ID: AtomicU64 = AtomicU64::new(0);
         let id = NEXT_TEST_DIR_ID.fetch_add(1, Ordering::Relaxed);
         std::env::temp_dir().join(format!(
@@ -213,6 +218,7 @@ mod tests {
         Ok(())
     }
 
+    /// Applies environment values after file values so they take precedence.
     #[test]
     fn environment_values_override_file_values() -> Result<()> {
         let dir = test_directory("environment");
@@ -236,6 +242,7 @@ mod tests {
         Ok(())
     }
 
+    /// Reports parse failures with their paths for malformed TOML and invalid field types.
     #[test]
     fn malformed_file_error_includes_its_path() -> Result<()> {
         let dir = test_directory("load_error");
@@ -256,6 +263,7 @@ mod tests {
         Ok(())
     }
 
+    /// Rejects oversized files after reading no more than the configured limit plus one byte.
     #[test]
     fn oversized_file_is_rejected_after_a_bounded_read() -> Result<()> {
         let dir = test_directory("oversized");

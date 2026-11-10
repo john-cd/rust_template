@@ -2,7 +2,7 @@
 //!
 //! TODO Reviewed ??-??-2026.
 
-use {{crate_name}}_lib::greeting;
+use {{lib_package_name | replace: "-", "_"}}::greeting;
 
 /// Confirms the greeting function is reachable from an external crate.
 #[test]

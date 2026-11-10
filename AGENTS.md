@@ -33,8 +33,7 @@
 - For focused validation, use `cargo check --workspace --all-targets --all-features --locked
   --profile ci`, `cargo test --workspace --all-targets --all-features --locked --profile ci`, and
   `cargo test --workspace --doc --all-features --locked --profile ci` as appropriate.
-- Run formatting and the focused checks relevant to a change. Do not claim platform or CI validation
-  that was not run.
+- Run formatting and the focused checks relevant to a change. Do not claim platform or CI validation that was not run.
 
 ## Editing and Git
 

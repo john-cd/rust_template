@@ -60,7 +60,7 @@ cargo make --quiet pre    # Formatting, check, and Clippy
 cargo tools check        # Check all workspace targets
 cargo make --quiet ci    # Complete local CI, including dependency and documentation checks
 cargo make --quiet links-online # Optional external-link check (requires network access)
-cargo run -p {{project-name}} -- Alice
+cargo run -p {{cli_package_name}} -- Alice
 ```
 
 Commit `Cargo.lock` changes together with manifest changes. Add meaningful tests for changed behavior.

@@ -2,7 +2,8 @@
 
 # Command-line application crate; shared package metadata and lints come from the workspace.
 [package]
-name = "{{project-name}}"
+name = "{{cli_package_name}}"
+# Inherit release and compiler policy from the root; command-line crates add their own category.
 version.workspace = true
 categories = ["command-line-utilities"]
 edition.workspace = true
@@ -14,15 +15,17 @@ rust-version.workspace = true
 description = "Starter command-line application for a Rust workspace"
 
 [lib]
-name = "{{crate_name}}"
+# Keep the Rust crate identifier valid when the generated package name contains hyphens.
+name = "{{cli_package_name | replace: "-", "_"}}"
 
-# Clap parses arguments, while my_lib provides reusable behavior.
+# Clap parses arguments, the generated library provides reusable behavior, and tracing emits diagnostics.
 [dependencies]
 clap.workspace = true
-{{crate_name}}_lib.workspace = true
+"{{lib_package_name | replace: "-", "_"}}".workspace = true
 tracing.workspace = true
 tracing-appender.workspace = true
 tracing-subscriber.workspace = true
 
 [lints]
+# Apply the workspace's Rust, rustdoc, and Clippy rules to this crate.
 workspace = true
