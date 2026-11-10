@@ -3,5 +3,6 @@
 # Guides
 
 - [Adopt this template](adopting-template.md): naming, setup, validation, and release decisions.
+- [Logging](logging.md): stderr events, log filters, file locations, and daily rotation.
 
 Add step-by-step instructions for common project tasks here. Keep each guide focused on one outcome and link related configuration or reference pages where useful.

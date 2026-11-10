@@ -9,6 +9,7 @@
 /// ```
 #[must_use]
 pub fn greeting(name: &str) -> String {
+    tracing::debug!("preparing greeting");
     format!("Hello, {name} from {}!", env!("CARGO_PKG_NAME"))
 }
 

@@ -2,6 +2,8 @@
 //!
 //! TODO Reviewed ??-??-2026.
 
+/// Atomic replacement for small application-owned files.
+mod atomic_file;
 /// Configuration loading and settings for library consumers.
 pub mod config;
 /// Error types shared by the library's public operations.

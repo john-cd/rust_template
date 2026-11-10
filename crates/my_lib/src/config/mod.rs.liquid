@@ -1,11 +1,13 @@
 //! Configuration loading and application settings.
 //!
-//! Settings are layered, from lowest to highest priority:
-//! built-in defaults, an optional TOML file, then `{{crate_name | upcase}}_LIB_*` environment
-//! variables (for example `{{crate_name | upcase}}_LIB_NAME=Ada`).
+//! Settings are layered, from lowest to highest priority: built-in defaults, an optional TOML
+//! file, then `{{crate_name | upcase}}_LIB_*` environment variables (for example
+//! `{{crate_name | upcase}}_LIB_NAME=Ada`).
 //!
 //! TODO Reviewed ??-??-2026.
 
+use std::fs::File;
+use std::io::Read;
 use std::path::Path;
 
 use serde::Deserialize;
@@ -15,6 +17,8 @@ use crate::error::Result;
 
 /// Prefix of the environment variables that override file settings.
 const ENV_PREFIX: &str = "{{crate_name | upcase}}_LIB";
+/// Maximum configuration file size read into memory.
+const MAX_CONFIG_FILE_BYTES: usize = 1024 * 1024;
 
 /// Application settings. Replace the fields with your own.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -46,20 +50,25 @@ impl Config {
         }
     }
 
-    /// Loads the configuration from defaults, the optional TOML `file`
-    /// (a missing file is not an error), and `{{crate_name | upcase}}_LIB_*` environment variables.
+    /// Loads configuration from defaults, an optional TOML `file`, and environment variables.
+    /// Files larger than 1 MiB are rejected before parsing.
     ///
     /// # Errors
     ///
-    /// Returns an error if the file or environment values cannot be parsed.
+    /// Returns an error if the file cannot be read or parsed, or environment values are invalid.
     pub fn load(file: Option<&Path>) -> Result<Self> {
         let mut builder = config::Config::builder();
-        if let Some(path) = file {
-            builder = builder.add_source(
-                config::File::from(path)
-                    .format(config::FileFormat::Toml)
-                    .required(false),
-            );
+        if let Some(path) = file
+            && let Some(contents) = read_optional_config_file(path)?
+        {
+            let file_settings = toml::from_str::<Self>(&contents).map_err(|source| {
+                crate::MyError::ConfigFileParse {
+                    path: path.to_owned(),
+                    source,
+                }
+            })?;
+            let file_source = config::Config::try_from(&file_settings)?;
+            builder = builder.add_source(file_source);
         }
         let settings = builder
             .add_source(config::Environment::with_prefix(ENV_PREFIX))
@@ -76,19 +85,50 @@ impl Config {
         Ok(toml::to_string_pretty(self)?)
     }
 
-    /// Saves the configuration to `path` as TOML, creating parent
-    /// directories if needed.
+    /// Saves the configuration to `path` using atomic file replacement.
     ///
     /// # Errors
     ///
-    /// Returns an error if serialization or writing the file fails.
+    /// Returns an error if serialization or the staged file replacement fails.
     pub fn save(&self, path: &Path) -> Result<()> {
-        if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
-            std::fs::create_dir_all(parent)?;
-        }
-        std::fs::write(path, self.to_toml()?)?;
-        Ok(())
+        let contents = self.to_toml()?;
+        crate::atomic_file::write_atomic(path, contents.as_bytes())
     }
+}
+
+/// Reads an optional TOML file without allowing an unbounded input allocation.
+fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
+    let file = match File::open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(source) => {
+            return Err(crate::MyError::ConfigFileRead {
+                path: path.to_owned(),
+                source,
+            });
+        }
+    };
+
+    let mut bytes = Vec::with_capacity(MAX_CONFIG_FILE_BYTES + 1);
+    file.take((MAX_CONFIG_FILE_BYTES + 1) as u64)
+        .read_to_end(&mut bytes)
+        .map_err(|source| crate::MyError::ConfigFileRead {
+            path: path.to_owned(),
+            source,
+        })?;
+    if bytes.len() > MAX_CONFIG_FILE_BYTES {
+        return Err(crate::MyError::ConfigFileTooLarge {
+            path: path.to_owned(),
+            limit_bytes: MAX_CONFIG_FILE_BYTES,
+        });
+    }
+
+    String::from_utf8(bytes)
+        .map(Some)
+        .map_err(|source| crate::MyError::ConfigFileEncoding {
+            path: path.to_owned(),
+            source,
+        })
 }
 
 /// Tests configuration defaults, loading, and round-trip persistence.
@@ -96,10 +136,17 @@ impl Config {
 mod tests {
     use super::*;
 
+    fn test_directory(label: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!(
+            "{{crate_name}}_config_{label}_{}",
+            std::process::id()
+        ))
+    }
+
     /// Saves settings to a nested path and loads them back unchanged.
     #[test]
     fn save_then_load_round_trips() -> Result<()> {
-        let dir = std::env::temp_dir().join(format!("{{crate_name}}_lib_cfg_{}", std::process::id()));
+        let dir = test_directory("round_trip");
         let path = dir.join("nested").join("config.toml");
         let cfg = Config {
             name: "Ada".to_owned(),
@@ -114,7 +161,7 @@ mod tests {
     /// Uses built-in settings when the optional configuration file is missing.
     #[test]
     fn missing_file_yields_defaults() -> Result<()> {
-        let path = std::env::temp_dir().join("{{crate_name}}_lib_does_not_exist.toml");
+        let path = test_directory("missing").join("absent.toml");
         assert_eq!(Config::load(Some(&path))?, Config::default());
         Ok(())
     }
@@ -122,13 +169,27 @@ mod tests {
     /// Applies supplied TOML fields while retaining defaults for omitted fields.
     #[test]
     fn partial_file_keeps_defaults() -> Result<()> {
-        let dir = std::env::temp_dir().join(format!("{{crate_name}}_lib_part_{}", std::process::id()));
+        let dir = test_directory("partial");
         std::fs::create_dir_all(&dir)?;
         let path = dir.join("c.toml");
         std::fs::write(&path, "verbose = true\n")?;
         let cfg = Config::load(Some(&path))?;
         assert!(cfg.verbose);
         assert_eq!(cfg.name, "world");
+        std::fs::remove_dir_all(&dir)?;
+        Ok(())
+    }
+
+    /// Rejects configuration files larger than the fixed read limit.
+    #[test]
+    fn oversized_file_is_rejected() -> Result<()> {
+        let dir = test_directory("oversized");
+        std::fs::create_dir_all(&dir)?;
+        let path = dir.join("config.toml");
+        std::fs::write(&path, vec![b' '; MAX_CONFIG_FILE_BYTES + 1])?;
+
+        let error = Config::load(Some(&path)).expect_err("oversized input should be rejected");
+        assert!(matches!(error, crate::MyError::ConfigFileTooLarge { path: error_path, .. } if error_path == path));
         std::fs::remove_dir_all(&dir)?;
         Ok(())
     }

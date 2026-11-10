@@ -7,12 +7,8 @@
 //! TODO Reviewed ??-??-2026.
 
 use std::fs::File;
-use std::fs::OpenOptions;
-use std::io::Write;
+use std::io::Read;
 use std::path::Path;
-use std::path::PathBuf;
-use std::sync::atomic::AtomicU64;
-use std::sync::atomic::Ordering;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -21,8 +17,8 @@ use crate::error::Result;
 
 /// Prefix of the environment variables that override file settings.
 const ENV_PREFIX: &str = "MY_LIB";
-/// Process-local counter used to avoid collisions between concurrent saves.
-static NEXT_TEMP_FILE_ID: AtomicU64 = AtomicU64::new(0);
+/// Maximum configuration file size read into memory.
+const MAX_CONFIG_FILE_BYTES: usize = 1024 * 1024;
 
 /// Application settings. Replace the fields with your own.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -56,6 +52,7 @@ impl Config {
 
     /// Loads the configuration from defaults, the optional TOML `file`
     /// (a missing file is not an error), and `MY_LIB_*` environment variables.
+    /// Files larger than 1 MiB are rejected before parsing.
     ///
     /// # Errors
     ///
@@ -73,12 +70,17 @@ impl Config {
         environment: config::Environment,
     ) -> Result<Self> {
         let mut builder = config::Config::builder();
-        if let Some(path) = file {
-            builder = builder.add_source(
-                config::File::from(path)
-                    .format(config::FileFormat::Toml)
-                    .required(false),
-            );
+        if let Some(path) = file
+            && let Some(contents) = read_optional_config_file(path)?
+        {
+            let file_settings = toml::from_str::<Self>(&contents).map_err(|source| {
+                crate::MyError::ConfigFileParse {
+                    path: path.to_owned(),
+                    source,
+                }
+            })?;
+            let file_source = config::Config::try_from(&file_settings)?;
+            builder = builder.add_source(file_source);
         }
         let settings = builder.add_source(environment).build()?;
         Ok(settings.try_deserialize()?)
@@ -95,165 +97,59 @@ impl Config {
 
     /// Saves the configuration to `path` as TOML, creating parent directories if needed.
     ///
-    /// The complete serialized file is written to a uniquely named sibling and synced before it
-    /// replaces the destination. Replacing a regular file preserves its permissions. A symlink at
-    /// the destination is replaced as a link; its target is not followed. On Unix, the parent
-    /// directory is synced after replacement on a best-effort basis. Other platforms rely on the
-    /// atomic rename and synced file contents; a power loss can still lose the directory-entry
-    /// update where the platform does not provide a portable directory sync operation.
+    /// The complete serialized file is written using the library's atomic file replacement helper.
     ///
     /// # Errors
     ///
     /// Returns an error if serialization or writing the file fails.
     pub fn save(&self, path: &Path) -> Result<()> {
-        self.save_with_replace(path, |source, destination| {
-            std::fs::rename(source, destination)
-        })
-    }
-
-    fn save_with_replace<F>(&self, path: &Path, replace: F) -> Result<()>
-    where
-        F: FnOnce(&Path, &Path) -> std::io::Result<()>,
-    {
         let contents = self.to_toml()?;
-        if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
-            std::fs::create_dir_all(parent)?;
+        crate::atomic_file::write_atomic(path, contents.as_bytes())
+    }
+}
+
+/// Reads an optional TOML file without allowing an unbounded input allocation.
+fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
+    let file = match File::open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(source) => {
+            return Err(crate::MyError::ConfigFileRead {
+                path: path.to_owned(),
+                source,
+            });
         }
-
-        let parent = path
-            .parent()
-            .filter(|p| !p.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        let destination_permissions = match std::fs::symlink_metadata(path) {
-            Ok(metadata) if metadata.file_type().is_file() => Some(metadata.permissions()),
-            Ok(metadata) if metadata.file_type().is_symlink() => None,
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
-            Ok(_) => {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "configuration destination must be a regular file or symlink",
-                )
-                .into());
-            }
-            Err(error) => return Err(error.into()),
-        };
-        let (temporary_file, mut file) = create_temporary_file(path, parent)?;
-        file.write_all(contents.as_bytes())?;
-        file.sync_all()?;
-        if let Some(permissions) = destination_permissions {
-            std::fs::set_permissions(temporary_file.path(), permissions)?;
-            file.sync_all()?;
-        }
-        drop(file);
-
-        // The destination is only touched after the complete temporary file is ready. A failed
-        // replace therefore leaves an existing destination unchanged.
-        replace(temporary_file.path(), path)?;
-        sync_parent_directory(parent);
-        Ok(())
-    }
-}
-
-/// A sibling staging file that is removed if replacement does not consume it.
-struct TemporaryFile {
-    path: PathBuf,
-}
-
-impl TemporaryFile {
-    fn path(&self) -> &Path {
-        &self.path
-    }
-}
-
-impl Drop for TemporaryFile {
-    fn drop(&mut self) {
-        remove_temporary_file(&self.path);
-    }
-}
-
-#[cfg(windows)]
-#[expect(
-    clippy::permissions_set_readonly_false,
-    reason = "Windows cleanup only clears the read-only attribute on the temporary file"
-)]
-fn remove_temporary_file(path: &Path) {
-    if std::fs::remove_file(path).is_err() {
-        // A copied read-only destination mode can prevent cleanup after a failed rename.
-        if let Ok(metadata) = std::fs::metadata(path) {
-            let mut permissions = metadata.permissions();
-            permissions.set_readonly(false);
-            let _ = std::fs::set_permissions(path, permissions);
-        }
-        let _ = std::fs::remove_file(path);
-    }
-}
-
-#[cfg(not(windows))]
-fn remove_temporary_file(path: &Path) {
-    let _ = std::fs::remove_file(path);
-}
-
-/// Creates a unique staging file beside the destination so replacement stays on one filesystem.
-fn create_temporary_file(destination: &Path, parent: &Path) -> Result<(TemporaryFile, File)> {
-    let Some(file_name) = destination.file_name() else {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::InvalidInput,
-            "configuration destination must name a file",
-        )
-        .into());
     };
 
-    for _ in 0..128 {
-        let id = NEXT_TEMP_FILE_ID.fetch_add(1, Ordering::Relaxed);
-        let temporary_path = parent.join(format!(
-            ".{}.{}.{}.tmp",
-            file_name.to_string_lossy(),
-            std::process::id(),
-            id
-        ));
-        match OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&temporary_path)
-        {
-            Ok(file) => {
-                return Ok((
-                    TemporaryFile {
-                        path: temporary_path,
-                    },
-                    file,
-                ));
-            }
-            Err(error) if error.kind() != std::io::ErrorKind::AlreadyExists => {
-                return Err(error.into());
-            }
-            Err(_) => {}
-        }
+    let mut bytes = Vec::with_capacity(MAX_CONFIG_FILE_BYTES + 1);
+    file.take((MAX_CONFIG_FILE_BYTES + 1) as u64)
+        .read_to_end(&mut bytes)
+        .map_err(|source| crate::MyError::ConfigFileRead {
+            path: path.to_owned(),
+            source,
+        })?;
+    if bytes.len() > MAX_CONFIG_FILE_BYTES {
+        return Err(crate::MyError::ConfigFileTooLarge {
+            path: path.to_owned(),
+            limit_bytes: MAX_CONFIG_FILE_BYTES,
+        });
     }
 
-    Err(std::io::Error::new(
-        std::io::ErrorKind::AlreadyExists,
-        "could not allocate a unique configuration staging file",
-    )
-    .into())
-}
-
-/// Syncs the containing directory after replacement where Unix provides this operation.
-fn sync_parent_directory(parent: &Path) {
-    #[cfg(unix)]
-    if let Ok(directory) = File::open(parent) {
-        // Replacement has already committed. Directory syncing is best-effort because reporting
-        // an error here would imply the prior file survived when it may not have.
-        let _ = directory.sync_all();
-    }
-
-    #[cfg(not(unix))]
-    let _ = parent;
+    String::from_utf8(bytes)
+        .map(Some)
+        .map_err(|source| crate::MyError::ConfigFileEncoding {
+            path: path.to_owned(),
+            source,
+        })
 }
 
 /// Tests configuration defaults, loading, and round-trip persistence.
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
     use super::*;
 
     fn environment_source(values: &[(&str, &str)]) -> config::Environment {
@@ -341,80 +237,40 @@ mod tests {
     }
 
     #[test]
-    fn malformed_or_unreadable_file_returns_an_error() -> Result<()> {
+    fn malformed_file_error_includes_its_path() -> Result<()> {
         let dir = test_directory("load_error");
         std::fs::create_dir_all(&dir)?;
         let malformed = dir.join("malformed.toml");
         let invalid_type = dir.join("invalid_type.toml");
         std::fs::write(&malformed, "name = [\n")?;
         std::fs::write(&invalid_type, "name = { nested = true }\n")?;
-        assert!(Config::load_with_environment(Some(&malformed), environment_source(&[])).is_err());
+        let error = Config::load_with_environment(Some(&malformed), environment_source(&[]))
+            .expect_err("malformed TOML should be rejected");
+        assert!(matches!(error, crate::MyError::ConfigFileParse { path, .. } if path == malformed));
+        let error = Config::load_with_environment(Some(&invalid_type), environment_source(&[]))
+            .expect_err("invalid field type should be rejected");
         assert!(
-            Config::load_with_environment(Some(&invalid_type), environment_source(&[])).is_err()
+            matches!(error, crate::MyError::ConfigFileParse { path, .. } if path == invalid_type)
         );
         std::fs::remove_dir_all(&dir)?;
         Ok(())
     }
 
     #[test]
-    fn failed_replace_preserves_the_previous_file() -> Result<()> {
-        let dir = test_directory("replace_failure");
+    fn oversized_file_is_rejected_after_a_bounded_read() -> Result<()> {
+        let dir = test_directory("oversized");
         std::fs::create_dir_all(&dir)?;
         let path = dir.join("config.toml");
-        let original = b"valid prior configuration";
-        std::fs::write(&path, original)?;
+        let oversized_contents = vec![b' '; MAX_CONFIG_FILE_BYTES + 1];
+        std::fs::write(&path, oversized_contents)?;
 
-        let result = Config::new("replacement").save_with_replace(&path, |_, _| {
-            Err(std::io::Error::new(
-                std::io::ErrorKind::PermissionDenied,
-                "simulated replacement failure",
-            ))
-        });
-
-        assert!(result.is_err());
-        assert_eq!(std::fs::read(&path)?, original);
-        assert_eq!(std::fs::read_dir(&dir)?.count(), 1);
-        std::fs::remove_dir_all(&dir)?;
-        Ok(())
-    }
-
-    #[cfg(unix)]
-    #[test]
-    fn replacing_a_symlink_does_not_modify_its_target() -> Result<()> {
-        use std::os::unix::fs::symlink;
-
-        let dir = test_directory("symlink");
-        std::fs::create_dir_all(&dir)?;
-        let target = dir.join("target.toml");
-        let path = dir.join("config.toml");
-        std::fs::write(&target, b"target remains untouched")?;
-        symlink(&target, &path)?;
-
-        Config::new("replacement").save(&path)?;
-
-        assert!(std::fs::symlink_metadata(&path)?.file_type().is_file());
-        assert_eq!(std::fs::read(&target)?, b"target remains untouched");
-        std::fs::remove_dir_all(&dir)?;
-        Ok(())
-    }
-
-    #[cfg(unix)]
-    #[test]
-    fn replacing_a_regular_file_preserves_its_permissions() -> Result<()> {
-        use std::os::unix::fs::PermissionsExt;
-
-        let dir = test_directory("permissions");
-        std::fs::create_dir_all(&dir)?;
-        let path = dir.join("config.toml");
-        std::fs::write(&path, b"old")?;
-        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o640))?;
-
-        Config::new("replacement").save(&path)?;
-
-        assert_eq!(
-            std::fs::metadata(&path)?.permissions().mode() & 0o777,
-            0o640
-        );
+        let error = Config::load_with_environment(Some(&path), environment_source(&[]))
+            .expect_err("oversized configuration should be rejected");
+        assert!(matches!(
+            error,
+            crate::MyError::ConfigFileTooLarge { path: error_path, limit_bytes }
+                if error_path == path && limit_bytes == MAX_CONFIG_FILE_BYTES
+        ));
         std::fs::remove_dir_all(&dir)?;
         Ok(())
     }

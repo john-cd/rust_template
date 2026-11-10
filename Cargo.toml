@@ -25,6 +25,9 @@ my_lib = { path = "crates/my_lib" }
 serde = { version = "1.0.229", features = ["derive"] }
 thiserror = "2.0.21"
 toml = "1.2.1"
+tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+tracing-appender = "0.2.5"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 # Common crates:
 
@@ -46,9 +49,6 @@ toml = "1.2.1"
 # sqlx = { version = "0.9.0", default-features = false }
 # tempfile = "3.27.0"
 # tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros"] }
-# Workspace code uses tracing events and does not necessarily need the optional attribute macros.
-# tracing = { version = "0.1.44", default-features = false, features = ["std"] }
-# tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # url = "2.5.8"
 # uuid = "1.29.2"
 # walkdir = "2.5.0"
@@ -60,6 +60,11 @@ unused_must_use = "deny"
 missing_docs = "warn"
 unreachable_pub = "warn"
 rust_2018_idioms = { level = "warn", priority = -1 }
+
+[workspace.lints.rustdoc]
+all = "warn"
+broken_intra_doc_links = "deny"
+missing_crate_level_docs = "warn"
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
