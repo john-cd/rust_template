@@ -4,14 +4,14 @@
 ARG RUST_VERSION
 ARG DEBIAN_VERSION
 
+FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS base
+
 # -----------------------------------------------------------------------------
 # Development image: editor tooling and a non-root workspace user.
 # -----------------------------------------------------------------------------
-FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS development
+FROM base AS development
 
-ARG ZOLA_VERSION
-# Reuse the checksum-verifying installer for the pinned Zola release.
-COPY scripts/install-zola.sh /usr/local/bin/install-zola
+
 
 # Install native build dependencies and create the account used by editor sessions.
 RUN apt-get update \
@@ -60,35 +60,49 @@ USER vscode
 # Production build stages: use cargo-chef to cache dependencies apart from application sources.
 # -----------------------------------------------------------------------------
 FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS chef
+
 ARG CARGO_CHEF_VERSION
+
 RUN cargo install --locked cargo-chef --version "${CARGO_CHEF_VERSION}"
+
 WORKDIR /app
 
 # -----------------------------------------------------------------------------
 # Planner stage: record dependency metadata so source-only changes preserve the dependency layer.
 # -----------------------------------------------------------------------------
 FROM chef AS planner
+
 COPY . .
+
 RUN cargo chef prepare --recipe-path recipe.json
 
 # -----------------------------------------------------------------------------
 # Builder stage: reuse the recipe layer, then compile the sample CLI in release mode.
 # -----------------------------------------------------------------------------
 FROM chef AS builder
+
 COPY --from=planner /app/recipe.json recipe.json
+
 RUN cargo chef cook --release --locked --recipe-path recipe.json
+
 COPY . .
+
 RUN cargo build --release --locked
 
 # -----------------------------------------------------------------------------
 # Runtime image: include the compiled CLI and certificates without the Rust build toolchain.
 # -----------------------------------------------------------------------------
 FROM debian:${DEBIAN_VERSION}-slim AS production
+
 ARG CARGO_PACKAGE_NAME
+
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends ca-certificates \
     && useradd --system --no-create-home --uid 10001 app \
     && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/target/release/${CARGO_PACKAGE_NAME} /usr/local/bin/app
+
 USER app
+
 ENTRYPOINT ["/usr/local/bin/app"]

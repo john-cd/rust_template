@@ -6,7 +6,7 @@ name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env}
 
 services:
   # Production-only runtime image; it is excluded when Compose loads the development override.
-  production:
+  app:
     profiles: [production]
     build:
       context: ..
