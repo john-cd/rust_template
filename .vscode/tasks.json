@@ -27,6 +27,14 @@
       "args": ["make", "format"],
       "options": { "cwd": "${workspaceFolder}" },
       "problemMatcher": []
+    },
+    {
+      "label": "Repository: spelling",
+      "type": "process",
+      "command": "cargo",
+      "args": ["make", "typos"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
     }
   ]
 }

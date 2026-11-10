@@ -17,4 +17,5 @@ services:
         DEBIAN_VERSION: ${DEBIAN_VERSION:?Set DEBIAN_VERSION in .devcontainer/.env}
         CARGO_BINSTALL_VERSION: ${CARGO_BINSTALL_VERSION:?Set CARGO_BINSTALL_VERSION in .devcontainer/.env}
         CARGO_CHEF_VERSION: ${CARGO_CHEF_VERSION:?Set CARGO_CHEF_VERSION in .devcontainer/.env}
+        SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env}
         CARGO_PACKAGE_NAME: ${CARGO_PACKAGE_NAME:?Set CARGO_PACKAGE_NAME in .devcontainer/.env}

@@ -46,6 +46,7 @@ ARG ZIZMOR_VERSION
 ARG SCCACHE_VERSION
 ARG DPRINT_VERSION
 ARG LYCHEE_VERSION
+ARG TYPOS_VERSION
 
 RUN rustup component add clippy rustfmt \
     && rustup component add llvm-tools-preview \
@@ -59,7 +60,8 @@ RUN rustup component add clippy rustfmt \
         "zizmor@${ZIZMOR_VERSION}" \
         "dprint@${DPRINT_VERSION}" \
         "lychee@${LYCHEE_VERSION}" \
-        "sccache@${SCCACHE_VERSION}"
+        "sccache@${SCCACHE_VERSION}" \
+        "typos-cli@${TYPOS_VERSION}"
 
 USER vscode
 
@@ -88,6 +90,11 @@ RUN cargo chef prepare --recipe-path recipe.json
 # -----------------------------------------------------------------------------
 FROM chef AS builder
 
+ARG SCCACHE_VERSION
+
+# The copied Cargo configuration selects sccache as the compiler wrapper.
+RUN cargo binstall --locked --no-confirm "sccache@${SCCACHE_VERSION}"
+
 COPY --from=planner /app/recipe.json recipe.json
 
 RUN cargo chef cook --release --locked --recipe-path recipe.json
@@ -95,6 +102,13 @@ RUN cargo chef cook --release --locked --recipe-path recipe.json
 COPY . .
 
 RUN cargo build --release --locked
+
+FROM builder AS production-smoke
+
+ARG CARGO_PACKAGE_NAME
+
+# Verify that the generated executable starts before assembling the runtime image.
+RUN ./target/release/${CARGO_PACKAGE_NAME} --help
 
 # -----------------------------------------------------------------------------
 # Runtime image: include the compiled CLI and certificates without the Rust build toolchain.
@@ -108,7 +122,7 @@ RUN apt-get update \
     && useradd --system --no-create-home --uid 10001 app \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/${CARGO_PACKAGE_NAME} /usr/local/bin/app
+COPY --from=production-smoke /app/target/release/${CARGO_PACKAGE_NAME} /usr/local/bin/app
 
 USER app
 

@@ -27,7 +27,7 @@
 
 ## Commands and validation
 
-- Cargo uses `.cargo/config.toml` for sccache, quiet output, the `cargo tools` alias using the `tools` profile, and development profiles. Cargo Make overrides Windows build output to `D:/target/<project>` and `C:/code_build/<project>` by default; `CARGO_TARGET_ROOT` and `CARGO_BUILD_ROOT` change those roots, while explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR` values take precedence. `SCCACHE_DIR` and `SCCACHE_BASEDIRS` can configure external compiler-cache storage. The shared cache recognizes the `.worktrees/a`, `.worktrees/b`, and `.worktrees/c` worktree slots.
+- Cargo uses `.cargo/config.toml` for sccache, quiet output, the `cargo tools` alias using the `tools` profile, and development profiles. Cargo Make overrides Windows build output to `D:/target/<project>/<slot>` and `C:/code_build/<project>/<slot>` by default. The primary checkout uses the `main` slot; set `CODE_WORKTREE_SLOT` to `a`, `b`, or `c` in a linked worktree. `CARGO_TARGET_ROOT` and `CARGO_BUILD_ROOT` change those roots, while explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR` values take precedence. `SCCACHE_DIR` and `SCCACHE_BASEDIRS` can configure external compiler-cache storage.
 - `Makefile.toml` owns Cargo Make task definitions. The `cargo tools` alias is a convenience
   frontend: its format/check commands delegate to Cargo Make, and its website command invokes Zola. Keep local commands and CI tasks consistent with those definitions.
 - For focused validation, use `cargo check --workspace --all-targets --all-features --locked

@@ -9,10 +9,11 @@ CARGO_TARGET_ROOT = { value = "D:/target", condition = { platforms = ["windows"]
 CARGO_BUILD_ROOT = { value = "C:/code_build", condition = { platforms = ["windows"], env_not_set = [
   "CARGO_BUILD_ROOT",
 ] } }
-CARGO_TARGET_DIR = { value = "${CARGO_TARGET_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
+CODE_WORKTREE_SLOT = { value = "main", env_not_set = ["CODE_WORKTREE_SLOT"] }
+CARGO_TARGET_DIR = { value = "${CARGO_TARGET_ROOT}/${CARGO_MAKE_PROJECT_NAME}/${CODE_WORKTREE_SLOT}", condition = { platforms = [
   "windows",
 ], env_not_set = ["CARGO_TARGET_DIR"] } }
-CARGO_BUILD_BUILD_DIR = { value = "${CARGO_BUILD_ROOT}/${CARGO_MAKE_PROJECT_NAME}", condition = { platforms = [
+CARGO_BUILD_BUILD_DIR = { value = "${CARGO_BUILD_ROOT}/${CARGO_MAKE_PROJECT_NAME}/${CODE_WORKTREE_SLOT}", condition = { platforms = [
   "windows",
 ], env_not_set = ["CARGO_BUILD_BUILD_DIR"] } }
 RUSTFMT_TOOLCHAIN = { value = "nightly-2026-11-06", condition = { env_not_set = [
@@ -304,6 +305,11 @@ category = "Quality"
 command = "cargo"
 args = ["machete"]
 
+[tasks.typos]
+description = "Check maintained files for spelling mistakes"
+category = "Quality"
+command = "typos"
+
 [tasks.zizmor]
 description = "Audit GitHub Actions workflows for security issues"
 category = "Quality"
@@ -500,6 +506,7 @@ dependencies = [
   "doctest",
   "doc",
   "deny",
+  "typos",
   "links",
   "website-check",
   "website-build",

@@ -1,0 +1,27 @@
+# TODO Reviewed ??-??-????
+
+name: Container smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build development image
+        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml build devcontainer
+      - name: Smoke test pinned development tools
+        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml run --rm --no-deps devcontainer bash -lc 'rustc --version && cargo nextest --version && sccache --version && dprint --version && lychee --version && typos --version'
+      - name: Build production image
+        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production build app
+      - name: Smoke test production executable
+        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production run --rm app --help

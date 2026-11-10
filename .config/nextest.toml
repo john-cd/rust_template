@@ -22,5 +22,5 @@ final-status-level = "skip"
 failure-output = "immediate-final"
 
 [profile.ci.junit]
-path = "target/nextest/ci/junit.xml"
+path = "junit.xml"
 report-name = "rust-template-ci"

@@ -5,4 +5,3 @@
 - [ ] Add or update tests, then run `cargo test`.
 - [ ] Update the README with setup and usage instructions.
 - [ ] Run `cargo fmt` and `cargo clippy`.
-- [x] Add `scripts/setup-cloud.sh` (cloud environment setup script); keep its pins in sync with `.devcontainer/.env`.

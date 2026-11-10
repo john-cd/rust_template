@@ -23,6 +23,7 @@ services:
         SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env}
         DPRINT_VERSION: ${DPRINT_VERSION:?Set DPRINT_VERSION in .devcontainer/.env}
         LYCHEE_VERSION: ${LYCHEE_VERSION:?Set LYCHEE_VERSION in .devcontainer/.env}
+        TYPOS_VERSION: ${TYPOS_VERSION:?Set TYPOS_VERSION in .devcontainer/.env}
         ZOLA_VERSION: ${ZOLA_VERSION:?Set ZOLA_VERSION in .devcontainer/.env}
     volumes:
       # Share the checkout with the editor while keeping Cargo data in Docker-managed volumes.

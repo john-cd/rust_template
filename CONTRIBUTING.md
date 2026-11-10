@@ -33,7 +33,7 @@ Install `cargo-binstall` first with `cargo install --locked cargo-binstall --ver
 tools with its prebuilt-binary support (CI and the devcontainer also install these):
 
 ```sh
-cargo binstall --locked --no-confirm cargo-make@0.37.24 cargo-nextest@0.9.148 cargo-deny@0.20.2 dprint@0.64.3 lychee@0.24.2 sccache@0.19.0
+cargo binstall --locked --no-confirm cargo-make@0.37.24 cargo-nextest@0.9.148 cargo-deny@0.20.2 dprint@0.64.3 lychee@0.24.2 sccache@0.19.0 typos-cli@1.52.0
 ```
 
 On Linux, `bash scripts/install-tools.sh` installs the pinned Cargo tools and GitHub CLI. Use
@@ -57,7 +57,8 @@ for fresh-checkout setup, compiler-cache bootstrap, and release decisions.
 ```sh
 cargo tools format       # Apply Rust and dprint formatting
 cargo make --quiet pre    # Formatting, check, and Clippy
-cargo tools check        # Complete local CI, including dependency and documentation checks
+cargo tools check        # Check all workspace targets
+cargo make --quiet ci    # Complete local CI, including dependency and documentation checks
 cargo make --quiet links-online # Optional external-link check (requires network access)
 cargo run -p {{project-name}} -- Alice
 ```
