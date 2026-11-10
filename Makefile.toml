@@ -1,6 +1,8 @@
 # TODO Reviewed ??-??-????
 
+# Shared defaults used by Cargo Make tasks; explicit environment variables take precedence.
 [env]
+# Keep Windows build artifacts outside checkouts while other platforms use Cargo's normal paths.
 CARGO_TARGET_ROOT = { value = "D:/target", condition = { platforms = ["windows"], env_not_set = [
   "CARGO_TARGET_ROOT",
 ] } }
@@ -196,7 +198,7 @@ category = "Run"
 description = "Run the sample CLI"
 category = "Run"
 command = "cargo"
-args = ["run", "--locked", "--package", "my_cli", "--"]
+args = ["run", "--locked", "--"]
 
 # Quality
 
@@ -433,6 +435,8 @@ args = [
   ".devcontainer/.env",
   "-f",
   ".devcontainer/compose.yaml",
+  "-f",
+  ".devcontainer/compose.override.yaml",
   "build",
   "devcontainer",
 ]
@@ -447,6 +451,8 @@ args = [
   ".devcontainer/.env",
   "-f",
   ".devcontainer/compose.yaml",
+  "--profile",
+  "production",
   "build",
   "production",
 ]

@@ -7,11 +7,12 @@ A Rust workspace starter with a sample library, a Clap-based binary, developer t
 Create a project with `cargo-generate` 0.24 or newer:
 
 ```sh
-cargo generate --git https://github.com/john-cd/rust_template.git --branch develop --name my-project
+cargo generate --git https://github.com/john-cd/rust_template.git --branch develop --name myproject
 ```
 
-The generated workspace builds with its sample crate names. Follow the
-[adoption guide](docs/guides/adopting-template.md) to replace them and the sample content.
+The generated workspace names its CLI package after the selected project name
+and its library package `<project-name>_lib`. Follow the [adoption guide](docs/guides/adopting-template.md)
+to replace the sample behavior and metadata.
 
 ## Branch workflow
 
@@ -40,7 +41,7 @@ Add workspace packages under `crates/`. Shared package metadata and lint policy 
 such as code generators, schema checks, or build helpers. Extend or replace the sample `cargo tools`
 commands as needed; keep application runtime behavior in the application crates.
 
-The library crate starts with `config`, `error`, `models`, and `services` modules. The companion CLI uses Clap derive and calls the library greeting: `cargo run -p my_cli -- Alice`.
+The library crate starts with `config`, `error`, `models`, and `services` modules. The companion CLI uses Clap derive and calls the library greeting: `cargo run -p {{project-name}} -- Alice`.
 
 ## Prerequisites
 
@@ -113,13 +114,13 @@ set -a
 set +a
 docker build -f .devcontainer/Dockerfile --target production \
   --build-arg RUST_VERSION --build-arg DEBIAN_VERSION --build-arg CARGO_CHEF_VERSION \
-  -t my-cli .
-docker run --rm my-cli Alice
+  --build-arg CARGO_PACKAGE_NAME={{project-name}} -t {{project-name}} .
+docker run --rm {{project-name}} Alice
 ```
 
-Rename the `my_cli` build target and executable when adopting the template.
+The Cargo package names and production executable use the generated project name.
 
-Open the repository in VS Code and choose **Reopen in Container**. The devcontainer builds from `.devcontainer/Dockerfile` with Docker Compose on Debian Trixie, mounts the workspace, and installs the Rust Analyzer and TOML extensions. Edit `.devcontainer/.env` to configure its Rust and development-tool versions.
+Open the repository in VS Code and choose **Reopen in Container**. The devcontainer builds from `.devcontainer/Dockerfile` with Docker Compose on Debian Trixie, mounts the workspace, and installs the Rust Analyzer and TOML extensions. Edit `.devcontainer/.env` to configure its project prefix, production executable name, Rust version, and development-tool versions.
 It also installs the pinned Rust formatter and development tools. Port 1111 is forwarded for Zola previews.
 
 ## Documentation

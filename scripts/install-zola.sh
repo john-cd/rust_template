@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# Download a supported Zola release, verify its pinned checksum, and install it to the requested directory.
 set -euo pipefail
 
 version=${1:?Usage: install-zola.sh <version> <destination>}
@@ -6,6 +8,7 @@ destination=${2:?Usage: install-zola.sh <version> <destination>}
 
 system=$(uname -s)
 architecture=$(uname -m)
+# Only map platforms with release artifacts supported by this installer.
 case "$system/$architecture" in
   Linux/x86_64) platform=x86_64-unknown-linux-gnu ;;
   Linux/aarch64) platform=aarch64-unknown-linux-gnu ;;
@@ -13,6 +16,7 @@ case "$system/$architecture" in
 esac
 
 asset="zola-v${version}-${platform}.tar.gz"
+# Require a checked-in checksum for the exact version and platform before installing.
 case "$version/$platform" in
   0.23.6/x86_64-unknown-linux-gnu) checksum=8f5132b3522412d04e395e0b25f6d68613ad272a873e54a2b3ebf664873024a4 ;;
   0.23.6/aarch64-unknown-linux-gnu) checksum=266448fffbf7c7004ca399d0e76dd699541771096d8a42aede98cebe2a029d02 ;;
@@ -21,6 +25,7 @@ esac
 
 archive_url="https://github.com/getzola/zola/releases/download/v${version}/${asset}"
 temp_dir=$(mktemp -d)
+# Remove the archive and extracted files after success, failure, or interruption.
 trap 'rm -rf "$temp_dir"' EXIT
 archive="$temp_dir/$asset"
 

@@ -1,5 +1,6 @@
 # TODO Reviewed ??-??-????
 
+# Keep source and wrapped comments readable within the repository's 100-column style.
 edition = "2024"
 style_edition = "2024"
 max_width = 100

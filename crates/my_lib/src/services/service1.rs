@@ -1,4 +1,4 @@
-//! Service 1.
+//! Example application service operations for `Model1`.
 //!
 //! TODO Reviewed ??-??-2026.
 
@@ -22,10 +22,12 @@ impl Service1 {
     }
 }
 
+/// Checks the service's description of a domain model.
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    /// Formats a model's name in the service description.
     #[test]
     fn describes_model() {
         assert_eq!(Service1::new().describe(&Model1::new("a")), "Model1(a)");

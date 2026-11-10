@@ -1,4 +1,5 @@
 # TODO Reviewed ??-??-????
+# Validate Rust across supported operating systems and check repository tooling on Linux.
 
 name: Rust CI
 
@@ -17,6 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Compile, lint, and test the workspace on each supported runner platform.
   validate:
     name: Validate (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -65,7 +67,7 @@ jobs:
       - name: Check minimum Rust version
         env:
           RUSTC_WRAPPER: ""
-        run: rustup toolchain install 1.98.1 --profile minimal && cargo +1.98.1 check -p my_lib -p my_cli --all-targets --locked
+        run: rustup toolchain install 1.98.1 --profile minimal && cargo +1.98.1 check --workspace --all-targets --locked
         shell: bash
 
       - name: Install Rust formatter toolchain
@@ -96,6 +98,7 @@ jobs:
           path: target/nextest/ci/junit.xml
           if-no-files-found: ignore
 
+  # Check docs, repository formatting, and container configuration.
   documentation:
     name: Documentation and repository formatting
     runs-on: ubuntu-latest
@@ -177,6 +180,8 @@ jobs:
         run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7 .github/workflows/ci.yml
       - run: cargo make zizmor
       - name: Validate devcontainer Compose configuration
-        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml config --quiet
+        run: |
+          docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production config --quiet
+          docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml config --quiet
       - run: cargo make website-check
       - run: cargo make website-build

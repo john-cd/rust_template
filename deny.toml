@@ -1,10 +1,12 @@
 # TODO Reviewed ??-??-????
 
 [advisories]
+# Treat yanked releases as a dependency-policy failure.
 version = 2
 yanked = "deny"
 
 [licenses]
+# Allow licenses reviewed for common Rust ecosystem dependencies.
 allow = [
   "0BSD",
   "Apache-2.0",
@@ -34,6 +36,7 @@ allow-wildcard-paths = true
 highlight = "all"
 
 [sources]
+# Reject dependencies from registries or Git sources outside the reviewed allowlists.
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]

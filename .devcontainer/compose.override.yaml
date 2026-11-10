@@ -1,0 +1,45 @@
+# Development service and editor settings layered over the production Compose file.
+#
+# TODO Reviewed ??-??-????
+
+services:
+  devcontainer:
+    # Build the editor image with the same pinned tool versions used by the Dockerfile.
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      target: development
+      args:
+        RUST_VERSION: ${RUST_VERSION:?Set RUST_VERSION in .devcontainer/.env}
+        DEBIAN_VERSION: ${DEBIAN_VERSION:?Set DEBIAN_VERSION in .devcontainer/.env}
+        RUSTFMT_VERSION: ${RUSTFMT_VERSION:?Set RUSTFMT_VERSION in .devcontainer/.env}
+        CARGO_MAKE_VERSION: ${CARGO_MAKE_VERSION:?Set CARGO_MAKE_VERSION in .devcontainer/.env}
+        CARGO_BINSTALL_VERSION: ${CARGO_BINSTALL_VERSION:?Set CARGO_BINSTALL_VERSION in .devcontainer/.env}
+        CARGO_NEXTEST_VERSION: ${CARGO_NEXTEST_VERSION:?Set CARGO_NEXTEST_VERSION in .devcontainer/.env}
+        CARGO_DENY_VERSION: ${CARGO_DENY_VERSION:?Set CARGO_DENY_VERSION in .devcontainer/.env}
+        CARGO_MACHETE_VERSION: ${CARGO_MACHETE_VERSION:?Set CARGO_MACHETE_VERSION in .devcontainer/.env}
+        CARGO_LLVM_COV_VERSION: ${CARGO_LLVM_COV_VERSION:?Set CARGO_LLVM_COV_VERSION in .devcontainer/.env}
+        ZIZMOR_VERSION: ${ZIZMOR_VERSION:?Set ZIZMOR_VERSION in .devcontainer/.env}
+        SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env}
+        DPRINT_VERSION: ${DPRINT_VERSION:?Set DPRINT_VERSION in .devcontainer/.env}
+        LYCHEE_VERSION: ${LYCHEE_VERSION:?Set LYCHEE_VERSION in .devcontainer/.env}
+        ZOLA_VERSION: ${ZOLA_VERSION:?Set ZOLA_VERSION in .devcontainer/.env}
+    volumes:
+      # Share the checkout with the editor while keeping Cargo data in Docker-managed volumes.
+      - ..:/workspaces/${COMPOSE_PROJECT_NAME}/:cached
+      # Persist Cargo downloads/tool binaries and compiled artifacts across container rebuilds.
+      - cargo_home_cache:/usr/local/cargo/
+      - cargo_target_cache:/target/${COMPOSE_PROJECT_NAME}/
+    environment:
+      SCCACHE_BASEDIRS: /workspaces/${COMPOSE_PROJECT_NAME}:/workspaces/${COMPOSE_PROJECT_NAME}/.worktrees/a:/workspaces/${COMPOSE_PROJECT_NAME}/.worktrees/b:/workspaces/${COMPOSE_PROJECT_NAME}/.worktrees/c
+      # Keep build output on its persistent volume, outside the checkout mount.
+      CARGO_TARGET_DIR: /target/${COMPOSE_PROJECT_NAME}/
+    working_dir: /workspaces/${COMPOSE_PROJECT_NAME}/
+    command: sleep infinity
+    init: true
+
+volumes:
+  cargo_home_cache:
+    name: "${COMPOSE_PROJECT_NAME}_cargo_home_cache_${RUST_VERSION}"
+  cargo_target_cache:
+    name: "${COMPOSE_PROJECT_NAME}_cargo_target_cache_${RUST_VERSION}"

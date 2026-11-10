@@ -1,9 +1,12 @@
 # TODO Reviewed ??-??-????
 
+# Workspace members share package metadata, dependency versions, and lint policy below.
 [workspace]
 resolver = "3"
 members = ["crates/*", "tools"]
+default-members = ["crates/my_cli"]
 
+# Keep common crate metadata in one place so new members inherit the same defaults.
 [workspace.package]
 version = "0.1.0"
 categories = ["development-tools"]
@@ -13,15 +16,44 @@ license = "MIT OR Apache-2.0"
 publish = false
 rust-version = "1.98.1"
 
+# Centralize dependency versions while allowing each crate to select only what it uses.
 [workspace.dependencies]
 clap = { version = "4.6.7", features = ["derive"] }
-config = { version = "0.15", default-features = false, features = ["toml"] }
-criterion = "0.7.0"
+config = { version = "0.15.27", default-features = false, features = ["toml"] }
+criterion = "0.8.2"
 my_lib = { path = "crates/my_lib" }
-serde = { version = "1", features = ["derive"] }
+serde = { version = "1.0.229", features = ["derive"] }
 thiserror = "2.0.21"
-toml = "1"
+toml = "1.2.1"
 
+# Common crates:
+
+# anyhow = "1.0.104"
+# axum = "0.8.9"
+# bytes = "1.12.1"
+# chrono = "0.4.45"
+# futures = "0.3.34"
+# indexmap = "2.14.2"
+# itertools = "0.15.0"
+# proptest = "1.12.0"
+# rand = "0.10.3"
+# rayon = "1.12.0"
+# regex = "1.13.1"
+# reqwest = { version = "0.13.5", default-features = false, features = ["charset", "http2", "json", "rustls"] }
+# rustls = "0.23.46"
+# serde_json = "1.0.154"
+# # Database, runtime, and TLS features are selected by the consuming crate.
+# sqlx = { version = "0.9.0", default-features = false }
+# tempfile = "3.27.0"
+# tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros"] }
+# Workspace code uses tracing events and does not necessarily need the optional attribute macros.
+# tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+# tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+# url = "2.5.8"
+# uuid = "1.29.2"
+# walkdir = "2.5.0"
+
+# Apply safety and correctness checks consistently to every workspace member.
 [workspace.lints.rust]
 unsafe_code = "forbid"
 unused_must_use = "deny"

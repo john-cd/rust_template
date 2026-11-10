@@ -34,7 +34,7 @@
 
 set -euo pipefail
 
-# ---- Pins: keep in sync with rust_template/.devcontainer/.env (that file wins when found) ----
+# ---- Pins: keep in sync with .devcontainer/.env (that file wins when found) ----
 declare -A V=(
   [RUSTFMT_VERSION]=nightly-2026-11-06
   [CARGO_BINSTALL_VERSION]=1.26.2
@@ -84,6 +84,7 @@ if [[ $(uname -s) != Linux ]]; then
 fi
 
 # ---- Selection ----
+# Resolve requested groups first, so --only, --with, and --skip compose predictably.
 declare -A selected=()
 split() { local IFS=,; read -r -a _out <<<"$1"; printf '%s\n' "${_out[@]}"; }
 add_group() {
@@ -121,11 +122,13 @@ run() {
   "$@"
 }
 # step <label> <cmd...>: run, record failure, keep going.
+# Continue through independent groups, then report all failed steps in the final summary.
 step() {
   local label=$1; shift
   if ! run "$@"; then failures+=("$label"); printf '!! failed: %s\n' "$label" >&2; fi
 }
 have() { command -v "$1" >/dev/null 2>&1; }
+# Support both root containers and regular Linux accounts that have sudo.
 sudo_cmd() {
   if [[ $(id -u) -eq 0 ]]; then "$@"
   elif have sudo; then sudo "$@"

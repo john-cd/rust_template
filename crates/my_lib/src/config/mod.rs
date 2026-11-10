@@ -35,6 +35,7 @@ pub struct Config {
 }
 
 impl Default for Config {
+    /// Returns the built-in settings used when no source overrides them.
     fn default() -> Self {
         Self {
             name: "world".to_owned(),
@@ -250,6 +251,7 @@ fn sync_parent_directory(parent: &Path) {
     let _ = parent;
 }
 
+/// Tests configuration defaults, loading, and round-trip persistence.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -272,6 +274,7 @@ mod tests {
         ))
     }
 
+    /// Saves settings to a nested path and loads them back unchanged.
     #[test]
     fn save_then_load_round_trips() -> Result<()> {
         let dir = test_directory("round_trip");
@@ -289,6 +292,7 @@ mod tests {
         Ok(())
     }
 
+    /// Uses built-in settings when the optional configuration file is missing.
     #[test]
     fn missing_file_yields_defaults() -> Result<()> {
         let path = test_directory("missing").join("absent.toml");
@@ -299,6 +303,7 @@ mod tests {
         Ok(())
     }
 
+    /// Applies supplied TOML fields while retaining defaults for omitted fields.
     #[test]
     fn partial_file_keeps_defaults() -> Result<()> {
         let dir = test_directory("partial");

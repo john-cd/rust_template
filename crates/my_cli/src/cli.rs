@@ -1,3 +1,5 @@
+//! Parses command-line arguments and handles greeting output and process errors.
+//!
 //! TODO Reviewed ??-??-2026.
 
 use std::io::Write;
@@ -28,28 +30,34 @@ pub fn run() -> ExitCode {
     }
 }
 
+/// Writes the library greeting to the supplied output stream.
 fn write_greeting(mut writer: impl Write, name: &str) -> std::io::Result<()> {
     writeln!(writer, "{}", my_lib::greeting(name))
 }
 
+/// Exercises output handling when the destination writer fails.
 #[cfg(test)]
 mod tests {
     use std::io::Write;
 
     use super::write_greeting;
 
+    /// Writer double that always reports a broken pipe.
     struct BrokenWriter;
 
     impl Write for BrokenWriter {
+        /// Simulates a closed output stream.
         fn write(&mut self, _buffer: &[u8]) -> std::io::Result<usize> {
             Err(std::io::ErrorKind::BrokenPipe.into())
         }
 
+        /// Accepts flushes so the simulated write failure stays focused.
         fn flush(&mut self) -> std::io::Result<()> {
             Ok(())
         }
     }
 
+    /// Propagates a broken-pipe error from the output writer.
     #[test]
     fn write_greeting_returns_output_errors_to_the_caller() {
         let error = write_greeting(BrokenWriter, "Alice").expect_err("writer is closed");

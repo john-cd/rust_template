@@ -1,5 +1,6 @@
 # TODO Reviewed ??-??-????
 
+# Reusable library crate; workspace metadata and lint settings are inherited from the root.
 [package]
 name = "my_lib"
 version.workspace = true
@@ -12,12 +13,14 @@ readme = "README.md"
 rust-version.workspace = true
 description = "Starter library crate for a Rust workspace"
 
+# Runtime dependencies support configuration, serialization, and typed errors.
 [dependencies]
 config.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 toml.workspace = true
 
+# Criterion is used only by the library's benchmark target.
 [dev-dependencies]
 criterion.workspace = true
 

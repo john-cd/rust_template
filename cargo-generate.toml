@@ -1,7 +1,31 @@
 [template]
 cargo_generate_version = ">=0.24.0"
-# GitHub Actions and Zola use braces that are not Liquid placeholders.
-# Only the generated project note needs template expansion.
-include = ["PROJECT.md", "PROJECT.md.liquid"]
+# Match generated output paths; the .liquid suffix is removed before this filter
+# is applied. GitHub Actions expressions and Zola template braces stay untouched.
+include = [
+  "Cargo.toml",
+  "Cargo.lock",
+  "README.md",
+  "CONTRIBUTING.md",
+  "PROJECT.md",
+  "Makefile.toml",
+  ".devcontainer/.env",
+  ".devcontainer/.env.example",
+  ".devcontainer/devcontainer.json",
+  "crates/my_cli/Cargo.toml",
+  "crates/my_lib/Cargo.toml",
+  "crates/my_cli/src/cli.rs",
+  "crates/my_cli/src/lib.rs",
+  "crates/my_cli/src/main.rs",
+  "crates/my_cli/tests/cli.rs",
+  "crates/my_lib/src/greeting.rs",
+  "crates/my_lib/src/config/mod.rs",
+  "crates/my_lib/tests/greeting.rs",
+  "crates/my_lib/examples/greeting.rs",
+  "crates/my_lib/benches/greeting.rs",
+  "crates/**/*.md",
+  "docs/**/*.md",
+  "website/content/**/*.md",
+]
 # Keep local build output and auxiliary worktrees out of generated projects.
 ignore = [".worktrees", "target", ".lycheecache"]

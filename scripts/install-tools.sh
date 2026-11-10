@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# Install pinned Rust development tools and, unless skipped, the GitHub CLI.
+
 set -euo pipefail
 
 usage() {
@@ -32,6 +35,7 @@ fi
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repository_root=$(cd -- "$script_dir/.." && pwd)
+# Keep versions centralized with the devcontainer image to prevent installer drift.
 version_file="$repository_root/.devcontainer/.env"
 if [[ ! -f $version_file ]]; then
   printf 'Could not find tool versions at %s.\n' "$version_file" >&2
@@ -68,6 +72,7 @@ run() {
   fi
 }
 
+# Run from the checkout so Cargo workspace discovery and relative paths are stable.
 cd -- "$repository_root"
 run rustup component add llvm-tools-preview
 run env RUSTC_WRAPPER= cargo install --locked cargo-binstall --version "${versions[CARGO_BINSTALL_VERSION]}"
@@ -75,6 +80,7 @@ run env RUSTC_WRAPPER= cargo install --locked cargo-binstall --version "${versio
 if [[ $dry_run == true ]]; then
   binstall=cargo-binstall
 else
+  # Prefer PATH, then fall back to Cargo's configured install root.
   binstall=$(command -v cargo-binstall || true)
   if [[ -z $binstall ]]; then
     install_root=${CARGO_INSTALL_ROOT:-${CARGO_HOME:-$HOME/.cargo}}
@@ -99,8 +105,10 @@ run env RUSTC_WRAPPER= "$binstall" --locked --no-confirm \
   "typos-cli@${versions[TYPOS_VERSION]}"
 
 install_root=${CARGO_INSTALL_ROOT:-${CARGO_HOME:-$HOME/.cargo}}
+# Zola shares the Cargo tool install root, but comes from a checksum-verified release archive.
 run bash "$repository_root/scripts/install-zola.sh" "${versions[ZOLA_VERSION]}" "$install_root/bin"
 
+# Install GitHub CLI with the host package manager because it is not a Cargo tool.
 if [[ $skip_gh == true ]]; then
   printf 'Skipping GitHub CLI.\n'
 elif command -v gh >/dev/null 2>&1; then

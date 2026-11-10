@@ -1,3 +1,4 @@
+# Collect reproduction and environment details needed to investigate a defect.
 name: Bug report
 description: Report a reproducible problem.
 body:

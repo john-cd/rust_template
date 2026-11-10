@@ -8,7 +8,7 @@ This page describes the checked-in files that control the workspace, tools, CI, 
 
 - [`Cargo.toml`](../../Cargo.toml) defines workspace members, shared package metadata, shared dependencies, and workspace-wide Rust and Clippy lints. Crate manifests inherit these values.
 - [`Cargo.lock`](../../Cargo.lock) records the resolved versions for reproducible workspace builds. Update it with dependency changes; do not edit it by hand.
-- [`cargo-generate.toml`](../../cargo-generate.toml) limits Liquid expansion to the generated project note and excludes local worktrees and build output from generated projects.
+- [`cargo-generate.toml`](../../cargo-generate.toml) selects the files that render cargo-generate placeholders for package, lockfile, Compose, and documentation names. Liquid manifest overlays keep this template workspace buildable before generation; local environment files, worktrees, and build output are excluded from generated projects.
 - [`.cargo/config.toml`](../../.cargo/config.toml) configures `sccache` as the compiler wrapper, quiet Cargo output, the `cargo tools` alias, and development, CI, debug, and tools profiles. Cargo uses the checkout-relative `target/` directory by default. Set `CARGO_TARGET_DIR` to move direct Cargo build output outside the checkout; set `SCCACHE_DIR` and `SCCACHE_BASEDIRS` in the environment to configure external/shared compiler-cache storage. For Cargo Make on Windows, `CARGO_TARGET_DIR` defaults to `D:/target/<project>` and `CARGO_BUILD_BUILD_DIR` to `C:/code_build/<project>`. Set `CARGO_TARGET_ROOT` or `CARGO_BUILD_ROOT` to change those roots; explicit output-directory variables take precedence. The shared-cache worktree slots are `.worktrees/a`, `.worktrees/b`, and `.worktrees/c`. `dev` tunes local builds; `ci` uses the same quick-compile settings; `debug` enables full debug information for workspace crates; `tools` optimizes the repository-local developer binary. Install the pinned development tools from [CONTRIBUTING.md](../../CONTRIBUTING.md) before building.
 - [`.config/nextest.toml`](../../.config/nextest.toml) defines default and CI test-runner behavior, including retries, timeouts, output, and the CI JUnit report.
 - [`clippy.toml`](../../clippy.toml) holds Clippy thresholds and configuration shared by workspace packages.
@@ -30,8 +30,12 @@ This page describes the checked-in files that control the workspace, tools, CI, 
 - [`.gitattributes`](../../.gitattributes) defines Git's repository-wide text and line-ending normalization behavior.
 - [`.gitignore`](../../.gitignore) excludes Rust build output, local environment files, and operating-system/editor state while allowing shared VS Code settings, tasks, launch configurations, and recommendations.
 - [`.devcontainer/Dockerfile`](../../.devcontainer/Dockerfile) builds a Rust development image and creates the non-root `vscode` user.
-- [`.devcontainer/compose.yaml`](../../.devcontainer/compose.yaml) builds the devcontainer service, mounts the checkout, and keeps the container available for the editor.
-- [`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) connects VS Code to the Compose service and recommends Rust Analyzer and TOML support.
+- [`.devcontainer/.env`](../../.devcontainer/.env) supplies the Compose project prefix, production executable name, and pinned image/tool versions; `.env.example` is the shareable template for those settings.
+- [`.devcontainer/compose.yaml`](../../.devcontainer/compose.yaml) defines the production image build under the `production` profile.
+- [`.devcontainer/compose.override.yaml`](../../.devcontainer/compose.override.yaml) defines the development service and adds the checkout mount, persistent Cargo home and target volumes, compiler-cache paths, working directory, and long-running command for editor sessions.
+- [`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) loads both Compose files, connects VS Code to the devcontainer service, and recommends Rust Analyzer and TOML support.
+
+From the repository root, validate the editor configuration with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml config --quiet`. Commands that specify `-f` must list both files to include the development service and editor settings. For a production image build, use `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production build production`.
 
 ## Automation
 

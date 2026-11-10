@@ -1,3 +1,4 @@
+# Install pinned Cargo tools, Zola, and optionally GitHub CLI on Windows.
 [CmdletBinding()]
 param(
     [switch]$DryRun
@@ -11,6 +12,7 @@ if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
 }
 
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
+# Share the tool versions with the devcontainer and Linux installer.
 $versionFile = Join-Path $repositoryRoot ".devcontainer/.env"
 if (-not (Test-Path $versionFile)) {
     throw "Could not find tool versions at $versionFile."
@@ -54,6 +56,7 @@ if ($null -eq $winget) {
 }
 
 function Get-CargoInstallRoot {
+    # Honor Cargo's explicit install root and configured root before using CARGO_HOME.
     if (-not [string]::IsNullOrWhiteSpace($env:CARGO_INSTALL_ROOT)) {
         return [System.IO.Path]::GetFullPath($env:CARGO_INSTALL_ROOT)
     }
@@ -103,6 +106,7 @@ function Invoke-ExternalCommand {
         [string[]]$ArgumentList
     )
 
+    # Show the exact command in both normal and dry-run modes.
     Write-Host "> $FilePath $($ArgumentList -join ' ')"
     if ($DryRun) {
         return
@@ -122,6 +126,7 @@ function Install-ZolaRelease {
         [string]$Destination
     )
 
+    # Refuse versions without a pinned checksum so an unverified archive is never installed.
     $checksum = switch ($Version) {
         "0.23.6" { "79179284f816febc281adbedb27189806cf22f83e8be4d0fca6835fbeeb09587" }
         default { throw "No pinned Zola release checksum for version $Version." }
@@ -147,11 +152,13 @@ function Install-ZolaRelease {
         Copy-Item -Path (Join-Path $temporaryDirectory "zola.exe") -Destination (Join-Path $Destination "zola.exe") -Force
     }
     finally {
+        # Always remove the downloaded archive and extracted files, including after failures.
         Remove-Item -Path $temporaryDirectory -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
 
 function Test-PathContainsDirectory {
+    # Compare normalized paths so duplicate PATH entries are not added with alternate separators.
     param(
         [AllowEmptyString()]
         [string]$PathValue,
@@ -182,6 +189,7 @@ function Test-PathContainsDirectory {
 }
 
 function Add-CargoBinToPath {
+    # Update this process immediately and the user's persistent PATH for future shells.
     param(
         [Parameter(Mandatory)]
         [string]$CargoBin
@@ -217,6 +225,7 @@ function Add-CargoBinToPath {
     }
 }
 
+# Avoid invoking sccache while bootstrapping it, then restore the caller's wrapper.
 $previousWrapper = [System.Environment]::GetEnvironmentVariable("RUSTC_WRAPPER", "Process")
 Push-Location $repositoryRoot
 try {

@@ -1,9 +1,10 @@
-# {{ project-name }}
+{% comment %}cargo-generate renders this note with the generated project's name.{% endcomment %}
+# {{project-name}}
 
-This project was created from the Rust workspace starter. The sample library and
-CLI retain the names `my_lib` and `my_cli` so that the generated workspace builds
-before you choose application package names.
+This project was created from the Rust workspace starter. Its CLI package and
+executable are named `{{project-name}}`, and its library package is named
+`{{project-name}}_lib`.
 
-Follow the [adoption guide](docs/guides/adopting-template.md) to rename the crates,
-replace the sample behavior and documentation, and review the toolchain and CI
-settings. Keep `Cargo.lock` synchronized with any manifest changes.
+Follow the [adoption guide](docs/guides/adopting-template.md) to replace the sample
+behavior and documentation, and review the toolchain and CI settings. Keep
+`Cargo.lock` synchronized with any manifest changes.
