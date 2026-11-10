@@ -171,6 +171,10 @@ impl Drop for TemporaryFile {
 }
 
 #[cfg(windows)]
+#[expect(
+    clippy::permissions_set_readonly_false,
+    reason = "Windows cleanup only clears the read-only attribute on the temporary file"
+)]
 fn remove_temporary_file(path: &Path) {
     if std::fs::remove_file(path).is_err() {
         // A copied read-only destination mode can prevent cleanup after a failed rename.
