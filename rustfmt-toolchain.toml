@@ -1,6 +1,8 @@
 # TODO Reviewed ??-??-????
 
-# Formatter-only toolchain; keep CI and cargo make format-rust-check on this pin.
+# Repository-specific formatter pin; rustup does not auto-discover this filename.
+# Makefile.toml reads the channel through RUSTFMT_TOOLCHAIN and explicitly runs `rustup run`.
+# CI also reads the channel to install rustfmt, so update this pin and Makefile.toml's default together.
 [toolchain]
 channel = "nightly-2026-11-06"
 profile = "minimal"
