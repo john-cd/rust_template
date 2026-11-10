@@ -5,6 +5,7 @@ cargo_generate_version = ">=0.24.0"
 include = [
   "Cargo.toml",
   "Cargo.lock",
+  "LICENSE-MIT",
   "README.md",
   "CONTRIBUTING.md",
   "PROJECT.md",
