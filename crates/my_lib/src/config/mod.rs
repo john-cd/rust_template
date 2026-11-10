@@ -27,6 +27,7 @@ pub struct Config {
 }
 
 impl Default for Config {
+    /// Returns the built-in settings used when no source overrides them.
     fn default() -> Self {
         Self {
             name: "world".to_owned(),
@@ -90,10 +91,12 @@ impl Config {
     }
 }
 
+/// Tests configuration defaults, loading, and round-trip persistence.
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    /// Saves settings to a nested path and loads them back unchanged.
     #[test]
     fn save_then_load_round_trips() -> Result<()> {
         let dir = std::env::temp_dir().join(format!("my_lib_cfg_{}", std::process::id()));
@@ -108,6 +111,7 @@ mod tests {
         Ok(())
     }
 
+    /// Uses built-in settings when the optional configuration file is missing.
     #[test]
     fn missing_file_yields_defaults() -> Result<()> {
         let path = std::env::temp_dir().join("my_lib_does_not_exist.toml");
@@ -115,6 +119,7 @@ mod tests {
         Ok(())
     }
 
+    /// Applies supplied TOML fields while retaining defaults for omitted fields.
     #[test]
     fn partial_file_keeps_defaults() -> Result<()> {
         let dir = std::env::temp_dir().join(format!("my_lib_part_{}", std::process::id()));

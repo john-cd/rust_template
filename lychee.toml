@@ -1,4 +1,5 @@
-# Adapted from nextcell's maintained-documentation link policy.
+# Adapted from the maintained-documentation link policy used by sibling Rust workspaces.
+# Share these link-check settings between local tasks and CI.
 cache = true
 include_fragments = "full"
 include_verbatim = false

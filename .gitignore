@@ -30,6 +30,8 @@ rustc-ice-*.txt
 !.env.example
 !.env.*.example
 !.devcontainer/.env
+!.devcontainer/.env.liquid
+!.devcontainer/.env.example.liquid
 
 # JetBrains IDEs
 .idea/

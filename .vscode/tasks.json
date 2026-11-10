@@ -1,5 +1,6 @@
 {
   "version": "2.0.0",
+  // Route common editor actions through the repository's Cargo Make tasks.
   "tasks": [
     {
       "label": "Rust: check",

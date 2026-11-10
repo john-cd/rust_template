@@ -1,0 +1,33 @@
+{
+  // Compose keeps the production image in the base file and editor settings in the override.
+  "name": "Rust workspace",
+  "dockerComposeFile": ["compose.yaml", "compose.override.yaml"],
+  "service": "devcontainer",
+  // Must match the checkout mount target in compose.override.yaml and .devcontainer/.env.
+  "workspaceFolder": "/workspaces/{{project-name}}",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [1111],
+  // Keep editor recommendations and settings local to this container definition.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "dprint.dprint",
+        "EditorConfig.EditorConfig",
+        "alefragnani.Bookmarks",
+        "fill-labs.dependi",
+        "codezombiech.gitignore",
+        "UtsavVaria.goog-search",
+        "DavidAnson.vscode-markdownlint"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "rust-analyzer.check.command": "clippy",
+        "[rust]": { "editor.defaultFormatter": "rust-lang.rust-analyzer" },
+        "[markdown][json][jsonc][toml][yaml]": { "editor.defaultFormatter": "dprint.dprint" }
+      }
+    }
+  },
+  "remoteUser": "vscode"
+}

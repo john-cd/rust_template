@@ -21,8 +21,9 @@ From the repository root, install the pinned components with
 `rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt` and
 `rustup toolchain install nightly-2026-11-06 --profile minimal --component rustfmt`.
 
-The shared devcontainer versions are in `.devcontainer/.env`. Edit and commit version changes there;
-these values are not secrets. Compose requires these values and passes them to the Docker build.
+The shared devcontainer settings are in `.devcontainer/.env`. It sets the Compose project prefix,
+production executable name, Rust version, and development-tool versions. Edit and commit changes
+there; these values are not secrets. Compose requires them and passes the build settings to Docker.
 Store any credentials in a separate ignored secret file. The devcontainer uses the Debian suite named
 by `DEBIAN_VERSION`. After changing versions, rebuild the container. The toolchain pins used by Cargo and CI remain in
 `rust-toolchain.toml`, `rustfmt-toolchain.toml`, and the workflow; update those too when changing the
@@ -58,7 +59,7 @@ cargo tools format       # Apply Rust and dprint formatting
 cargo make --quiet pre    # Formatting, check, and Clippy
 cargo tools check        # Complete local CI, including dependency and documentation checks
 cargo make --quiet links-online # Optional external-link check (requires network access)
-cargo run -p my_cli -- Alice
+cargo run -p {{project-name}} -- Alice
 ```
 
 Commit `Cargo.lock` changes together with manifest changes. Add meaningful tests for changed behavior.

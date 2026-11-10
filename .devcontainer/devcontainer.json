@@ -1,10 +1,13 @@
 {
+  // Compose keeps the production image in the base file and editor settings in the override.
   "name": "Rust workspace",
-  "dockerComposeFile": "compose.yaml",
+  "dockerComposeFile": ["compose.yaml", "compose.override.yaml"],
   "service": "devcontainer",
-  "workspaceFolder": "/workspaces/project",
+  // Must match the checkout mount target in compose.override.yaml and .devcontainer/.env.
+  "workspaceFolder": "/workspaces/myproject",
   "shutdownAction": "stopCompose",
   "forwardPorts": [1111],
+  // Keep editor recommendations and settings local to this container definition.
   "customizations": {
     "vscode": {
       "extensions": [

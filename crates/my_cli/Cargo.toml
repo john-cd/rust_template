@@ -1,5 +1,6 @@
 # TODO Reviewed ??-??-????
 
+# Command-line application crate; shared package metadata and lints come from the workspace.
 [package]
 name = "my_cli"
 version.workspace = true
@@ -12,6 +13,7 @@ readme = "README.md"
 rust-version.workspace = true
 description = "Starter command-line application for a Rust workspace"
 
+# Clap parses arguments, while my_lib provides reusable behavior.
 [dependencies]
 clap.workspace = true
 my_lib.workspace = true

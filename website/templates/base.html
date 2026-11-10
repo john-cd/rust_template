@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="{{ lang | default(value='en') }}">
   <head>
+    <!-- Shared metadata and assets used by every rendered page. -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="{{ get_url(path='style.css') }}">
   </head>
   <body>
+    <!-- Site-wide navigation and page content frame. -->
     <a class="skip" href="#content">Skip to content</a>
     <header><a href="{{ get_url(path='@/_index.md') }}">{{ config.title }}</a></header>
     <main id="content">{% block content %}{% endblock content %}</main>

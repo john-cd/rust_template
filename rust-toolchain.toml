@@ -1,5 +1,6 @@
 # TODO Reviewed ??-??-????
 
+# Pin the compiler used for local development and CI, including the components they require.
 [toolchain]
 channel = "1.99.1"
 profile = "minimal"

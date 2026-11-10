@@ -1,3 +1,4 @@
+/* Shared layout, focus visibility, and color-scheme styles for the generated site. */
 :root { color-scheme: light dark; font: 1.125rem/1.65 system-ui, sans-serif; }
 body { max-width: 52rem; margin: auto; padding: 1.5rem; }
 header, footer { padding: 1rem 0; }

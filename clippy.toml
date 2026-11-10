@@ -1,5 +1,6 @@
 # TODO Reviewed ??-??-????
 
+# Keep lint thresholds low enough to flag unusually complex or hard-to-maintain code.
 msrv = "1.98.1"
 
 cognitive-complexity-threshold = 25

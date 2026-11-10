@@ -1,4 +1,5 @@
 {
+  // Recommend tools for Rust, repository formatting, and workspace navigation.
   "recommendations": [
     "rust-lang.rust-analyzer",
     "tamasfe.even-better-toml",

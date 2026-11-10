@@ -1,6 +1,8 @@
 {
+  // Use consistent line endings and formatter settings in this workspace.
   "files.eol": "\n",
   "editor.formatOnSave": true,
+  // Match editor analysis to the all-features checks run in CI.
   "rust-analyzer.cargo.features": "all",
   "rust-analyzer.check.command": "clippy",
   "rust-analyzer.procMacro.enable": true,

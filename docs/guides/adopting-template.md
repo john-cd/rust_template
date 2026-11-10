@@ -9,26 +9,26 @@ cargo generate --git https://github.com/john-cd/rust_template.git --branch devel
 ```
 
 For local development, use `cargo generate --path . --name my-project` from this
-repository. The generated `PROJECT.md` records the chosen project name. The sample
-package names remain stable so the generated workspace builds immediately.
+repository. The generated `PROJECT.md` records the chosen project name. The CLI
+package and executable use that name; the library package appends `_lib`.
 
-1. Rename `my_lib` and `my_cli` in their manifests, the workspace dependency,
-   imports, tests, examples, benchmarks, documentation, and CLI output.
-2. Replace the shared version, keywords, categories, and other package metadata
+1. Replace the shared version, keywords, categories, and other package metadata
    with values appropriate to the new project. Set package descriptions, authorship,
    repository URLs, and license notices. Keep `publish = false` until publication
    is intentional.
-3. Replace the sample greeting and the unused configuration/model/service stubs
+2. Replace the sample greeting and the unused configuration/model/service stubs
    with application behavior. Keep crate roots declarative.
-4. Replace the requirements and website content. Set the website's deployment URL
+3. Replace the requirements and website content. Set the website's deployment URL
    and check a build with its real URL prefix before publishing.
-5. Review the branch workflow, issue forms, pull request template, dependency
+4. Review the branch workflow, issue forms, pull request template, dependency
    policy, test timeouts, MSRV, and tool pins. Enable the repository's Actions and
    dependency updates. Configure branch protection and security reporting in the
    hosting service; those settings are not created by these files.
 
-Use `rg -n 'my_lib|my_cli|rust_template|Rust workspace starter'` from the root to
-find remaining template names. Keep `Cargo.lock` synchronized with manifest edits.
+The source folders remain `crates/my_lib` and `crates/my_cli`; package names are
+independent of those paths. Use `rg -n 'rust_template|Rust workspace starter'`
+from the root to find remaining template branding. Keep `Cargo.lock` synchronized
+with manifest edits.
 
 ## Local setup
 

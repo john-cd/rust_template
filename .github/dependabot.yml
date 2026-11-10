@@ -1,5 +1,6 @@
 # TODO Reviewed ??-??-????
 
+# Group dependency bumps and review them on a predictable monthly schedule.
 version: 2
 updates:
   - package-ecosystem: cargo

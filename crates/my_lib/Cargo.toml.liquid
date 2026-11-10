@@ -1,0 +1,32 @@
+# TODO Reviewed ??-??-????
+
+# Reusable library crate; workspace metadata and lint settings are inherited from the root.
+[package]
+name = "{{project-name}}_lib"
+version.workspace = true
+categories.workspace = true
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+publish.workspace = true
+readme = "README.md"
+rust-version.workspace = true
+description = "Starter library crate for a Rust workspace"
+
+# Runtime dependencies support configuration, serialization, and typed errors.
+[dependencies]
+config.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+
+# Criterion is used only by the library's benchmark target.
+[dev-dependencies]
+criterion.workspace = true
+
+[[bench]]
+name = "greeting"
+harness = false
+
+[lints]
+workspace = true
