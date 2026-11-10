@@ -1,8 +1,9 @@
 # TODO Reviewed ??-??-????
 
 [advisories]
-# Treat yanked releases as a dependency-policy failure.
+# Retained from cargo-deny's older configuration format; current releases ignore this field.
 version = 2
+# Fail when the lockfile resolves to a version that its registry has yanked.
 yanked = "deny"
 
 [licenses]
@@ -23,21 +24,27 @@ allow = [
   "Unlicense",
   "Zlib",
 ]
+# Minimum confidence for identifying a license from a dependency's license text.
 confidence-threshold = 0.8
 # This template keeps a broad allowlist for future dependencies; do not warn when
 # an allowed license is not used by the current dependency tree.
 unused-allowed-license = "allow"
 
 [bans]
+# Report duplicate versions for review without failing the check.
 multiple-versions = "warn"
+# Reject dependencies that use `*` instead of a version constraint.
 wildcards = "deny"
 # Private workspace path dependencies share the checkout rather than a registry version.
 allow-wildcard-paths = true
+# Color both the lowest-version and simplest paths in duplicate-version graphs.
 highlight = "all"
 
 [sources]
 # Reject dependencies from registries or Git sources outside the reviewed allowlists.
 unknown-registry = "deny"
 unknown-git = "deny"
+# Trust crates.io's canonical Git index as the only registry source.
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# No Git-based dependency sources are currently approved.
 allow-git = []
