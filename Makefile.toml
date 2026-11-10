@@ -244,7 +244,16 @@ alias = "lint"
 description = "Lint with autofix: apply Clippy suggestions to the workspace"
 category = "Quality"
 command = "cargo"
-args = ["clippy", "--fix", "--allow-dirty", "--allow-staged", "--workspace", "--all-targets", "--all-features", "--locked"]
+args = [
+  "clippy",
+  "--fix",
+  "--allow-dirty",
+  "--allow-staged",
+  "--workspace",
+  "--all-targets",
+  "--all-features",
+  "--locked",
+]
 
 [tasks.la]
 alias = "lint-all"
