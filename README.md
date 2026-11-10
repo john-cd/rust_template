@@ -113,7 +113,8 @@ set -a
 . .devcontainer/.env
 set +a
 docker build -f .devcontainer/Dockerfile --target production \
-  --build-arg RUST_VERSION --build-arg DEBIAN_VERSION --build-arg CARGO_CHEF_VERSION \
+  --build-arg RUST_VERSION --build-arg DEBIAN_VERSION --build-arg CARGO_BINSTALL_VERSION \
+  --build-arg CARGO_CHEF_VERSION \
   --build-arg CARGO_PACKAGE_NAME={{project-name}} -t {{project-name}} .
 docker run --rm {{project-name}} Alice
 ```

@@ -1,10 +1,17 @@
 # TODO Reviewed ??-??-????
 
+# -----------------------------------------------------------------------------
+# Base image
+# -----------------------------------------------------------------------------
 # Compose passes the shared base image versions and tool pins from .devcontainer/.env.
 ARG RUST_VERSION
 ARG DEBIAN_VERSION
 
 FROM rust:${RUST_VERSION}-${DEBIAN_VERSION} AS base
+
+ARG CARGO_BINSTALL_VERSION
+
+RUN cargo install --locked cargo-binstall --version "${CARGO_BINSTALL_VERSION}"
 
 # -----------------------------------------------------------------------------
 # Development image: editor tooling and a non-root workspace user.
@@ -31,7 +38,6 @@ RUN chmod 0755 /usr/local/bin/install-zola \
 # Add the pinned formatter toolchain and commands used by local checks.
 ARG RUSTFMT_VERSION
 ARG CARGO_MAKE_VERSION
-ARG CARGO_BINSTALL_VERSION
 ARG CARGO_NEXTEST_VERSION
 ARG CARGO_DENY_VERSION
 ARG CARGO_MACHETE_VERSION
@@ -44,7 +50,6 @@ ARG LYCHEE_VERSION
 RUN rustup component add clippy rustfmt \
     && rustup component add llvm-tools-preview \
     && rustup toolchain install "${RUSTFMT_VERSION}" --profile minimal --component rustfmt \
-    && cargo install --locked cargo-binstall --version "${CARGO_BINSTALL_VERSION}" \
     && cargo binstall --locked --no-confirm \
         "cargo-make@${CARGO_MAKE_VERSION}" \
         "cargo-nextest@${CARGO_NEXTEST_VERSION}" \
@@ -65,7 +70,7 @@ FROM base AS chef
 
 ARG CARGO_CHEF_VERSION
 
-RUN cargo install --locked cargo-chef --version "${CARGO_CHEF_VERSION}"
+RUN cargo binstall --locked --no-confirm "cargo-chef@${CARGO_CHEF_VERSION}"
 
 WORKDIR /app
 

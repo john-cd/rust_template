@@ -35,7 +35,7 @@ This page describes the checked-in files that control the workspace, tools, CI, 
 - [`.devcontainer/compose.override.yaml`](../../.devcontainer/compose.override.yaml) defines the development service and adds the checkout mount, persistent Cargo home and target volumes, compiler-cache paths, working directory, and long-running command for editor sessions.
 - [`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) loads both Compose files, connects VS Code to the devcontainer service, and recommends Rust Analyzer and TOML support.
 
-From the repository root, validate the editor configuration with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml config --quiet`. Commands that specify `-f` must list both files to include the development service and editor settings. For a production image build, use `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production build production`.
+From the repository root, validate the editor configuration with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml config --quiet`. Commands that specify `-f` must list both files to include the development service and editor settings. For a production image build, use `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production build app`.
 
 ## Automation
 
