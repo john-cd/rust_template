@@ -1,6 +1,10 @@
 # TODO Reviewed ??-??-????
 
-# Shared defaults used by Cargo Make tasks; explicit environment variables take precedence.
+# =============================================================================
+# Environment and Cargo Make defaults
+# =============================================================================
+
+# Explicit environment variables take precedence over these shared defaults.
 [env]
 # Keep Windows build artifacts outside checkouts while other platforms use Cargo's normal paths.
 CARGO_TARGET_ROOT = { value = "D:/target", condition = { platforms = ["windows"], env_not_set = [
@@ -23,6 +27,10 @@ RUSTFMT_TOOLCHAIN = { value = "nightly-2026-11-06", condition = { env_not_set = 
 [config]
 default_to_workspace = false
 skip_core_tasks = true
+
+# =============================================================================
+# Workspace
+# =============================================================================
 
 [tasks.default]
 description = "Show available project tasks"
@@ -49,7 +57,9 @@ description = "Before committing: format everything, lint with autofix, then run
 category = "Workspace"
 dependencies = ["format-all", "lint", "check-all"]
 
+# =============================================================================
 # Formatting
+# =============================================================================
 
 [tasks.f]
 alias = "format"
@@ -104,7 +114,9 @@ category = "Formatting"
 command = "dprint"
 args = ["check", "--log-level=error"]
 
+# =============================================================================
 # Build
+# =============================================================================
 
 [tasks.c]
 alias = "check"
@@ -189,7 +201,9 @@ echo SCCACHE_DIR=${cache}
 echo SCCACHE_BASEDIRS=${bases}
 '''
 
+# =============================================================================
 # Run
+# =============================================================================
 
 [tasks.r]
 alias = "run"
@@ -201,7 +215,9 @@ category = "Run"
 command = "cargo"
 args = ["run", "--locked", "--"]
 
+# =============================================================================
 # Quality
+# =============================================================================
 
 [tasks.lc]
 alias = "lint-check"
@@ -316,7 +332,9 @@ category = "Quality"
 command = "zizmor"
 args = ["--min-severity", "high", ".github/workflows"]
 
+# =============================================================================
 # Testing
+# =============================================================================
 
 [tasks.t]
 alias = "test"
@@ -384,7 +402,9 @@ category = "Testing"
 command = "cargo"
 args = ["llvm-cov", "--workspace", "--all-features", "--locked", "--html"]
 
+# =============================================================================
 # Documentation
+# =============================================================================
 
 [tasks.d]
 alias = "doc"
@@ -429,7 +449,9 @@ args = [
   "website/README.md",
 ]
 
+# =============================================================================
 # Docker
+# =============================================================================
 
 [tasks.docker-build-dev]
 description = "Build the development container image"
@@ -463,7 +485,9 @@ args = [
   "app",
 ]
 
+# =============================================================================
 # Website
+# =============================================================================
 
 [tasks.website-check]
 category = "Website"
@@ -492,7 +516,9 @@ command = "zola"
 args = ["--root", "website", "serve", "--interface", "0.0.0.0"]
 env = { RUST_LOG = "error" }
 
+# =============================================================================
 # CI
+# =============================================================================
 
 [tasks.ci]
 description = "Run the local CI checks (requires cargo-nextest and cargo-deny)"
