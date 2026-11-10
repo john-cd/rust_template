@@ -47,15 +47,41 @@ The library crate starts with `config`, `error`, `models`, and `services` module
 
 ## Prerequisites
 
-- Rust 1.99.1 with `clippy` and `rustfmt`; rustup installs the pinned development toolchain from
-  `rust-toolchain.toml`. The workspace separately declares Rust 1.98.1 as its MSRV, which CI checks
-  with locked dependencies.
-- `cargo-binstall` and `sccache`; Cargo uses `sccache` as the compiler wrapper for Rust builds. See [CONTRIBUTING.md](CONTRIBUTING.md) for pinned install commands.
-- [`cargo-make`](https://github.com/sagiegurari/cargo-make)
-- [`cargo-nextest`](https://nexte.st/)
-- [`cargo-deny`](https://embarkstudios.github.io/cargo-deny/)
-- [`cargo-machete`](https://github.com/bnjbvr/cargo-machete), [`cargo-llvm-cov`](https://github.com/taiki-e/cargo-llvm-cov), and [`zizmor`](https://zizmor.sh/) for optional dependency, coverage, and workflow checks.
-- dprint, lychee, typos, and Zola; see [CONTRIBUTING.md](CONTRIBUTING.md) for installation and pinned versions.
+For local development, install Git, Rust through [rustup](https://rust-lang.org/tools/install/), and
+the repository tools. On Windows, install the MSVC C++ build tools if rustup prompts for them.
+The checked-in toolchain files pin Rust 1.99.1 for development and nightly rustfmt for formatting;
+the declared MSRV is 1.98.1 and CI checks it separately.
+
+After cloning the repository, install both Rust toolchains:
+
+```sh
+rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt
+rustup toolchain install nightly-2026-11-06 --profile minimal --component rustfmt
+```
+
+Install the pinned Cargo, formatting, link, spelling, and website tools from the repository root.
+The platform scripts read their versions from `.devcontainer/.env`:
+
+```sh
+# Linux
+bash scripts/install-tools.sh
+```
+
+```powershell
+# Windows PowerShell
+pwsh -NoProfile -File scripts/install-tools.ps1
+```
+
+On macOS, use the pinned manual Cargo-tool installation in [CONTRIBUTING.md](CONTRIBUTING.md) and
+install Zola from its [official guide](https://www.getzola.org/documentation/getting-started/installation/).
+The full `cargo make ci` task also needs `cargo-nextest`, `cargo-deny`, dprint, lychee, typos, and
+Zola. `cargo make ci-rust` runs the Rust and dependency checks without the website build.
+`cargo-machete`, `cargo-llvm-cov`, and `zizmor` support optional dependency, coverage, and workflow
+checks.
+
+To use the supplied devcontainer instead, install Docker with Compose and VS Code, then choose
+**Reopen in Container**. The container installs the pinned development toolchain and tools for you.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for platform-specific details and the complete tool list.
 
 ## Common commands
 
