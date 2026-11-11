@@ -1,4 +1,5 @@
 // Resolve package-name defaults and reject workspace name collisions before rendering.
+
 // `auto` preserves the familiar CLI/project name and library `_lib` suffix.
 let project_name = variable::get("project-name");
 let cli_package_name = variable::get("cli_package_name");
