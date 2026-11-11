@@ -53,10 +53,10 @@ The library crate includes starter `config`, `error`, `models`, and `services` m
 
 For local development,
 
-1) Install Git, [rustup](https://rust-lang.org/tools/install/). On Windows, install the MSVC C++ build tools if `rustup` prompts for them.
+1. Install Git, [rustup](https://rust-lang.org/tools/install/). On Windows, install the MSVC C++ build tools if `rustup` prompts for them.
 
-2) The checked-in toolchain files pin Rust {{rust_version}} for development and `rustfmt` {{rustfmt_version}} for formatting;
-the declared MSRV is 1.98.1 and CI checks it separately.
+2. The checked-in toolchain files pin Rust {{rust_version}} for development and `rustfmt` {{rustfmt_version}} for formatting;
+   the declared MSRV is 1.98.1 and CI checks it separately.
 
 Install both Rust toolchains with the minimal profile and the required components:
 
@@ -192,3 +192,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks, and template adoption
 The root includes the contributor guide and dual-license texts. Crate READMEs link to the shared contributor guide and license; package-level license-file inclusion should be checked before publishing a crate.
 Licensed under MIT OR Apache-2.0; see [LICENSE](LICENSE), [LICENSE-MIT](LICENSE-MIT), and
 [LICENSE-APACHE](LICENSE-APACHE).
+

@@ -1,6 +1,7 @@
 # TODO Reviewed ??-??-????
 
-env_scripts = ['''
+env_scripts = [
+  '''
 #!@duckscript
 fn <scope> root_default
     value = get_env ${1}
@@ -54,7 +55,8 @@ if ${windows}
         set_env CARGO_BUILD_BUILD_DIR "${build_root}/${project}/${slot}"
     end
 end
-''']
+''',
+]
 
 # =============================================================================
 # Environment and Cargo Make defaults
@@ -588,3 +590,4 @@ dependencies = [
 description = "Run the Rust build, lint, test, documentation, and dependency checks"
 category = "CI"
 dependencies = ["check", "build", "lint-check", "test", "doctest", "doc", "deny"]
+
