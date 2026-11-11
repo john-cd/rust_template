@@ -1,9 +1,11 @@
 # Check prose and source identifiers using English spelling by default.
 [default]
 locale = "en"
+
 # Check both file contents and paths so misspelled source and documentation names are caught.
 check-file = true
 check-filename = true
+
 # Hex identifiers such as hashes and color literals are not prose spelling.
 ignore-hex = true
 

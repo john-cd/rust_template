@@ -49,9 +49,10 @@ tracing-appender = "0.2.5"
 # Add environment-filter support for RUST_LOG-style runtime filtering.
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
-# Common crates:
+# Common crates (uncomment what you need) --------------------------------------------------
 
 # Error reporting and validation
+
 # Flexible error types with context and chained reports.
 # anyhow = "1.0.104"
 # Structured, source-aware diagnostics for command-line applications.
@@ -60,6 +61,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # validator = "0.21.0"
 
 # Async, concurrency, and task coordination
+
 # Atomically swaps shared reference-counted values without a read lock.
 # arc-swap = "1.9.5"
 # Enables async functions in traits through generated boxed futures.
@@ -86,6 +88,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # rayon = "1.12.0"
 
 # HTTP, networking, and URLs
+
 # Async HTTP server and routing framework.
 # axum = "0.8.9"
 # Efficient byte buffers for networking and binary data.
@@ -102,6 +105,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # urlencoding = "2.1.3"
 
 # Configuration, serialization, and data formats
+
 # Loads local .env files into process environment variables.
 # dotenvy = "0.15.7"
 # Compact binary serialization for constrained or space-sensitive formats.
@@ -118,6 +122,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # uuid = "1.29.2"
 
 # Text, templates, and code generation
+
 # Compile-time checked templates for generating HTML and other text.
 # askama = "0.16.1"
 # Byte-string operations that also support invalid UTF-8 data.
@@ -148,6 +153,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # paste = "1.0.15"
 
 # Collections and memory management
+
 # Fast non-cryptographic hash implementation for hash maps and caches.
 # ahash = "0.8.12"
 # Defines typed bit-mask flags and their operators.
@@ -180,6 +186,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # zerocopy = "0.8.63"
 
 # Filesystem and platform paths
+
 # Replaces files through a temporary sibling and rename.
 # atomicwrites = "0.4.4"
 # UTF-8 path types for applications that require text paths.
@@ -198,6 +205,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # walkdir = "2.5.0"
 
 # Date, time, mathematics, and scientific data
+
 # Compares floating-point values with tolerances, often in numerical tests.
 # approx = "0.5.1"
 # Date and time types, parsing, and formatting; compare with jiff and time.
@@ -222,6 +230,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # time = "0.3.55"
 
 # Compression, images, hashing, and random values
+
 # Cryptographic hash function for content IDs and integrity checks.
 # blake3 = "1.8.7"
 # Compresses and decompresses gzip, zlib, and related formats.
@@ -240,6 +249,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # ryu = "1.0.23"
 
 # Process, terminal, and observability
+
 # Handles Ctrl-C to support graceful process shutdown.
 # ctrlc = "3.5.2"
 # Terminal progress bars and spinners.
@@ -248,6 +258,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # metrics = "0.24.6"
 
 # Testing and snapshots
+
 # Snapshot testing for output and structured values.
 # insta = "1.49.0"
 # Mock HTTP server for deterministic client integration tests.
@@ -256,6 +267,8 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 # pretty_assertions = "1.4.1"
 # Property-based testing with generated inputs and shrinking.
 # proptest = "1.12.0"
+
+# --------------------------------------------------------------------------
 
 # Apply safety and correctness checks consistently to every workspace member.
 [workspace.lints.rust]
