@@ -92,36 +92,36 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for platform-specific details and the com
 ## Common commands
 
 ```sh
-cargo make --quiet f         # Apply Rust and repository formatting
-cargo make --quiet fc        # Check Rust and repository formatting
-cargo make --quiet fmt       # Check Rust formatting
-cargo make --quiet check     # Check all workspace targets
-cargo make --quiet c         # Short alias for check
-cargo make --quiet build     # Build all workspace targets
-cargo make --quiet b         # Short alias for build
-cargo make --quiet clippy    # Run Clippy with warnings denied
-cargo make --quiet l         # Short alias for clippy
-cargo make --quiet fix       # Apply compiler suggestions
-cargo make --quiet lint-fix  # Apply Clippy suggestions
-cargo make --quiet run       # Run the sample CLI (alias: r)
-cargo make --quiet release   # Build the release profile
-cargo make --quiet test      # Run tests with nextest (alias: t)
-cargo make --quiet bench     # Run benchmarks (bench-check compiles only)
-cargo make --quiet doctest   # Run documentation tests
-cargo make --quiet deny      # Check dependency policy
-cargo make --quiet machete   # Review potentially unused dependencies
-cargo make --quiet coverage  # Measure test coverage
-cargo make --quiet coverage-html # Generate an HTML coverage report
-cargo make --quiet zizmor    # Audit GitHub Actions workflows
-cargo make --quiet pre       # Pre-commit formatting, check, and Clippy
-cargo make --quiet doc       # Build API documentation
-cargo make --quiet web       # Build the website
-cargo make --quiet hooks-install # Install prek Git hooks
-cargo make --quiet hooks-run # Run prek against staged files
-cargo make --quiet build-env # Show Cargo output and cache environment
-cargo make --quiet docker-build-dev  # Build the development image
-cargo make --quiet docker-build-prod # Build the production image
-cargo make --quiet ci        # Run the complete local CI task set
+cargo make f         # Apply Rust and repository formatting
+cargo make fc        # Check Rust and repository formatting
+cargo make fmt       # Check Rust formatting
+cargo make check     # Check all workspace targets
+cargo make c         # Short alias for check
+cargo make build     # Build all workspace targets
+cargo make b         # Short alias for build
+cargo make clippy    # Run Clippy with warnings denied
+cargo make l         # Short alias for clippy
+cargo make fix       # Apply compiler suggestions
+cargo make lint-fix  # Apply Clippy suggestions
+cargo make run       # Run the sample CLI (alias: r)
+cargo make release   # Build the release profile
+cargo make test      # Run tests with nextest (alias: t)
+cargo make bench     # Run benchmarks (bench-check compiles only)
+cargo make doctest   # Run documentation tests
+cargo make deny      # Check dependency policy
+cargo make machete   # Review potentially unused dependencies
+cargo make coverage  # Measure test coverage
+cargo make coverage-html # Generate an HTML coverage report
+cargo make zizmor    # Audit GitHub Actions workflows
+cargo make pre       # Pre-commit formatting, check, and Clippy
+cargo make doc       # Build API documentation
+cargo make web       # Build the website
+cargo make hooks-install # Install prek Git hooks
+cargo make hooks-run # Run prek against staged files
+cargo make build-env # Show Cargo output and cache environment
+cargo make docker-build-dev  # Build the development image
+cargo make docker-build-prod # Build the production image
+cargo make ci        # Run the complete local CI task set
 cargo tools format   # Format Rust, documentation, and configuration
 cargo tools website  # Build the Zola website
 ```
