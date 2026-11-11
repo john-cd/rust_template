@@ -20,7 +20,7 @@ files; review the result before changing package names or source-folder paths.
 - [ ] Update workspace and crate metadata in `Cargo.toml`: descriptions, version, authors, URLs,
       keywords, categories, license, and `publish` policy. Check package names generated from the
       project name and change them only if the project needs different names.
-- [ ] Search for remaining template names and sample paths with
+- [ ] Search for remaining template names and sample paths with e.g. `ripgrep`:
       `rg -n 'rust_template|Rust workspace starter|my_cli|my_lib' --glob '!Cargo.lock' .` and update
       intentional references.
 - [ ] Replace the example requirements and quality targets; keep the docs index and adoption guide
