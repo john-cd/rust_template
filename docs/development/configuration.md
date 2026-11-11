@@ -44,11 +44,11 @@ previous file intact.
 - [`.gitignore`](../../.gitignore) excludes Rust build output, local environment files, and operating-system/editor state while allowing shared VS Code settings, tasks, launch configurations, and recommendations.
 - [`.devcontainer/Dockerfile`](../../.devcontainer/Dockerfile) builds a Rust development image and creates the non-root `vscode` user.
 - [`.devcontainer/.env`](../../.devcontainer/.env) supplies the Compose project prefix, production executable name, and pinned image/tool versions; `.env.example` is the shareable template for those settings.
-- [`.devcontainer/compose.yaml`](../../.devcontainer/compose.yaml) defines the production image build under the `production` profile.
-- [`.devcontainer/compose.override.yaml`](../../.devcontainer/compose.override.yaml) defines the development service and adds the checkout mount, persistent Cargo home and target volumes, compiler-cache paths, working directory, and long-running command for editor sessions.
-- [`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) loads both Compose files, connects VS Code to the devcontainer service, and recommends Rust Analyzer and TOML support.
+- [`.devcontainer/compose.devcontainer.yaml`](../../.devcontainer/compose.devcontainer.yaml) defines the editor image, checkout mount, persistent Cargo home and target volumes, compiler-cache paths, working directory, and long-running command for editor sessions.
+- [`.devcontainer/compose.production.yaml`](../../.devcontainer/compose.production.yaml) defines the production image build and runtime service.
+- [`.devcontainer/devcontainer.json`](../../.devcontainer/devcontainer.json) loads only the devcontainer Compose file, connects VS Code to its service, and recommends Rust Analyzer and TOML support.
 
-From the repository root, validate the editor configuration with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml -f .devcontainer/compose.override.yaml config --quiet`. Commands that specify `-f` must list both files to include the development service and editor settings. For a production image build, use `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.yaml --profile production build app`.
+From the repository root, validate the configurations with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.devcontainer.yaml config --quiet` and `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.production.yaml config --quiet`. Build the production image with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.production.yaml build app`.
 
 ## Automation
 

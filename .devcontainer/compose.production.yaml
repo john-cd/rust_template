@@ -1,13 +1,11 @@
 # TODO Reviewed ??-??-????
 # Docker Compose reference guide: https://docs.docker.com/go/compose-spec-reference/
 
-# Require the generated or local project prefix so workspace paths and cache volumes agree.
+# Require the generated or local project prefix for consistent image names.
 name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env}
 
 services:
-  # Production-only runtime image; it is excluded when Compose loads the development override.
   app:
-    profiles: [production]
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile

@@ -1,6 +1,8 @@
-# Development service and editor settings layered over the production Compose file.
-#
 # TODO Reviewed ??-??-????
+# Docker Compose reference guide: https://docs.docker.com/go/compose-spec-reference/
+
+# Require the generated or local project prefix so workspace paths and cache volumes agree.
+name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env}
 
 services:
   devcontainer:

@@ -29,6 +29,10 @@ by `DEBIAN_VERSION`. After changing versions, rebuild the container. The toolcha
 `rust-toolchain.toml`, `rustfmt-toolchain.toml`, and the workflow; update those too when changing the
 workspace's compiler or formatter version.
 
+VS Code loads `.devcontainer/compose.devcontainer.yaml` for its development container. Production
+image commands use `.devcontainer/compose.production.yaml`; the two files are standalone so each
+Compose operation includes only its intended service.
+
 Install `cargo-binstall` first with `cargo install --locked cargo-binstall --version {{cargo_binstall_version}}`, then install the development
 tools with its prebuilt-binary support (CI and the devcontainer also install these):
 

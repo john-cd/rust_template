@@ -1,9 +1,9 @@
 {
-  // Compose keeps the production image in the base file and editor settings in the override.
+  // Keep the editor environment independent from the production service configuration.
   "name": "Rust workspace",
-  "dockerComposeFile": ["compose.yaml", "compose.override.yaml"],
+  "dockerComposeFile": "compose.devcontainer.yaml",
   "service": "devcontainer",
-  // Must match the checkout mount target in compose.override.yaml and .devcontainer/.env.
+  // Must match the checkout mount target in compose.devcontainer.yaml and .devcontainer/.env.
   "workspaceFolder": "/workspaces/{{project-name}}",
   "shutdownAction": "stopCompose",
   "forwardPorts": [1111],

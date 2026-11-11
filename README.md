@@ -167,8 +167,9 @@ docker run --rm {{project-name}} Alice
 
 The Cargo package names and production executable use the generated project name.
 
-Open the repository in VS Code and choose **Reopen in Container**. The devcontainer builds from `.devcontainer/Dockerfile` with Docker Compose on Debian Trixie, mounts the workspace, and installs the Rust Analyzer and TOML extensions. Edit `.devcontainer/.env` to configure its project prefix, production executable name, Rust version, and development-tool versions.
-It also installs the pinned Rust formatter and development tools. Port 1111 is forwarded for Zola previews.
+Open the repository in VS Code and choose **Reopen in Container**. The devcontainer uses the standalone `.devcontainer/compose.devcontainer.yaml` configuration to build from `.devcontainer/Dockerfile` on Debian Trixie, mount the workspace, and install the Rust Analyzer and TOML extensions. Edit `.devcontainer/.env` to configure its project prefix, production executable name, Rust version, and development-tool versions. It also installs the pinned Rust formatter and development tools. Port 1111 is forwarded for Zola previews.
+
+The production service has a separate Compose file. Build it with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.production.yaml build app`, then run it with `docker compose --env-file .devcontainer/.env -f .devcontainer/compose.production.yaml run --rm app --help`.
 
 ## Documentation
 
