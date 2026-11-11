@@ -19,14 +19,20 @@ description = "Starter library crate for a Rust workspace"
 
 # Runtime dependencies support configuration, serialization, and typed errors.
 [dependencies]
+# Layered configuration system for Rust applications.
 config.workspace = true
+# A generic serialization/deserialization framework
 serde.workspace = true
+# Derives standard Error implementations for custom Rust error types.
 thiserror.workspace = true
+# A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for...
 toml.workspace = true
+# Application-level tracing for Rust.
 tracing.workspace = true
 
 # Criterion is used only by the library's benchmark target.
 [dev-dependencies]
+# Measures Rust benchmark performance with statistical analysis and comparison reports.
 criterion.workspace = true
 
 [[bench]]

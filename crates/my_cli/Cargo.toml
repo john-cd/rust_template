@@ -20,10 +20,15 @@ description = "Starter command-line application for a Rust workspace"
 
 # Clap parses arguments, my_lib provides reusable behavior, and tracing emits diagnostics.
 [dependencies]
+# A simple to use, efficient, and full-featured Command Line Argument Parser
 clap.workspace = true
+# Starter library crate for a Rust workspace
 my_lib.workspace = true
+# Application-level tracing for Rust.
 tracing.workspace = true
+# Provides utilities for file appenders and making non-blocking writers.
 tracing-appender.workspace = true
+# Utilities for implementing and composing `tracing` subscribers.
 tracing-subscriber.workspace = true
 
 [lints]
