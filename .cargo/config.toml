@@ -11,10 +11,11 @@ incremental = false
 # By default, the environment variables specified will not override values that already exist in the environment.
 # This behavior can be changed by setting the force flag.
 [env]
+SCCACHE_BASEDIRS = { value = ".", relative = true }
 # If not done otherwise, set a shared cache across main checkout and worktrees.
 # SCCACHE_DIR = "D:/sccache"
 # SCCACHE_BASEDIRS = "D:/code/my_project;D:/code/my_project/.worktrees/a;D:/code/my_project/.worktrees/b;D:/code/my_project/.worktrees/c"
-# SCCACHE_CACHE_SIZE = "35G"
+# SCCACHE_CACHE_SIZE = "45G"
 
 [term]
 # Less token usage and output clutter.
@@ -134,3 +135,7 @@ opt-level = 2
 #
 # [profile.test.package."*"]
 # opt-level = <profile default: 0>
+
+[env.SCCACHE_CACHE_SIZE]
+value = "45G"
+force = true
