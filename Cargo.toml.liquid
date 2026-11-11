@@ -51,27 +51,211 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 # Common crates:
 
+# Error reporting and validation
+# Flexible error types with context and chained reports.
 # anyhow = "1.0.104"
-# axum = "0.8.9"
-# bytes = "1.12.1"
-# chrono = "0.4.45"
+# Structured, source-aware diagnostics for command-line applications.
+# miette = "7.6.0"
+# Declarative validation for structs and individual fields.
+# validator = "0.21.0"
+
+# Async, concurrency, and task coordination
+# Atomically swaps shared reference-counted values without a read lock.
+# arc-swap = "1.9.5"
+# Enables async functions in traits through generated boxed futures.
+# async-trait = "0.1.92"
+# Multi-producer, multi-consumer channels for thread communication.
+# crossbeam-channel = "0.5.17"
+# Concurrent hash map with sharded locking.
+# dashmap = "6.2.1"
+# Async and synchronous channels; an alternative to crossbeam-channel or Tokio channels.
+# flume = "0.12.0"
+# Core futures traits and combinators for asynchronous code.
 # futures = "0.3.34"
-# indexmap = "2.14.2"
-# itertools = "0.15.0"
-# proptest = "1.12.0"
-# rand = "0.10.3"
-# rayon = "1.12.0"
-# regex = "1.13.1"
-# reqwest = { version = "0.13.5", default-features = false, features = ["charset", "http2", "json", "rustls"] }
-# rustls = "0.23.46"
-# serde_json = "1.0.154"
-# # Database, runtime, and TLS features are selected by the consuming crate.
-# sqlx = { version = "0.9.0", default-features = false }
-# tempfile = "3.27.0"
+# Stream types and commonly used async utility functions.
+# futures-util = "0.3.34"
+# Synchronization primitives including mutexes and read-write locks.
+# parking_lot = "0.13.0"
+# Async runtime with multithreaded execution and macro support.
 # tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros"] }
+# Coordinates graceful shutdown of Tokio tasks and services.
+# tokio-graceful-shutdown = "0.20.0"
+# Tokio utilities such as cancellation tokens, codecs, and task helpers.
+# tokio-util = "0.7.20"
+# Data-parallel iterators and thread-pool utilities.
+# rayon = "1.12.0"
+
+# HTTP, networking, and URLs
+# Async HTTP server and routing framework.
+# axum = "0.8.9"
+# Efficient byte buffers for networking and binary data.
+# bytes = "1.12.1"
+# Async HTTP client with optional JSON, HTTP/2, and rustls TLS support.
+# reqwest = { version = "0.13.5", default-features = false, features = ["charset", "http2", "json", "rustls"] }
+# Memory-safe TLS implementation for encrypted network connections.
+# rustls = "0.23.46"
+# Synchronous HTTP client; an alternative when async I/O is unnecessary.
+# ureq = "3.5.1"
+# Parses, validates, and constructs URLs.
 # url = "2.5.8"
+# Encodes and decodes URL components using percent escapes.
+# urlencoding = "2.1.3"
+
+# Configuration, serialization, and data formats
+# Loads local .env files into process environment variables.
+# dotenvy = "0.15.7"
+# Compact binary serialization for constrained or space-sensitive formats.
+# postcard = "1.1.3"
+# Zero-copy archived serialization for direct reads from stored data.
+# rkyv = "0.8.18"
+# Converts Rust values to and from JSON.
+# serde_json = "1.0.154"
+# Async SQL client; select database, runtime, and TLS features in the consuming crate.
+# sqlx = { version = "0.9.0", default-features = false }
+# Edits TOML while preserving comments, formatting, and key order.
+# toml_edit = "0.25.19"
+# Creates and parses universally unique identifiers.
 # uuid = "1.29.2"
+
+# Text, templates, and code generation
+# Compile-time checked templates for generating HTML and other text.
+# askama = "0.16.1"
+# Byte-string operations that also support invalid UTF-8 data.
+# bstr = "1.13.1"
+# Simplifies conditional compilation across target configurations.
+# cfg-if = "1.0.5"
+# Derives common traits; enable only the derive features the project uses.
+# derive_more = "2.1.1"
+# Matches paths against compiled glob patterns.
+# globset = "0.4.21"
+# Converts identifiers between common naming conventions.
+# heck = "0.5.0"
+# Regular-expression matching and capture extraction.
+# regex = "1.13.1"
+# Derives enum helpers and string conversions; enable the derive feature as needed.
+# strum = { version = "0.28.0", features = ["derive"] }
+# Parses and constructs Rust syntax trees for macros and code generators.
+# syn = { version = "3.0.10", features = ["full"] }
+# Jinja-like template engine for rendering text at runtime.
+# tera = "2.4.0"
+# Interns strings to reduce duplicate owned string storage.
+# ustr = "1.1.0"
+# Stable token-stream types used by procedural macros.
+# proc-macro2 = "1.0.107"
+# Builds token streams for procedural macros and Rust code generation.
+# quote = "1.0.47"
+# Concatenates identifiers in procedural macros.
+# paste = "1.0.15"
+
+# Collections and memory management
+# Fast non-cryptographic hash implementation for hash maps and caches.
+# ahash = "0.8.12"
+# Defines typed bit-mask flags and their operators.
+# bitflags = "2.13.2"
+# Allocates short-lived values from a bump arena.
+# bumpalo = "3.20.3"
+# Safely converts between compatible plain-data types.
+# bytemuck = "1.15.2"
+# Hash map and set types that preserve insertion order.
+# indexmap = "2.14.2"
+# Iterator adapters and utilities beyond the standard library.
+# itertools = "0.15.0"
+# Least-recently-used cache for bounded key/value retention.
+# lru = "0.19.0"
+# Maps file contents into memory for random-access I/O.
+# memmap2 = "0.9.12"
+# Alternative allocator; benchmark representative workloads before adopting it.
+# mimalloc = "0.1.52"
+# Concurrent in-memory cache with expiration and capacity policies.
+# moka = "0.12.16"
+# Lazy, one-time initialization primitives.
+# once_cell = "1.21.4"
+# Maps floating-point values into a total order for maps and sorting.
+# ordered-float = "5.5.1"
+# Stores small vectors inline before spilling larger contents to the heap.
+# smallvec = "1.16.5"
+# Maps stable keys to values while tracking removed entries safely.
+# slotmap = "1.1.1"
+# Provides checked conversions between byte layouts and Rust types.
+# zerocopy = "0.8.63"
+
+# Filesystem and platform paths
+# Replaces files through a temporary sibling and rename.
+# atomicwrites = "0.4.4"
+# UTF-8 path types for applications that require text paths.
+# camino = "1.2.6"
+# Platform-specific user directories; choose this or dirs for standard locations.
+# directories = "6.0.0"
+# Simpler platform-specific user-directory lookup; an alternative to directories.
+# dirs = "7.0.0"
+# Recursively walks directories while honoring ignore files.
+# ignore = "0.4.34"
+# Watches files and directories for filesystem changes.
+# notify = "8.2.2"
+# Creates temporary files and directories, primarily for tests.
+# tempfile = "3.27.0"
+# Recursively traverses directory trees with configurable depth and errors.
 # walkdir = "2.5.0"
+
+# Date, time, mathematics, and scientific data
+# Compares floating-point values with tolerances, often in numerical tests.
+# approx = "0.5.1"
+# Date and time types, parsing, and formatting; compare with jiff and time.
+# chrono = "0.4.45"
+# Modern date, time, and time-zone types; an alternative to chrono or time.
+# jiff = "0.2.42"
+# Linear algebra types and operations for fixed- and dynamic-size matrices.
+# nalgebra = "0.35.0"
+# N-dimensional arrays and numerical operations.
+# ndarray = "0.17.2"
+# Numeric traits, complex numbers, and rational-number types.
+# num = "0.4.3"
+# Shared traits for generic numeric operations.
+# num-traits = "0.2.19"
+# Columnar data frame library for analytics and tabular transformations.
+# polars = { version = "0.55.2", features = ["temporal", "dtype-categorical"] }
+# Arbitrary-precision floating-point and integer arithmetic; requires native GMP libraries.
+# rug = "1.30.0"
+# Fixed-point decimal arithmetic for precise base-10 values.
+# rust_decimal = "1.43.0"
+# Date and time types with explicit optional feature selection; compare with chrono and jiff.
+# time = "0.3.55"
+
+# Compression, images, hashing, and random values
+# Cryptographic hash function for content IDs and integrity checks.
+# blake3 = "1.8.7"
+# Compresses and decompresses gzip, zlib, and related formats.
+# flate2 = "1.1.11"
+# Reads, writes, and transforms images; enable only the codecs the application needs.
+# image = "0.25.10"
+# Small, fast random-number generator for non-cryptographic use.
+# fastrand = "2.5.0"
+# Random number generation and distributions.
+# rand = "0.10.3"
+# SHA-2 cryptographic digest algorithms.
+# sha2 = "0.11.1"
+# Fast non-cryptographic xxHash algorithms; select the desired algorithm feature.
+# xxhash-rust = { version = "0.8.19", features = ["xxh3"] }
+# Fast conversion of floating-point numbers to decimal strings.
+# ryu = "1.0.23"
+
+# Process, terminal, and observability
+# Handles Ctrl-C to support graceful process shutdown.
+# ctrlc = "3.5.2"
+# Terminal progress bars and spinners.
+# indicatif = "0.18.6"
+# Metrics facade for recording application measurements.
+# metrics = "0.24.6"
+
+# Testing and snapshots
+# Snapshot testing for output and structured values.
+# insta = "1.49.0"
+# Mock HTTP server for deterministic client integration tests.
+# mockito = "1.7.2"
+# Clearer diffs for failed equality assertions in tests.
+# pretty_assertions = "1.4.1"
+# Property-based testing with generated inputs and shrinking.
+# proptest = "1.12.0"
 
 # Apply safety and correctness checks consistently to every workspace member.
 [workspace.lints.rust]
