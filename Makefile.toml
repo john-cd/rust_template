@@ -1,25 +1,67 @@
 # TODO Reviewed ??-??-????
 
+env_scripts = ['''
+#!@duckscript
+fn <scope> root_default
+    value = get_env ${1}
+    empty = is_empty ${value}
+    if ${empty}
+        value = set ${2}
+    end
+    set_env ${1} ${value}
+    return ${value}
+end
+
+checkout = get_env CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY
+empty = is_empty ${checkout}
+if ${empty}
+    checkout = get_env CARGO_MAKE_WORKING_DIRECTORY
+end
+checkout = replace ${checkout} \\ /
+parent = dirname ${checkout}
+parent_name = basename ${parent}
+slot = set main
+main_repo = set ${checkout}
+if eq ${parent_name} .worktrees
+    slot = basename ${checkout}
+    main_repo = dirname ${parent}
+end
+override = get_env CODE_WORKTREE_SLOT
+empty = is_empty ${override}
+if not ${empty}
+    slot = set ${override}
+end
+allowed = split "main a b c" " "
+valid = array_contains ${allowed} ${slot}
+if eq ${valid} false
+    trigger_error "Invalid rust_template worktree slot: ${slot}"
+end
+set_env CODE_WORKTREE_SLOT ${slot}
+
+windows = is_windows
+if ${windows}
+    target_root = root_default CARGO_TARGET_ROOT D:/target
+    build_root = root_default CARGO_BUILD_ROOT C:/code_build
+    project = basename ${main_repo}
+    target = get_env CARGO_TARGET_DIR
+    empty = is_empty ${target}
+    if ${empty}
+        set_env CARGO_TARGET_DIR "${target_root}/${project}/${slot}"
+    end
+    build = get_env CARGO_BUILD_BUILD_DIR
+    empty = is_empty ${build}
+    if ${empty}
+        set_env CARGO_BUILD_BUILD_DIR "${build_root}/${project}/${slot}"
+    end
+end
+''']
+
 # =============================================================================
 # Environment and Cargo Make defaults
 # =============================================================================
 
 # Explicit environment variables take precedence over these shared defaults.
 [env]
-# Keep Windows build artifacts outside checkouts while other platforms use Cargo's normal paths.
-CARGO_TARGET_ROOT = { value = "D:/target", condition = { platforms = ["windows"], env_not_set = [
-  "CARGO_TARGET_ROOT",
-] } }
-CARGO_BUILD_ROOT = { value = "C:/code_build", condition = { platforms = ["windows"], env_not_set = [
-  "CARGO_BUILD_ROOT",
-] } }
-CODE_WORKTREE_SLOT = { value = "main", env_not_set = ["CODE_WORKTREE_SLOT"] }
-CARGO_TARGET_DIR = { value = "${CARGO_TARGET_ROOT}/${CARGO_MAKE_PROJECT_NAME}/${CODE_WORKTREE_SLOT}", condition = { platforms = [
-  "windows",
-], env_not_set = ["CARGO_TARGET_DIR"] } }
-CARGO_BUILD_BUILD_DIR = { value = "${CARGO_BUILD_ROOT}/${CARGO_MAKE_PROJECT_NAME}/${CODE_WORKTREE_SLOT}", condition = { platforms = [
-  "windows",
-], env_not_set = ["CARGO_BUILD_BUILD_DIR"] } }
 RUSTFMT_TOOLCHAIN = { value = "nightly-2026-11-06", condition = { env_not_set = [
   "RUSTFMT_TOOLCHAIN",
 ] } }
@@ -191,10 +233,12 @@ description = "Show effective Cargo build and cache environment"
 category = "Build"
 script_runner = "@duckscript"
 script = '''
+slot = get_env CODE_WORKTREE_SLOT
 target = get_env CARGO_TARGET_DIR
 build = get_env CARGO_BUILD_BUILD_DIR
 cache = get_env SCCACHE_DIR
 bases = get_env SCCACHE_BASEDIRS
+echo CODE_WORKTREE_SLOT=${slot}
 echo CARGO_TARGET_DIR=${target}
 echo CARGO_BUILD_BUILD_DIR=${build}
 echo SCCACHE_DIR=${cache}

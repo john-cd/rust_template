@@ -138,17 +138,18 @@ The sample library bounds TOML configuration reads to 1 MiB and saves configurat
 staged atomic file replacement. See the [configuration reference](docs/development/configuration.md)
 for the limits and file-replacement behavior.
 
-Cargo writes build output to the checkout-relative `target/` directory by default. Set
-`CARGO_TARGET_DIR` to use an external build directory, `SCCACHE_DIR` to relocate the sccache
-cache, or `SCCACHE_BASEDIRS` to share cache entries across checkout paths. The shared-cache
-worktree slots are `.worktrees/a`, `.worktrees/b`, and `.worktrees/c`.
+Direct Cargo commands use Cargo's normal configuration and environment-variable precedence. When
+no host configuration or environment override is set, Cargo writes build output to the
+checkout-relative `target/` directory. Set `CARGO_TARGET_DIR` or `CARGO_BUILD_BUILD_DIR` to choose
+external output directories; set `SCCACHE_DIR` to relocate the sccache cache, or
+`SCCACHE_BASEDIRS` to share cache entries across checkout paths.
 
-On Windows, Cargo Make defaults `CARGO_TARGET_DIR` to `D:/target/<project>/<slot>` and
-`CARGO_BUILD_BUILD_DIR` to `C:/code_build/<project>/<slot>`. The primary checkout uses the `main`
-slot by default; set `CODE_WORKTREE_SLOT` to `a`, `b`, or `c` in a linked worktree. Set
-`CARGO_TARGET_ROOT` or
-`CARGO_BUILD_ROOT` to change those roots; explicit `CARGO_TARGET_DIR` and
-`CARGO_BUILD_BUILD_DIR` values take precedence. Other platforms keep the direct-Cargo defaults.
+On Windows, Cargo Make stores target output in `D:/target/rust_template/<slot>` and intermediate
+build output in `C:/code_build/rust_template/<slot>`. It detects `main` in the primary checkout and
+`a`, `b`, or `c` in the matching `.worktrees/<slot>` checkout. Set `CODE_WORKTREE_SLOT` to override
+the detected slot. Set `CARGO_TARGET_ROOT` or `CARGO_BUILD_ROOT` to change the respective roots;
+explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR` values take precedence. Other platforms
+keep Cargo's normal defaults.
 
 ## Devcontainer
 
