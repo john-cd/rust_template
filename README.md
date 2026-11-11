@@ -119,6 +119,7 @@ cargo make web       # Build the website
 cargo make hooks-install # Install prek Git hooks
 cargo make hooks-run # Run prek against staged files
 cargo make build-env # Show Cargo output and cache environment
+cargo make setup-build # Link direct Cargo output paths on Windows
 cargo make docker-build-dev  # Build the development image
 cargo make docker-build-prod # Build the production image
 cargo make ci        # Run the complete local CI task set
@@ -138,11 +139,12 @@ The sample library bounds TOML configuration reads to 1 MiB and saves configurat
 staged atomic file replacement. See the [configuration reference](docs/development/configuration.md)
 for the limits and file-replacement behavior.
 
-Direct Cargo commands use Cargo's normal configuration and environment-variable precedence. When
-no host configuration or environment override is set, Cargo writes build output to the
-checkout-relative `target/` directory. Set `CARGO_TARGET_DIR` or `CARGO_BUILD_BUILD_DIR` to choose
-external output directories; set `SCCACHE_DIR` to relocate the sccache cache, or
-`SCCACHE_BASEDIRS` to share cache entries across checkout paths.
+On Windows, run `cargo make setup-build` once per checkout before using plain Cargo or
+rust-analyzer. It creates or validates `target` and `build` junctions to the per-slot directories
+below. Cargo Make tasks pass the same absolute paths directly. Set `CARGO_TARGET_ROOT` or
+`CARGO_BUILD_ROOT` to change the roots; explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR`
+values take precedence. Set `SCCACHE_DIR` to relocate the sccache cache, or `SCCACHE_BASEDIRS` to
+share cache entries across checkout paths.
 
 On Windows, Cargo Make stores target output in `D:/target/rust_template/<slot>` and intermediate
 build output in `C:/code_build/rust_template/<slot>`. It detects `main` in the primary checkout and

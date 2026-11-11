@@ -1,10 +1,12 @@
 # TODO Reviewed ??-??-????
 
 [build]
-# Cargo Make supplies platform-aware, per-worktree Windows output paths; see Makefile.toml.
-# Direct Cargo commands use Cargo's normal defaults unless CARGO_TARGET_DIR and/or
-# CARGO_BUILD_BUILD_DIR are explicitly set in the environment.
+# Cargo Make supplies absolute per-worktree paths; see Makefile.toml. Direct Cargo uses the
+# checkout-local target/build links, created with `cargo make setup-build` on Windows.
 rustc-wrapper = "sccache"
+target-dir = "target"
+build-dir = "build"
+incremental = false
 
 # By default, the environment variables specified will not override values that already exist in the environment.
 # This behavior can be changed by setting the force flag.
