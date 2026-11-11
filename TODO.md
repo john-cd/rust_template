@@ -1,6 +1,6 @@
 # Project adoption checklist
 
-Use this list after generating a workspace. Keep the tasks that apply, delete the rest, and add
+Use this list after generating a project with `cargo-generate`. Keep the tasks that apply, delete the rest, and add
 project-specific work. The template already substitutes the generated project name in selected
 files; review the result before changing package names or source-folder paths.
 

@@ -10,13 +10,13 @@ Create a project with `cargo-generate` 0.24 or newer:
 cargo generate --git https://github.com/john-cd/rust_template.git --branch develop --name myproject
 ```
 
+Replace `myproject` with your project name. The template currently uses `develop` as its integration branch.
+
 The setup-version prompts default to this template's pins. If you change one, update the matching
 toolchain or development-tool configuration in the generated project as well.
 
-Replace `myproject` with your project name. The template currently uses `develop` as the integration branch; the `main` branch is reserved for releases.
-
 By default, the generated workspace names its CLI package after the selected project and
-appends `_lib` to form the library package. cargo-generate also prompts for the crate folders and
+appends `_lib` to form the library package. `cargo-generate` also prompts for the crate folders and
 package names; accept `auto` for package names to keep these defaults. Follow the
 [adoption guide](docs/guides/adopting-template.md) to replace the sample behavior and metadata.
 
@@ -33,7 +33,7 @@ Use `develop` as the integration branch. Integrate reviewed work there, then pro
 │   └── {{cli_folder_name}}/ # Sample Clap binary
 ├── docs/                 # Project documentation
 ├── scripts/              # Repository maintenance and development scripts
-├── tools/                # Stub for project-specific development and compile-time tools
+├── tools/                # Stub for project-specific development and compile-time Rust tools
 ├── website/              # Zola content, templates, and static assets
 ├── .cargo/               # Cargo configuration
 ├── .config/              # cargo-nextest configuration
@@ -47,23 +47,25 @@ Add workspace packages under `crates/`. Shared package metadata and lint policy 
 such as code generators, schema checks, or build helpers. Extend or replace the sample `cargo tools`
 commands as needed; keep application runtime behavior in the application crates.
 
-The library crate starts with `config`, `error`, `models`, and `services` modules. The companion CLI uses Clap derive and calls the library greeting: `cargo run -p {{cli_package_name}} -- Alice`.
+The library crate includes starter `config`, `error`, `models`, and `services` modules. The companion CLI uses `clap` derive and calls the library greeting: try `cargo run -p {{cli_package_name}} -- Alice`.
 
 ## Prerequisites
 
-For local development, install Git, Rust through [rustup](https://rust-lang.org/tools/install/), and
-the repository tools. On Windows, install the MSVC C++ build tools if rustup prompts for them.
-The checked-in toolchain files pin Rust {{rust_version}} for development and rustfmt {{rustfmt_version}} for formatting;
+For local development,
+
+1) Install Git, [rustup](https://rust-lang.org/tools/install/). On Windows, install the MSVC C++ build tools if `rustup` prompts for them.
+
+2) The checked-in toolchain files pin Rust {{rust_version}} for development and `rustfmt` {{rustfmt_version}} for formatting;
 the declared MSRV is 1.98.1 and CI checks it separately.
 
-After cloning the repository, install both Rust toolchains:
+Install both Rust toolchains with the minimal profile and the required components:
 
 ```sh
 rustup toolchain install {{rust_version}} --profile minimal --component clippy,rustfmt
 rustup toolchain install {{rustfmt_version}} --profile minimal --component rustfmt
 ```
 
-Install the pinned Cargo, formatting, link, spelling, and website tools from the repository root.
+Install the pinned `cargo` formatting, link, spelling, and website tools from the repository root.
 The platform scripts read their versions from `.devcontainer/.env`:
 
 ```sh
