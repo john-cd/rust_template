@@ -192,4 +192,3 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks, and template adoption
 The root includes the contributor guide and dual-license texts. Crate READMEs link to the shared contributor guide and license; package-level license-file inclusion should be checked before publishing a crate.
 Licensed under MIT OR Apache-2.0; see [LICENSE](LICENSE), [LICENSE-MIT](LICENSE-MIT), and
 [LICENSE-APACHE](LICENSE-APACHE).
-

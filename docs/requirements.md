@@ -86,4 +86,3 @@ list with values agreed for the adopting project.
 - The project is licensed under MIT OR Apache-2.0 and is not published by default.
 - The full local CI task requires the external tools listed in `CONTRIBUTING.md`.
 - Website tasks require Zola; dependency policy checks require `cargo-deny`.
-
