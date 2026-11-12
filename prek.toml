@@ -23,8 +23,9 @@ hooks = [
 [[repos]]
 repo = "local"
 hooks = [
-  { id = "rust-format", name = "Rust formatting", entry = "cargo make format-rust-check", language = "system", types = [
+  # Call the installed formatters directly so these hooks do not require cargo-make.
+  { id = "rust-format", name = "Rust formatting", entry = "cargo fmt --all -- --check", language = "system", types = [
     "rust",
   ], pass_filenames = false },
-  { id = "repository-format", name = "Repository formatting", entry = "cargo make format-check", language = "system", files = '\.(md|mdx|json|jsonc|toml|yaml|yml)$', pass_filenames = false },
+  { id = "repository-format", name = "Repository formatting", entry = "dprint check --log-level=error", language = "system", files = '\.(md|mdx|json|jsonc|toml|yaml|yml)$', pass_filenames = false },
 ]
