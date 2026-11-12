@@ -1,8 +1,9 @@
+// rust-template devcontainer configuration uses a project-prefixed Compose service.
 {
   // Keep the editor environment independent from the production service configuration.
-  "name": "Rust workspace",
+  "name": "rust-template - Rust workspace",
   "dockerComposeFile": "compose.devcontainer.yaml",
-  "service": "devcontainer",
+  "service": "rust-template-devcontainer",
   // Must match the checkout mount target in compose.devcontainer.yaml and .devcontainer/.env.
   "workspaceFolder": "/workspaces/myproject",
   "shutdownAction": "stopCompose",

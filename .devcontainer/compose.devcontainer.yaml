@@ -1,48 +1,52 @@
+# Project-scoped Compose stack: rust-template-dev.
+# Build inputs come from tracked .devcontainer/.env; from the repo root pass --env-file .devcontainer/.env.
+# Keep credentials in ignored .devcontainer/.env.local; from the repo root pass it as a second --env-file when present.
 # TODO Reviewed ??-??-????
 # Docker Compose reference guide: https://docs.docker.com/go/compose-spec-reference/
 
 # Require the generated or local project prefix so workspace paths and cache volumes agree.
-name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env}
-
+name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env}-dev
 services:
-  devcontainer:
+  rust-template-devcontainer:
     # Build the editor image with the same pinned tool versions used by the Dockerfile.
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       target: development
       args:
-        RUST_VERSION: ${RUST_VERSION:?Set RUST_VERSION in .devcontainer/.env}
-        DEBIAN_VERSION: ${DEBIAN_VERSION:?Set DEBIAN_VERSION in .devcontainer/.env}
-        RUSTFMT_VERSION: ${RUSTFMT_VERSION:?Set RUSTFMT_VERSION in .devcontainer/.env}
-        CARGO_MAKE_VERSION: ${CARGO_MAKE_VERSION:?Set CARGO_MAKE_VERSION in .devcontainer/.env}
-        CARGO_BINSTALL_VERSION: ${CARGO_BINSTALL_VERSION:?Set CARGO_BINSTALL_VERSION in .devcontainer/.env}
-        CARGO_NEXTEST_VERSION: ${CARGO_NEXTEST_VERSION:?Set CARGO_NEXTEST_VERSION in .devcontainer/.env}
-        CARGO_DENY_VERSION: ${CARGO_DENY_VERSION:?Set CARGO_DENY_VERSION in .devcontainer/.env}
-        CARGO_MACHETE_VERSION: ${CARGO_MACHETE_VERSION:?Set CARGO_MACHETE_VERSION in .devcontainer/.env}
-        CARGO_LLVM_COV_VERSION: ${CARGO_LLVM_COV_VERSION:?Set CARGO_LLVM_COV_VERSION in .devcontainer/.env}
-        ZIZMOR_VERSION: ${ZIZMOR_VERSION:?Set ZIZMOR_VERSION in .devcontainer/.env}
-        SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env}
-        DPRINT_VERSION: ${DPRINT_VERSION:?Set DPRINT_VERSION in .devcontainer/.env}
-        LYCHEE_VERSION: ${LYCHEE_VERSION:?Set LYCHEE_VERSION in .devcontainer/.env}
-        TYPOS_VERSION: ${TYPOS_VERSION:?Set TYPOS_VERSION in .devcontainer/.env}
-        ZOLA_VERSION: ${ZOLA_VERSION:?Set ZOLA_VERSION in .devcontainer/.env}
+        RUST_VERSION: ${RUST_VERSION:?Set RUST_VERSION in .devcontainer/.env or the host environment}
+        DEBIAN_VERSION: ${DEBIAN_VERSION:?Set DEBIAN_VERSION in .devcontainer/.env or the host environment}
+        RUSTFMT_VERSION: ${RUSTFMT_VERSION:?Set RUSTFMT_VERSION in .devcontainer/.env or the host environment}
+        CARGO_MAKE_VERSION: ${CARGO_MAKE_VERSION:?Set CARGO_MAKE_VERSION in .devcontainer/.env or the host environment}
+        CARGO_BINSTALL_VERSION: ${CARGO_BINSTALL_VERSION:?Set CARGO_BINSTALL_VERSION in .devcontainer/.env or the host environment}
+        CARGO_NEXTEST_VERSION: ${CARGO_NEXTEST_VERSION:?Set CARGO_NEXTEST_VERSION in .devcontainer/.env or the host environment}
+        CARGO_DENY_VERSION: ${CARGO_DENY_VERSION:?Set CARGO_DENY_VERSION in .devcontainer/.env or the host environment}
+        CARGO_MACHETE_VERSION: ${CARGO_MACHETE_VERSION:?Set CARGO_MACHETE_VERSION in .devcontainer/.env or the host environment}
+        CARGO_LLVM_COV_VERSION: ${CARGO_LLVM_COV_VERSION:?Set CARGO_LLVM_COV_VERSION in .devcontainer/.env or the host environment}
+        ZIZMOR_VERSION: ${ZIZMOR_VERSION:?Set ZIZMOR_VERSION in .devcontainer/.env or the host environment}
+        SCCACHE_VERSION: ${SCCACHE_VERSION:?Set SCCACHE_VERSION in .devcontainer/.env or the host environment}
+        DPRINT_VERSION: ${DPRINT_VERSION:?Set DPRINT_VERSION in .devcontainer/.env or the host environment}
+        LYCHEE_VERSION: ${LYCHEE_VERSION:?Set LYCHEE_VERSION in .devcontainer/.env or the host environment}
+        TYPOS_VERSION: ${TYPOS_VERSION:?Set TYPOS_VERSION in .devcontainer/.env or the host environment}
+        ZOLA_VERSION: ${ZOLA_VERSION:?Set ZOLA_VERSION in .devcontainer/.env or the host environment}
+        CARGO_CHEF_VERSION: ${CARGO_CHEF_VERSION:?Set CARGO_CHEF_VERSION in .devcontainer/.env or the host environment}
+        CARGO_PACKAGE_NAME: ${CARGO_PACKAGE_NAME:?Set CARGO_PACKAGE_NAME in .devcontainer/.env or the host environment}
     volumes:
       # Share the checkout with the editor while keeping Cargo data in Docker-managed volumes.
-      - ..:/workspaces/${COMPOSE_PROJECT_NAME}/:cached
+      - ..:/workspaces/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/:cached
       # Persist Cargo downloads/tool binaries and compiled artifacts across container rebuilds.
-      - cargo_home_cache:/usr/local/cargo/
-      - cargo_target_cache:/target/${COMPOSE_PROJECT_NAME}/
+      - rust-template-cargo-home-cache:/usr/local/cargo/
+      - rust-template-cargo-target-cache:/target/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/
     environment:
-      SCCACHE_BASEDIRS: /workspaces/${COMPOSE_PROJECT_NAME}:/workspaces/${COMPOSE_PROJECT_NAME}/.worktrees/a:/workspaces/${COMPOSE_PROJECT_NAME}/.worktrees/b:/workspaces/${COMPOSE_PROJECT_NAME}/.worktrees/c
+      SCCACHE_BASEDIRS: /workspaces/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}:/workspaces/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/.worktrees/a:/workspaces/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/.worktrees/b:/workspaces/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/.worktrees/c
       # Keep build output on its persistent volume, outside the checkout mount.
-      CARGO_TARGET_DIR: /target/${COMPOSE_PROJECT_NAME}/
-    working_dir: /workspaces/${COMPOSE_PROJECT_NAME}/
+      CARGO_TARGET_DIR: /target/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/
+    working_dir: /workspaces/${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}/
     command: sleep infinity
     init: true
 
 volumes:
-  cargo_home_cache:
-    name: "${COMPOSE_PROJECT_NAME}_cargo_home_cache_${RUST_VERSION}"
-  cargo_target_cache:
-    name: "${COMPOSE_PROJECT_NAME}_cargo_target_cache_${RUST_VERSION}"
+  rust-template-cargo-home-cache:
+    name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}_rust-template-cargo_home_cache
+  rust-template-cargo-target-cache:
+    name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env or the host environment}_rust-template-cargo_target_cache
