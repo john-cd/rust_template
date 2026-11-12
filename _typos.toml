@@ -11,3 +11,4 @@ ignore-hex = true
 
 # Add only established project terms here; avoid broad ignores that hide real typos.
 [default.extend-words]
+flate = "flate"
