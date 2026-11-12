@@ -52,14 +52,16 @@ Install the tools listed in the contributor guide. Rustup reads the build pin
 automatically. The nightly formatter is separate; install the channel from
 `rustfmt-toolchain.toml` with the `rustfmt` component.
 
-Cargo selects sccache through `.cargo/config.toml`. Direct Cargo commands write build output to
-the checkout's `target/` directory by default; Cargo Make applies the repository's configured
-output paths, including external paths on Windows. To use external storage, set
-`CARGO_TARGET_DIR` for build output and `SCCACHE_DIR` for the compiler cache; set
-`SCCACHE_BASEDIRS` when sharing cache entries across checkout paths. The shared
-worktree slots are `.worktrees/a`, `.worktrees/b`, and `.worktrees/c`. To bootstrap
-without sccache, temporarily set `RUSTC_WRAPPER` to an empty value, then install the
-cache wrapper or remove the project setting. In PowerShell use
+Cargo selects sccache through `.cargo/config.toml`. Direct Cargo commands use the checkout's
+`target/` and `build/` paths; Cargo Make applies the repository's configured output paths. On
+Windows, set `CODE_TARGET_ROOT` and `CODE_BUILD_ROOT` to choose external roots; the defaults are
+`D:/target` and `C:/code_build`, with separate `<repo>/<slot>` directories. Run
+`cargo make setup-build` once per checkout to connect plain Cargo and rust-analyzer to those
+external slots. Set `CODE_SCCACHE_ROOT` or `SCCACHE_DIR` for the compiler cache. Cargo Make
+sets `SCCACHE_BASEDIRS` to this repository's main checkout and registered worktrees; direct Cargo
+uses the current checkout root. The shared worktree slots are `.worktrees/a`, `.worktrees/b`, and
+`.worktrees/c`. To bootstrap without sccache, temporarily set `RUSTC_WRAPPER` to an empty value,
+then install the cache wrapper or remove the project setting. In PowerShell use
 `$env:RUSTC_WRAPPER = ''`; in a POSIX shell use `RUSTC_WRAPPER='' cargo check --workspace --locked`.
 
 Optional hooks use the same checks as Cargo Make: install `prek` 0.5.6 or newer,

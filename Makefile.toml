@@ -40,21 +40,70 @@ end
 set_env CODE_WORKTREE_SLOT ${slot}
 
 windows = is_windows
+home = get_home_dir
 if ${windows}
-    target_root = root_default CARGO_TARGET_ROOT D:/target
-    build_root = root_default CARGO_BUILD_ROOT C:/code_build
-    project = basename ${main_repo}
+    target_root = root_default CODE_TARGET_ROOT D:/target
+    build_root = root_default CODE_BUILD_ROOT C:/code_build
+    cache_default = set D:/sccache
+    separator = set ";"
+else
+    cache_home = root_default XDG_CACHE_HOME "${home}/.cache"
+    target_root = root_default CODE_TARGET_ROOT "${cache_home}/cargo-target"
+    build_root = root_default CODE_BUILD_ROOT "${cache_home}/cargo-build"
+    cache_default = set "${cache_home}/sccache"
+    separator = set ":"
+end
+inherited_cache = get_env SCCACHE_DIR
+empty = is_empty ${inherited_cache}
+if not ${empty}
+    cache_default = set ${inherited_cache}
+end
+cache_root = root_default CODE_SCCACHE_ROOT ${cache_default}
+project = basename ${main_repo}
+target = get_env CARGO_TARGET_DIR
+empty = is_empty ${target}
+if ${empty}
+    target = set "${target_root}/${project}/${slot}"
+    set_env CARGO_TARGET_DIR ${target}
+end
+target = get_env CARGO_BUILD_TARGET_DIR
+empty = is_empty ${target}
+if ${empty}
     target = get_env CARGO_TARGET_DIR
-    empty = is_empty ${target}
-    if ${empty}
-        set_env CARGO_TARGET_DIR "${target_root}/${project}/${slot}"
-    end
-    build = get_env CARGO_BUILD_BUILD_DIR
-    empty = is_empty ${build}
-    if ${empty}
-        set_env CARGO_BUILD_BUILD_DIR "${build_root}/${project}/${slot}"
+    set_env CARGO_BUILD_TARGET_DIR ${target}
+end
+build = get_env CARGO_BUILD_BUILD_DIR
+empty = is_empty ${build}
+if ${empty}
+    set_env CARGO_BUILD_BUILD_DIR "${build_root}/${project}/${slot}"
+end
+set_env CODE_TARGET_ROOT ${target_root}
+set_env CODE_BUILD_ROOT ${build_root}
+set_env CODE_SCCACHE_ROOT ${cache_root}
+set_env SCCACHE_DIR ${cache_root}
+set_env SCCACHE_CACHE_SIZE 45G
+set_env RUSTC_WRAPPER sccache
+set_env CARGO_BUILD_RUSTC_WRAPPER sccache
+set_env CARGO_INCREMENTAL 0
+
+listing = exec git -C ${main_repo} -c core.fsmonitor=false worktree list --porcelain
+assert_eq ${listing.code} 0 "Could not enumerate registered Git worktrees"
+lines = split ${listing.stdout} \n
+bases = set ${main_repo}
+cache_slots = split "a b c" " "
+for line in ${lines}
+    line = trim ${line}
+    worktree_line = starts_with ${line} "worktree ${main_repo}/.worktrees/"
+    if ${worktree_line}
+        candidate = replace ${line} "worktree ${main_repo}/.worktrees/" ""
+        valid = array_contains ${cache_slots} ${candidate}
+        if not eq ${valid} false
+            bases = set "${bases}${separator}${main_repo}/.worktrees/${candidate}"
+        end
     end
 end
+set_env SCCACHE_BASEDIRS ${bases}
+
 ''',
 ]
 
@@ -62,8 +111,12 @@ end
 # Environment and Cargo Make defaults
 # =============================================================================
 
-# Explicit environment variables take precedence over these shared defaults.
+# Cargo Make forces shared sccache settings; the formatter toolchain remains overridable.
 [env]
+CARGO_BUILD_RUSTC_WRAPPER = { value = "sccache", force = true }
+CARGO_INCREMENTAL = { value = "0", force = true }
+RUSTC_WRAPPER = { value = "sccache", force = true }
+SCCACHE_CACHE_SIZE = { value = "45G", force = true }
 RUSTFMT_TOOLCHAIN = { value = "nightly-2026-11-06", condition = { env_not_set = [
   "RUSTFMT_TOOLCHAIN",
 ] } }
@@ -236,14 +289,30 @@ category = "Build"
 script_runner = "@duckscript"
 script = '''
 slot = get_env CODE_WORKTREE_SLOT
+target_root = get_env CODE_TARGET_ROOT
+build_root = get_env CODE_BUILD_ROOT
+cache_root = get_env CODE_SCCACHE_ROOT
 target = get_env CARGO_TARGET_DIR
+build_target = get_env CARGO_BUILD_TARGET_DIR
 build = get_env CARGO_BUILD_BUILD_DIR
+wrapper = get_env RUSTC_WRAPPER
+build_wrapper = get_env CARGO_BUILD_RUSTC_WRAPPER
+incremental = get_env CARGO_INCREMENTAL
 cache = get_env SCCACHE_DIR
+cache_size = get_env SCCACHE_CACHE_SIZE
 bases = get_env SCCACHE_BASEDIRS
 echo CODE_WORKTREE_SLOT=${slot}
+echo CODE_TARGET_ROOT=${target_root}
+echo CODE_BUILD_ROOT=${build_root}
+echo CODE_SCCACHE_ROOT=${cache_root}
 echo CARGO_TARGET_DIR=${target}
+echo CARGO_BUILD_TARGET_DIR=${build_target}
 echo CARGO_BUILD_BUILD_DIR=${build}
+echo RUSTC_WRAPPER=${wrapper}
+echo CARGO_BUILD_RUSTC_WRAPPER=${build_wrapper}
+echo CARGO_INCREMENTAL=${incremental}
 echo SCCACHE_DIR=${cache}
+echo SCCACHE_CACHE_SIZE=${cache_size}
 echo SCCACHE_BASEDIRS=${bases}
 '''
 

@@ -141,17 +141,18 @@ for the limits and file-replacement behavior.
 
 On Windows, run `cargo make setup-build` once per checkout before using plain Cargo or
 rust-analyzer. It creates or validates `target` and `build` junctions to the per-slot directories
-below. Cargo Make tasks pass the same absolute paths directly. Set `CARGO_TARGET_ROOT` or
-`CARGO_BUILD_ROOT` to change the roots; explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR`
-values take precedence. Set `SCCACHE_DIR` to relocate the sccache cache, or `SCCACHE_BASEDIRS` to
-share cache entries across checkout paths.
+below. Cargo Make tasks pass the same absolute paths directly. Set `CODE_TARGET_ROOT` or
+`CODE_BUILD_ROOT` to change the roots; explicit `CARGO_TARGET_DIR`, `CARGO_BUILD_TARGET_DIR`, and
+`CARGO_BUILD_BUILD_DIR` values take precedence. Set `CODE_SCCACHE_ROOT` (or `SCCACHE_DIR`) to
+relocate the compiler cache. Cargo Make sets `SCCACHE_BASEDIRS` to this repository's main checkout
+and registered worktrees; direct Cargo uses the current checkout root.
 
 On Windows, Cargo Make stores target output in `D:/target/rust_template/<slot>` and intermediate
 build output in `C:/code_build/rust_template/<slot>`. It detects `main` in the primary checkout and
 `a`, `b`, or `c` in the matching `.worktrees/<slot>` checkout. Set `CODE_WORKTREE_SLOT` to override
-the detected slot. Set `CARGO_TARGET_ROOT` or `CARGO_BUILD_ROOT` to change the respective roots;
-explicit `CARGO_TARGET_DIR` and `CARGO_BUILD_BUILD_DIR` values take precedence. Other platforms
-keep Cargo's normal defaults.
+the detected slot. Set `CODE_TARGET_ROOT` or `CODE_BUILD_ROOT` to change the respective roots;
+explicit Cargo output-directory variables take precedence. Other platforms use the configured
+XDG cache roots.
 
 ## Devcontainer
 

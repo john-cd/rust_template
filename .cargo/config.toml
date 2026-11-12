@@ -1,22 +1,17 @@
 # TODO Reviewed ??-??-????
 
 [build]
-# Cargo Make supplies absolute per-worktree paths; see Makefile.toml. Direct Cargo uses the
-# checkout-local target/build links, created with `cargo make setup-build` on Windows.
+# Cargo Make supplies absolute per-worktree paths from CODE_TARGET_ROOT and CODE_BUILD_ROOT;
+# direct Cargo uses checkout-local target/build links created by `cargo make setup-build`.
 rustc-wrapper = "sccache"
 target-dir = "target"
 build-dir = "build"
 incremental = false
 
-# By default, the environment variables specified will not override values that already exist in the environment.
-# This behavior can be changed by setting the force flag.
+# Direct Cargo normalizes paths against this checkout. Cargo Make replaces the value with the
+# registered main checkout and worktree paths.
 [env]
 SCCACHE_BASEDIRS = { value = ".", relative = true }
-# If not done otherwise, set a shared cache across main checkout and worktrees.
-# SCCACHE_DIR = "D:/sccache"
-# SCCACHE_BASEDIRS = "D:/code/my_project;D:/code/my_project/.worktrees/a;D:/code/my_project/.worktrees/b;D:/code/my_project/.worktrees/c"
-# SCCACHE_CACHE_SIZE = "45G"
-
 [term]
 # Less token usage and output clutter.
 quiet = true
