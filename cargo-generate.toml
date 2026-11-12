@@ -46,7 +46,7 @@ type = "string"
 
 [placeholders.rustfmt_version]
 prompt = "Rustfmt toolchain version"
-default = "nightly-2026-11-06"
+default = "nightly-2026-11-11"
 type = "string"
 
 [placeholders.cargo_binstall_version]

@@ -36,7 +36,7 @@ set -euo pipefail
 
 # ---- Pins: keep in sync with .devcontainer/.env (that file wins when found) ----
 declare -A V=(
-  [RUSTFMT_VERSION]=nightly-2026-11-06
+  [RUSTFMT_VERSION]=nightly-2026-11-11
   [CARGO_BINSTALL_VERSION]=1.26.2
   [CARGO_MAKE_VERSION]=0.37.24
   [CARGO_NEXTEST_VERSION]=0.9.148
