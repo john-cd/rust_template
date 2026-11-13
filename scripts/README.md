@@ -53,7 +53,7 @@ binaryen), `docs` (Zola, mdBook, admonish, linkcheck), `gh` (GitHub CLI, actionl
 
 Versions: the pins at the top of the script mirror `.devcontainer/.env`; when `./.devcontainer/.env`
 exists (or `ENV_FILE` points to a file) it overrides them, and any `<TOOL>_VERSION` environment
-variable overrides both (for example `CARGO_NEXTEST_VERSION=0.9.150`). uv, just, prek, mdBook and
+variable overrides both (for example `CARGO_NEXTEST_VERSION=0.9.151`). uv, just, prek, mdBook and
 the extras use the latest release unless pinned the same way. Update the script's pins and Zola
 checksums together with `.devcontainer/.env`.
 

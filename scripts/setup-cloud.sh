@@ -13,7 +13,7 @@
 #   --dry-run        print commands without running them
 #   -h, --help       this help
 # Environment: SETUP_COMPONENTS, SETUP_SKIP, SETUP_WITH (comma lists), SETUP_DRY_RUN=1,
-#   <TOOL>_VERSION overrides (for example CARGO_NEXTEST_VERSION=0.9.150), ENV_FILE=path to a
+#   <TOOL>_VERSION overrides (for example CARGO_NEXTEST_VERSION=0.9.151), ENV_FILE=path to a
 #   KEY=VALUE file (default: ./.devcontainer/.env when present) that overrides the pins below.
 #
 # Groups (default = rust,cargo,fmt,python,just):
@@ -37,9 +37,9 @@ set -euo pipefail
 # ---- Pins: keep in sync with .devcontainer/.env (that file wins when found) ----
 declare -A V=(
   [RUSTFMT_VERSION]=nightly-2026-11-11
-  [CARGO_BINSTALL_VERSION]=1.26.2
+  [CARGO_BINSTALL_VERSION]=1.27.0
   [CARGO_MAKE_VERSION]=0.37.24
-  [CARGO_NEXTEST_VERSION]=0.9.148
+  [CARGO_NEXTEST_VERSION]=0.9.151
   [CARGO_DENY_VERSION]=0.20.2
   [CARGO_MACHETE_VERSION]=0.9.2
   [CARGO_LLVM_COV_VERSION]=0.9.1

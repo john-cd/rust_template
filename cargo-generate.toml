@@ -51,7 +51,7 @@ type = "string"
 
 [placeholders.cargo_binstall_version]
 prompt = "cargo-binstall version"
-default = "1.26.2"
+default = "1.27.0"
 type = "string"
 
 [placeholders.cargo_make_version]
@@ -61,7 +61,7 @@ type = "string"
 
 [placeholders.cargo_nextest_version]
 prompt = "cargo-nextest version"
-default = "0.9.148"
+default = "0.9.151"
 type = "string"
 
 [placeholders.cargo_deny_version]
