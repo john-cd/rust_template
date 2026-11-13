@@ -43,7 +43,7 @@ windows = is_windows
 home = get_home_dir
 if ${windows}
     target_root = root_default CODE_TARGET_ROOT D:/target
-    build_root = root_default CODE_BUILD_ROOT C:/code_build
+    build_root = root_default CODE_BUILD_ROOT D:/code_build
     cache_default = set D:/sccache
     separator = set ";"
 else

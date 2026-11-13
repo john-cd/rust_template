@@ -148,7 +148,7 @@ relocate the compiler cache. Cargo Make sets `SCCACHE_BASEDIRS` to this reposito
 and registered worktrees; direct Cargo uses the current checkout root.
 
 On Windows, Cargo Make stores target output in `D:/target/rust_template/<slot>` and intermediate
-build output in `C:/code_build/rust_template/<slot>`. It detects `main` in the primary checkout and
+build output in `D:/code_build/rust_template/<slot>`. It detects `main` in the primary checkout and
 `a`, `b`, or `c` in the matching `.worktrees/<slot>` checkout. Set `CODE_WORKTREE_SLOT` to override
 the detected slot. Set `CODE_TARGET_ROOT` or `CODE_BUILD_ROOT` to change the respective roots;
 explicit Cargo output-directory variables take precedence. Other platforms use the configured

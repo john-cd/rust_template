@@ -55,7 +55,7 @@ automatically. The nightly formatter is separate; install the channel from
 Cargo selects sccache through `.cargo/config.toml`. Direct Cargo commands use the checkout's
 `target/` and `build/` paths; Cargo Make applies the repository's configured output paths. On
 Windows, set `CODE_TARGET_ROOT` and `CODE_BUILD_ROOT` to choose external roots; the defaults are
-`D:/target` and `C:/code_build`, with separate `<repo>/<slot>` directories. Run
+`D:/target` and `D:/code_build`, with separate `<repo>/<slot>` directories. Run
 `cargo make setup-build` once per checkout to connect plain Cargo and rust-analyzer to those
 external slots. Set `CODE_SCCACHE_ROOT` or `SCCACHE_DIR` for the compiler cache. Cargo Make
 sets `SCCACHE_BASEDIRS` to this repository's main checkout and registered worktrees; direct Cargo
