@@ -8,6 +8,10 @@
 name: ${COMPOSE_PROJECT_NAME:?Set COMPOSE_PROJECT_NAME in .devcontainer/.env}-dev
 services:
   rust-template-devcontainer:
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     # Build the editor image with the same pinned tool versions used by the Dockerfile.
     build:
       context: ..
