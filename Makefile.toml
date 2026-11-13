@@ -113,6 +113,9 @@ set_env SCCACHE_BASEDIRS ${bases}
 
 # Cargo Make forces shared sccache settings; the formatter toolchain remains overridable.
 [env]
+CARGO_TERM_QUIET = { value = "true", condition = { env_not_set = [
+  "CARGO_TERM_QUIET",
+] } }
 CARGO_BUILD_RUSTC_WRAPPER = { value = "sccache", force = true }
 CARGO_INCREMENTAL = { value = "0", force = true }
 RUSTC_WRAPPER = { value = "sccache", force = true }
@@ -189,7 +192,9 @@ category = "Formatting"
 script_runner = "@duckscript"
 script = '''
 toolchain = get_env RUSTFMT_TOOLCHAIN
+echo "[format-rust] start (rustfmt ${toolchain})"
 exec --fail-on-error rustup run ${toolchain} cargo --quiet fmt --all -- --quiet
+echo "[format-rust] done"
 '''
 
 [tasks.format-rust-check]
@@ -198,7 +203,9 @@ category = "Formatting"
 script_runner = "@duckscript"
 script = '''
 toolchain = get_env RUSTFMT_TOOLCHAIN
+echo "[format-rust-check] start (rustfmt ${toolchain})"
 exec --fail-on-error rustup run ${toolchain} cargo --quiet fmt --all -- --quiet --check
+echo "[format-rust-check] done"
 '''
 
 [tasks.format-files]

@@ -34,7 +34,6 @@ enum Task {
 }
 
 /// Parse and run the selected development command.
-#[must_use]
 pub fn run() -> ExitCode {
     let args = Args::parse();
     // Cargo sets this path for the checkout that builds this development-only binary.

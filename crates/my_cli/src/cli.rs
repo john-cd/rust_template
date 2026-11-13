@@ -19,7 +19,6 @@ struct Args {
 }
 
 /// Parse command-line arguments and print the greeting.
-#[must_use]
 pub fn run() -> ExitCode {
     let args = Args::parse();
     let _log_guard = match super::logging::init() {
