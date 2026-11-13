@@ -41,7 +41,7 @@ ignore = [".worktrees", "target", ".lycheecache"]
 # Defaults match the pins in .devcontainer/.env.liquid and the local toolchain files.
 [placeholders.rust_version]
 prompt = "Rust toolchain version"
-default = "1.99.1"
+default = "1.100.0"
 type = "string"
 
 [placeholders.rustfmt_version]

@@ -53,7 +53,7 @@ declare -A V=(
 )
 # Unpinned tools resolve to the latest release unless <TOOL>_VERSION is set:
 #   UV_VERSION JUST_VERSION PREK_VERSION MDBOOK_VERSION TRUNK_VERSION ...
-# Default Rust toolchain when the repo has no rust-toolchain.toml (RUST_VERSION or "stable").
+# Default Rust toolchain when the repo has no rust-toolchain.toml (RUST_VERSION or stable).
 
 ALL_GROUPS=(apt rust cargo fmt python just extras web docs gh)
 DEFAULT_GROUPS=(rust cargo fmt python just)

@@ -49,7 +49,7 @@ inherits = "dev"
 inherits = "dev"
 opt-level = 2
 
-# Cargo defaults reference (Cargo 1.99.1). These values are intentionally comments only.
+# Cargo defaults reference (Cargo 1.100.0). These values are intentionally comments only.
 # [build]
 # target-dir = "target"              # workspace-root target directory
 # incremental = <profile default>    # profile-dependent; false in CI when CI is set
