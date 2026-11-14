@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO Reviewed ??-??-2026.
+
 # Download a supported Zola release, verify its pinned checksum, and install it to the requested directory.
 # Arguments are the exact Zola version and destination bin directory; unsupported targets fail before download.
 set -euo pipefail

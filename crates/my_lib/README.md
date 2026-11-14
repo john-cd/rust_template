@@ -1,3 +1,5 @@
+<!-- TODO Reviewed ??-??-2026. -->
+
 # {{lib_package_name}}
 
 Starter library with configuration, errors, domain models, and service modules.

@@ -31,7 +31,10 @@ pub struct Config {
 }
 
 impl Default for Config {
-    /// Returns the built-in settings used when no source overrides them.
+    /// Constructs a usable initial config value with the defaults required by the mod component.
+    ///
+    /// # Returns
+    /// The self computed for the calling workflow.
     fn default() -> Self {
         Self {
             name: "world".to_owned(),
@@ -41,7 +44,13 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Creates a configuration with the given name and other defaults.
+    /// Constructs a usable initial config value with the defaults required by the mod component.
+    ///
+    /// # Arguments
+    /// * `name` - Human-readable value used to identify or display the selected config.
+    ///
+    /// # Returns
+    /// The self computed for the calling workflow.
     #[must_use]
     pub fn new(name: impl Into<String>) -> Self {
         Self {
@@ -50,22 +59,29 @@ impl Config {
         }
     }
 
-    /// Loads the configuration from defaults, the optional TOML `file`
     /// (a missing file is not an error), and `MY_LIB_*` environment variables.
     /// Files larger than 1 MiB are rejected before parsing.
-    ///
     /// # Errors
-    ///
     /// Returns an error if the file or environment values cannot be parsed.
+    ///
+    /// # Arguments
+    /// * `file` - Filesystem location used as the source or destination for this mod operation.
     pub fn load(file: Option<&Path>) -> Result<Self> {
         Self::load_with_environment(file, config::Environment::with_prefix(ENV_PREFIX))
     }
-
-    /// Loads settings from a file and the supplied environment source.
-    ///
     /// Keeping the source injectable lets tests exercise configuration layering without reading
     /// unrelated `MY_LIB_*` values from the test runner's process environment.
-    /// Loads settings from an explicitly supplied environment source for deterministic callers.
+    ///
+    /// # Arguments
+    /// * `file` - Filesystem location used as the source or destination for this mod operation.
+    /// * `environment` - Environment carrying the environment information consumed by the config workflow.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
+
     fn load_with_environment(
         file: Option<&Path>,
         environment: config::Environment,
@@ -87,22 +103,18 @@ impl Config {
         Ok(settings.try_deserialize()?)
     }
 
-    /// Serializes the configuration to a TOML string.
-    ///
     /// # Errors
-    ///
     /// Returns an error if serialization fails.
     pub fn to_toml(&self) -> Result<String> {
         Ok(toml::to_string_pretty(self)?)
     }
-
-    /// Saves the configuration to `path` as TOML, creating parent directories if needed.
-    ///
     /// The complete serialized file is written using the library's atomic file replacement helper.
-    ///
     /// # Errors
-    ///
     /// Returns an error if serialization or writing the file fails.
+    ///
+    /// # Arguments
+    /// * `path` - Filesystem location used as the source or destination for this mod operation.
+
     pub fn save(&self, path: &Path) -> Result<()> {
         let contents = self.to_toml()?;
         crate::atomic_file::write_atomic(path, contents.as_bytes())
@@ -154,7 +166,12 @@ mod tests {
 
     use super::*;
 
-    /// Builds a prefixed environment source without consulting the process environment.
+    ///
+    /// # Arguments
+    /// * `values` - [(str, str)] carrying the values information consumed by the config workflow.
+    ///
+    /// # Returns
+    /// The environment computed for the calling workflow.
     fn environment_source(values: &[(&str, &str)]) -> config::Environment {
         let source = values
             .iter()
@@ -164,6 +181,12 @@ mod tests {
     }
 
     /// Returns a unique temporary directory path for one configuration test.
+    ///
+    /// # Arguments
+    /// * `label` - Human-readable value used to identify or display the selected config.
+    ///
+    /// # Returns
+    /// The path buf computed for the calling workflow.
     fn test_directory(label: &str) -> PathBuf {
         /// Allocates distinct suffixes for tests running in parallel in this process.
         static NEXT_TEST_DIR_ID: AtomicU64 = AtomicU64::new(0);
@@ -175,7 +198,13 @@ mod tests {
         ))
     }
 
-    /// Saves settings to a nested path and loads them back unchanged.
+    /// Persists the then load round trips produced by the mod workflow so later operations can retrieve it.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// An error is returned if save, load_with_environment fails.
     #[test]
     fn save_then_load_round_trips() -> Result<()> {
         let dir = test_directory("round_trip");
@@ -194,6 +223,12 @@ mod tests {
     }
 
     /// Uses built-in settings when the optional configuration file is missing.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn missing_file_yields_defaults() -> Result<()> {
         let path = test_directory("missing").join("absent.toml");
@@ -205,6 +240,12 @@ mod tests {
     }
 
     /// Applies supplied TOML fields while retaining defaults for omitted fields.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn partial_file_keeps_defaults() -> Result<()> {
         let dir = test_directory("partial");
@@ -219,6 +260,12 @@ mod tests {
     }
 
     /// Applies environment values after file values so they take precedence.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn environment_values_override_file_values() -> Result<()> {
         let dir = test_directory("environment");
@@ -243,6 +290,12 @@ mod tests {
     }
 
     /// Reports parse failures with their paths for malformed TOML and invalid field types.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn malformed_file_error_includes_its_path() -> Result<()> {
         let dir = test_directory("load_error");
@@ -264,6 +317,12 @@ mod tests {
     }
 
     /// Rejects oversized files after reading no more than the configured limit plus one byte.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn oversized_file_is_rejected_after_a_bounded_read() -> Result<()> {
         let dir = test_directory("oversized");

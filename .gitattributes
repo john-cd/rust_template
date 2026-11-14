@@ -1,3 +1,5 @@
+# TODO Reviewed ??-??-2026.
+
 # Normalize text files to LF unless a more specific rule below says otherwise.
 * text=auto eol=lf
 

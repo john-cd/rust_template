@@ -19,7 +19,12 @@ static NEXT_LOG_DIRECTORY: AtomicUsize = AtomicUsize::new(0);
 struct TestLogDirectory(PathBuf);
 
 impl Drop for TestLogDirectory {
-    /// Removes test logs and reports cleanup failures without hiding the test result.
+    ///
+    /// # Returns
+    /// The successful test result value produced by this operation.
+    ///
+    /// # Errors
+    /// Failure is returned as error when the checks in the function body reject the request.
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_dir_all(&self.0)
             && error.kind() != std::io::ErrorKind::NotFound
@@ -29,7 +34,15 @@ impl Drop for TestLogDirectory {
     }
 }
 
-/// Runs the built CLI with isolated logging and returns its output and log directory.
+///
+/// # Arguments
+/// * `arguments` - [str] carrying the arguments information consumed by the test log directory workflow.
+///
+/// # Returns
+/// The successful test result value produced by this operation.
+///
+/// # Errors
+/// An error is returned if new fails.
 fn run_cli(arguments: &[&str]) -> TestResult<(Output, TestLogDirectory)> {
     let sequence = NEXT_LOG_DIRECTORY.fetch_add(1, Ordering::Relaxed);
     let log_directory = TestLogDirectory(std::env::temp_dir().join(format!(
@@ -47,6 +60,16 @@ fn run_cli(arguments: &[&str]) -> TestResult<(Output, TestLogDirectory)> {
 }
 
 /// Confirms the CLI emitted its startup event to stderr and a rotating log file.
+///
+/// # Arguments
+/// * `output` - Data produced for the caller by the surrounding cli workflow.
+/// * `log_directory` - Filesystem location used as the source or destination for this cli operation.
+///
+/// # Returns
+/// The successful test result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if a fallible operation cannot complete.
 fn assert_logging(output: &Output, log_directory: &Path) -> TestResult<()> {
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("command started"), "{stderr}");
@@ -60,6 +83,12 @@ fn assert_logging(output: &Output, log_directory: &Path) -> TestResult<()> {
 }
 
 /// Prints a greeting to stdout and tracing events to stderr and the log file.
+///
+/// # Returns
+/// The successful test result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if a fallible operation cannot complete.
 #[test]
 fn cli_greeting_smoke_test() -> TestResult<()> {
     let (output, log_directory) = run_cli(&["Alice"])?;
@@ -74,6 +103,12 @@ fn cli_greeting_smoke_test() -> TestResult<()> {
 }
 
 /// Uses the documented default name when no positional argument is supplied.
+///
+/// # Returns
+/// The successful test result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if a fallible operation cannot complete.
 #[test]
 fn cli_uses_documented_default_name() -> TestResult<()> {
     let (output, log_directory) = run_cli(&[])?;
@@ -88,6 +123,12 @@ fn cli_uses_documented_default_name() -> TestResult<()> {
 }
 
 /// Provides successful help and version responses.
+///
+/// # Returns
+/// The successful test result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if a fallible operation cannot complete.
 #[test]
 fn cli_help_and_version_succeed() -> TestResult<()> {
     for argument in ["--help", "--version"] {
@@ -103,6 +144,12 @@ fn cli_help_and_version_succeed() -> TestResult<()> {
 }
 
 /// Rejects extra positional arguments with Clap's usage error status.
+///
+/// # Returns
+/// The successful test result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if a fallible operation cannot complete.
 #[test]
 fn cli_rejects_unexpected_arguments() -> TestResult<()> {
     let output = Command::new(env!(concat!("CARGO_BIN_EXE_", env!("CARGO_PKG_NAME"))))

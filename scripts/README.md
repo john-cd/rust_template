@@ -1,3 +1,5 @@
+<!-- TODO Reviewed ??-??-2026. -->
+
 # Scripts
 
 Place repository maintenance and development scripts in this directory. Prefer small scripts that

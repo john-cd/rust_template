@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO Reviewed ??-??-2026.
+
 # Install pinned Rust development tools and, unless skipped, the GitHub CLI.
 # Read tool versions from .devcontainer/.env so local installs and CI use the same pins.
 # --dry-run prints commands without installing tools; --skip-gh limits this to Rust tooling.

@@ -1,3 +1,5 @@
+# TODO Reviewed ??-??-2026.
+
 # Check prose and source identifiers using English spelling by default.
 [default]
 locale = "en"

@@ -1,3 +1,5 @@
+<!-- TODO Reviewed ??-??-2026. -->
+
 # Project adoption checklist
 
 Use this list after generating a project with `cargo-generate`. Keep the tasks that apply, delete the rest, and add

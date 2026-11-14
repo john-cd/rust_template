@@ -1,3 +1,5 @@
+# TODO Reviewed ??-??-2026.
+
 # Adapted from the maintained-documentation link policy used by sibling Rust workspaces.
 # Share these link-check settings between local tasks and CI.
 # Cache URL results between runs in `.lycheecache`.

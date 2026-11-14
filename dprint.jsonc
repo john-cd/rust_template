@@ -1,4 +1,5 @@
-// TODO Reviewed ??-??-????
+// TODO Reviewed ??-??-2026.
+
 // Format maintained text/config files while excluding generated output and lockfiles.
 {
   "$schema": "https://dprint.dev/schemas/v0.json",

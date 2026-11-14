@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# TODO Reviewed ??-??-????
+# TODO Reviewed ??-??-2026.
+
 #
 # Idempotent setup script for Linux cloud / CI-like environments (for example the
 # claude.ai "cloud environment" setup script field). Self-contained: paste or copy it as is.

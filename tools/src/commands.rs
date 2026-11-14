@@ -34,6 +34,9 @@ enum Task {
 }
 
 /// Parse and run the selected development command.
+///
+/// # Returns
+/// A process status reflecting the outcome of the command.
 pub fn run() -> ExitCode {
     let args = Args::parse();
     // Cargo sets this path for the checkout that builds this development-only binary.
@@ -60,7 +63,12 @@ pub fn run() -> ExitCode {
     }
 }
 
-/// Maps a parsed task to the executable and arguments that implement it.
+///
+/// # Arguments
+/// * `task` - Task carrying the task information consumed by the commands workflow.
+///
+/// # Returns
+/// The (&'static str, &'static [&'static str]) computed for the calling workflow.
 fn command_for(task: &Task) -> (&'static str, &'static [&'static str]) {
     match task {
         Task::Check => ("cargo", &["make", "--quiet", "ci"]),
@@ -76,7 +84,6 @@ mod tests {
     use super::Task;
     use super::command_for;
 
-    /// Maps each supported task to the expected executable and arguments.
     #[test]
     fn command_mapping_covers_each_task() {
         assert_eq!(

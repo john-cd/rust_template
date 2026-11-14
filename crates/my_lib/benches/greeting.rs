@@ -12,6 +12,9 @@ use criterion::criterion_main;
 use my_lib::greeting;
 
 /// Measures the cost of producing a greeting for a short name.
+///
+/// # Arguments
+/// * `criterion` - Mutable criterion whose state is updated by this operation.
 fn benchmark_greeting(criterion: &mut Criterion) {
     criterion.bench_function("greeting", |bencher| {
         bencher.iter(|| greeting(black_box("world")));

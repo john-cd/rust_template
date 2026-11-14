@@ -1,3 +1,5 @@
+<!-- TODO Reviewed ??-??-2026. -->
+
 # {{project-name}}
 
 Clap-based example binary backed by the `{{lib_package_name}}` library.

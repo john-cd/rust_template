@@ -4,7 +4,9 @@
 
 use std::process::ExitCode;
 
-/// Starts the tools command and returns its process exit status.
+///
+/// # Returns
+/// A process status reflecting the outcome of the command.
 fn main() -> ExitCode {
     tools::run()
 }

@@ -1,3 +1,5 @@
+<!-- TODO Reviewed ??-??-2026. -->
+
 # ADR-NNNN: Decision title
 
 - **Status:** Proposed

@@ -1,3 +1,5 @@
+<!-- TODO Reviewed ??-??-2026. -->
+
 # Logging
 
 The CLI uses `tracing` events. By default, it writes `info` and higher-level events to stderr and

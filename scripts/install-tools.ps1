@@ -1,3 +1,5 @@
+# TODO Reviewed ??-??-2026.
+
 # Install pinned Cargo tools, Zola, and optionally GitHub CLI on Windows.
 # Read tool versions from .devcontainer/.env so local installs and CI use the same pins.
 # -DryRun shows the planned commands without installing tools or changing PATH.

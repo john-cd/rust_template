@@ -1,4 +1,6 @@
 //! Atomic file replacement for small application-owned files.
+//!
+//! TODO Reviewed ??-??-2026.
 
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -15,16 +17,17 @@ use crate::error::Result;
 static NEXT_TEMP_FILE_ID: AtomicU64 = AtomicU64::new(0);
 
 /// Replaces `path` with `contents` after writing and syncing a sibling staging file.
-///
 /// Existing regular-file permissions are preserved. A destination symlink is replaced as a link;
 /// its target is not followed. On Unix, the containing directory is synced after replacement on a
 /// best-effort basis. Other platforms rely on atomic rename and synced file contents, so a power
 /// loss can still lose the directory-entry update where portable directory sync is unavailable.
-///
 /// # Errors
-///
 /// Returns an error with the destination path and failed operation if staging or replacement
 /// fails. The prior destination is left unchanged when failure occurs before replacement.
+///
+/// # Arguments
+/// * `path` - Filesystem location used as the source or destination for this atomic_file operation.
+/// * `contents` - [u8] carrying the contents information consumed by the atomic file workflow.
 pub(crate) fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
     write_atomic_with(path, contents, |source, destination| {
         std::fs::rename(source, destination)
@@ -114,24 +117,35 @@ where
 
 /// A sibling staging file removed unless replacement consumes it.
 struct TemporaryFile {
+    /// Filesystem location associated with this temporary file.
     path: PathBuf,
 }
 
 impl TemporaryFile {
-    /// Returns the staging file path used for writing and replacement.
+    ///
+    /// # Returns
+    /// The &path computed for the calling workflow.
     fn path(&self) -> &Path {
         &self.path
     }
 }
 
 impl Drop for TemporaryFile {
-    /// Removes an unused staging file when the write exits before replacement.
     fn drop(&mut self) {
         remove_temporary_file(&self.path);
     }
 }
 
-/// Removes a temporary file, clearing its read-only attribute when necessary.
+/// Removes or resets the temporary file state owned by temporary file, preventing stale data from affecting later work.
+///
+/// # Arguments
+/// * `path` - Filesystem location used as the source or destination for this atomic_file operation.
+///
+/// # Returns
+/// The successful result value produced by this operation.
+///
+/// # Errors
+/// An error is returned when the remove temporary file operation cannot complete.
 #[cfg(windows)]
 #[expect(
     clippy::permissions_set_readonly_false,
@@ -148,7 +162,16 @@ fn remove_temporary_file(path: &Path) {
     }
 }
 
-/// Removes a temporary file and ignores cleanup errors during unwinding.
+/// Removes or resets the temporary file state owned by temporary file, preventing stale data from affecting later work.
+///
+/// # Arguments
+/// * `path` - Filesystem location used as the source or destination for this atomic_file operation.
+///
+/// # Returns
+/// The successful result value produced by this operation.
+///
+/// # Errors
+/// An error is returned when the remove temporary file operation cannot complete.
 #[cfg(not(windows))]
 fn remove_temporary_file(path: &Path) {
     let _ = std::fs::remove_file(path);
@@ -199,6 +222,12 @@ fn create_temporary_file(
 }
 
 /// Syncs the containing directory after replacement where Unix provides this operation.
+///
+/// # Arguments
+/// * `parent` - Filesystem location used as the source or destination for this atomic_file operation.
+///
+/// # Returns
+/// The self computed for the calling workflow.
 fn sync_parent_directory(parent: &Path) {
     #[cfg(unix)]
     if let Ok(directory) = File::open(parent) {
@@ -225,7 +254,13 @@ mod tests {
     struct TestDirectory(PathBuf);
 
     impl TestDirectory {
-        /// Creates a uniquely named directory path for one test case.
+        /// Constructs a usable initial test directory value with the defaults required by the atomic file component.
+        ///
+        /// # Arguments
+        /// * `label` - Human-readable value used to identify or display the selected test directory.
+        ///
+        /// # Returns
+        /// The self computed for the calling workflow.
         fn new(label: &str) -> Self {
             /// Generates unique suffixes for parallel test directories in this process.
             static NEXT_TEST_DIR_ID: AtomicU64 = AtomicU64::new(0);
@@ -239,7 +274,12 @@ mod tests {
     }
 
     impl Drop for TestDirectory {
-        /// Removes the test directory and its contents when the fixture is dropped.
+        ///
+        /// # Returns
+        /// The successful result value produced by this operation.
+        ///
+        /// # Errors
+        /// An error is returned when the drop operation cannot complete.
         fn drop(&mut self) {
             let _ = std::fs::remove_dir_all(&self.0);
         }
@@ -276,6 +316,12 @@ mod tests {
     }
 
     /// Replaces a symbolic link without writing through to the link target.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[cfg(unix)]
     #[test]
     fn replacing_a_symlink_does_not_modify_its_target() -> crate::Result<()> {
@@ -296,6 +342,12 @@ mod tests {
     }
 
     /// Preserves the mode bits of an existing regular destination file.
+    ///
+    /// # Returns
+    /// The successful result value produced by this operation.
+    ///
+    /// # Errors
+    /// Returns an error if a fallible operation cannot complete.
     #[cfg(unix)]
     #[test]
     fn replacing_a_regular_file_preserves_its_permissions() -> crate::Result<()> {

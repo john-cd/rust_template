@@ -1,4 +1,6 @@
 //! CLI logging setup with stderr output and rotating local log files.
+//!
+//! TODO Reviewed ??-??-2026.
 
 use std::env;
 use std::error::Error;
@@ -20,6 +22,12 @@ type InitResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 const LOG_BUFFERED_LINES_LIMIT: usize = 1024;
 
 /// Installs stderr and daily-file tracing layers, returning the guard that flushes file events.
+///
+/// # Returns
+/// The successful init result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if error when a request is rejected.
 pub(crate) fn init() -> InitResult<Option<WorkerGuard>> {
     let filter = env_filter();
     let Some(directory) = log_directory() else {
@@ -76,6 +84,15 @@ pub(crate) fn init() -> InitResult<Option<WorkerGuard>> {
 }
 
 /// Installs a stderr-only subscriber when persistent logging is unavailable.
+///
+/// # Arguments
+/// * `filter` - Env filter carrying the filter information consumed by the logging workflow.
+///
+/// # Returns
+/// The successful init result value produced by this operation.
+///
+/// # Errors
+/// Returns an error if a fallible operation cannot complete.
 fn init_stderr_only(filter: EnvFilter) -> InitResult<()> {
     let stderr_layer = tracing_subscriber::fmt::layer()
         .with_writer(std::io::stderr)
@@ -89,7 +106,9 @@ fn init_stderr_only(filter: EnvFilter) -> InitResult<()> {
     Ok(())
 }
 
-/// Reads `RUST_LOG`, falling back to `info` when it is missing or invalid.
+///
+/// # Returns
+/// The env filter computed for the calling workflow.
 fn env_filter() -> EnvFilter {
     let Some(directives) = env::var_os("RUST_LOG") else {
         return EnvFilter::new("info");
@@ -107,7 +126,9 @@ fn env_filter() -> EnvFilter {
     }
 }
 
-/// Returns the explicit log directory or the platform's default location.
+///
+/// # Returns
+/// The matching value when available; `None` when no value satisfies the lookup or selection rules.
 fn log_directory() -> Option<PathBuf> {
     if let Some(directory) = env::var_os("APP_LOG_DIR").filter(|value| !value.is_empty()) {
         return Some(PathBuf::from(directory));
@@ -124,9 +145,12 @@ fn default_log_directory() -> Option<PathBuf> {
         .filter(|path| path.is_absolute())
         .map(|base| base.join(env!("CARGO_PKG_NAME")).join("logs"))
 }
+/// Places macOS logs under the user's standard Library/Logs directory.
+///
+/// # Returns
+/// The matching value when available; `None` when no value satisfies the lookup or selection rules.
 
 #[cfg(target_os = "macos")]
-/// Places macOS logs under the user's standard Library/Logs directory.
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("HOME")
         .map(PathBuf::from)

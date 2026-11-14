@@ -1,4 +1,4 @@
-# TODO Reviewed ??-??-????
+# TODO Reviewed ??-??-2026.
 
 # Repository-specific formatter pin; rustup does not auto-discover this filename.
 # Makefile.toml reads the channel through RUSTFMT_TOOLCHAIN and explicitly runs `rustup run`.
