@@ -1,3 +1,5 @@
+# TODO Reviewed ??-??-2026.
+
 # Keep source, documentation, and website assets visible; skip generated/local state.
 # Version control and worktrees
 .git/

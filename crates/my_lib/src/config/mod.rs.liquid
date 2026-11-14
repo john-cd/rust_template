@@ -31,7 +31,7 @@ pub struct Config {
 }
 
 impl Default for Config {
-    /// Returns the built-in settings used when no source overrides them.
+    /// Uses `world` as the greeting name and disables verbose output.
     fn default() -> Self {
         Self {
             name: "world".to_owned(),
@@ -41,7 +41,7 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Creates a configuration with the given name and other defaults.
+    /// Creates settings with the supplied greeting `name` and verbose output disabled.
     #[must_use]
     pub fn new(name: impl Into<String>) -> Self {
         Self {
@@ -50,12 +50,11 @@ impl Config {
         }
     }
 
-    /// Loads configuration from defaults, an optional TOML `file`, and environment variables.
-    /// Files larger than 1 MiB are rejected before parsing.
+    /// Loads settings from defaults, an optional TOML `file`, and `MY_LIB_*` environment variables, in increasing precedence. A missing file uses the remaining sources.
     ///
     /// # Errors
     ///
-    /// Returns an error if the file cannot be read or parsed, or environment values are invalid.
+    /// Returns an error for unreadable files, files over 1 MiB, invalid UTF-8 or TOML, and settings that cannot be deserialized.
     pub fn load(file: Option<&Path>) -> Result<Self> {
         let mut builder = config::Config::builder();
         if let Some(path) = file
@@ -76,27 +75,31 @@ impl Config {
         Ok(settings.try_deserialize()?)
     }
 
-    /// Serializes the configuration to a TOML string.
+    /// Serializes the current settings as pretty-printed TOML.
     ///
     /// # Errors
     ///
-    /// Returns an error if serialization fails.
+    /// Returns the TOML serialization error.
     pub fn to_toml(&self) -> Result<String> {
         Ok(toml::to_string_pretty(self)?)
     }
 
-    /// Saves the configuration to `path` using atomic file replacement.
+    /// Serializes the settings and atomically replaces the file at `path`.
     ///
     /// # Errors
     ///
-    /// Returns an error if serialization or the staged file replacement fails.
+    /// Returns an error if serialization, staging, or replacement fails.
     pub fn save(&self, path: &Path) -> Result<()> {
         let contents = self.to_toml()?;
         crate::atomic_file::write_atomic(path, contents.as_bytes())
     }
 }
 
-/// Reads an optional TOML file without allowing an unbounded input allocation.
+/// Reads UTF-8 text from `path` with a bounded allocation. Returns `None` when the file is absent.
+///
+/// # Errors
+///
+/// Returns a path-aware error for failed reads, invalid UTF-8, or input larger than 1 MiB.
 fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
     let file = match File::open(path) {
         Ok(file) => file,
@@ -136,7 +139,7 @@ fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
 mod tests {
     use super::*;
 
-    /// Returns a uniquely named temporary directory path for one configuration test.
+    /// Builds a process-unique temporary path using `label` to identify the case.
     fn test_directory(label: &str) -> std::path::PathBuf {
         std::env::temp_dir().join(format!(
             "{{crate_name}}_config_{label}_{}",
@@ -144,7 +147,7 @@ mod tests {
         ))
     }
 
-    /// Saves settings to a nested path and loads them back unchanged.
+    /// Checks that saving and reloading settings preserves every field.
     #[test]
     fn save_then_load_round_trips() -> Result<()> {
         let dir = test_directory("round_trip");

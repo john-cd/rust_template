@@ -18,10 +18,10 @@ struct Args {
     name: String,
 }
 
-/// Parse command-line arguments and print the greeting.
+/// Parses the command line and writes a greeting to stdout.
 ///
-/// # Returns
-/// A process status reflecting the outcome of the command.
+/// Returns failure if tracing cannot be installed or stdout rejects the greeting. Clap handles
+/// help, version, and usage errors before output starts.
 pub fn run() -> ExitCode {
     let args = Args::parse();
     let _log_guard = match super::logging::init() {
@@ -50,18 +50,12 @@ pub fn run() -> ExitCode {
     }
 }
 
-/// Reports a failed stdout write through tracing or directly to stderr when filtered out.
-///
-/// # Arguments
-/// * `error` - Underlying failure whose details are preserved or converted into the returned error.
-/// * `tracing_enabled` - Bool carrying the tracing enabled information consumed by the cli workflow.
-/// * `fallback_stderr` - Impl write carrying the fallback stderr information consumed by the cli workflow.
-///
-/// # Returns
-/// The successful result value produced by this operation.
+/// Reports the stdout `error` through tracing when `tracing_enabled` is true. Otherwise writes the
+/// diagnostic to `fallback_stderr`.
 ///
 /// # Errors
-/// Returns an error if a fallible operation cannot complete.
+///
+/// Returns the I/O error if the fallback writer rejects the diagnostic.
 fn report_greeting_error(
     error: &std::io::Error,
     tracing_enabled: bool,
@@ -75,17 +69,11 @@ fn report_greeting_error(
     }
 }
 
-/// Persists the greeting produced by the cli workflow so later operations can retrieve it.
-///
-/// # Arguments
-/// * `writer` - Destination that receives the serialized or formatted result.
-/// * `name` - Human-readable value used to identify or display the selected cli.
-///
-/// # Returns
-/// The successful result value produced by this operation.
+/// Formats a greeting for `name` and writes it, followed by a newline, to `writer`.
 ///
 /// # Errors
-/// An error is returned when the write greeting operation cannot complete.
+///
+/// Returns the I/O error from the destination writer.
 fn write_greeting(mut writer: impl Write, name: &str) -> std::io::Result<()> {
     writeln!(writer, "{}", my_lib::greeting(name))
 }
@@ -103,32 +91,16 @@ mod tests {
 
     impl Write for BrokenWriter {
         /// Simulates a closed output stream.
-        ///
-        /// # Arguments
-        /// * `_buffer` - [u8] carrying the buffer information consumed by the broken writer workflow.
-        ///
-        /// # Returns
-        /// The successful result value produced by this operation.
-        ///
-        /// # Errors
-        /// Returns an error if std::io::ErrorKind::BrokenPipe.into( when a request is rejected.
         fn write(&mut self, _buffer: &[u8]) -> std::io::Result<usize> {
             Err(std::io::ErrorKind::BrokenPipe.into())
         }
-        /// Accepts flushes so the simulated write failure stays focused.
-        ///
-        /// # Returns
-        /// The successful result value produced by this operation.
-        ///
-        /// # Errors
-        /// Returns an error if a fallible operation cannot complete.
 
+        /// Returns success so the test writer isolates failure to writes.
         fn flush(&mut self) -> std::io::Result<()> {
             Ok(())
         }
     }
     /// Propagates a broken-pipe error from the output writer.
-
     #[test]
     fn write_greeting_returns_output_errors_to_the_caller() {
         let error = write_greeting(BrokenWriter, "Alice").expect_err("writer is closed");

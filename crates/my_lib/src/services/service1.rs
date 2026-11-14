@@ -9,22 +9,13 @@ use crate::models::Model1;
 pub struct Service1;
 
 impl Service1 {
-    /// Constructs a usable initial service1 value with the defaults required by the service1 component.
-    ///
-    /// # Returns
-    /// The self computed for the calling workflow.
+    /// Creates the stateless example service.
     #[must_use]
     pub fn new() -> Self {
         Self
     }
-    /// Returns a description of the model.
-    ///
-    /// # Arguments
-    /// * `model` - Model1 carrying the model information consumed by the service1 workflow.
-    ///
-    /// # Returns
-    /// The formatted text produced for the caller.
 
+    /// Formats the supplied model as `Model1(name)` using its display name.
     #[must_use]
     pub fn describe(&self, model: &Model1) -> String {
         format!("Model1({})", model.name)
@@ -36,6 +27,7 @@ impl Service1 {
 mod tests {
     use super::*;
 
+    /// Checks that the description includes the model name in parentheses.
     #[test]
     fn describes_model() {
         assert_eq!(Service1::new().describe(&Model1::new("a")), "Model1(a)");

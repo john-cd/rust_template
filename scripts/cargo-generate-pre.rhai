@@ -1,3 +1,5 @@
+// TODO Reviewed ??-??-2026.
+
 // Resolve package-name defaults and reject workspace name collisions before rendering.
 
 // `auto` preserves the familiar CLI/project name and library `_lib` suffix.

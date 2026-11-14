@@ -36,7 +36,8 @@ enum Task {
 /// Parse and run the selected development command.
 ///
 /// # Returns
-/// A process status reflecting the outcome of the command.
+/// Returns success when the child command succeeds. Reports failure to stderr if the workspace
+/// root cannot be found, the tool cannot start, or the child exits unsuccessfully.
 pub fn run() -> ExitCode {
     let args = Args::parse();
     // Cargo sets this path for the checkout that builds this development-only binary.
@@ -63,12 +64,14 @@ pub fn run() -> ExitCode {
     }
 }
 
+/// Selects the executable and arguments used to carry out one development task.
 ///
 /// # Arguments
-/// * `task` - Task carrying the task information consumed by the commands workflow.
+/// * `task` - The parsed command variant that determines which repository tool to invoke.
 ///
 /// # Returns
-/// The (&'static str, &'static [&'static str]) computed for the calling workflow.
+/// The executable name and argument slice passed to `Command`; `Website` selects build or serve
+/// arguments according to its `serve` option.
 fn command_for(task: &Task) -> (&'static str, &'static [&'static str]) {
     match task {
         Task::Check => ("cargo", &["make", "--quiet", "ci"]),
@@ -84,6 +87,7 @@ mod tests {
     use super::Task;
     use super::command_for;
 
+    /// Checks each task, including both website modes, against its child command.
     #[test]
     fn command_mapping_covers_each_task() {
         assert_eq!(

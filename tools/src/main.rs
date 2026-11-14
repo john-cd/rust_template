@@ -4,9 +4,7 @@
 
 use std::process::ExitCode;
 
-///
-/// # Returns
-/// A process status reflecting the outcome of the command.
+/// Runs the executable command and returns its exit status to the operating system.
 fn main() -> ExitCode {
     tools::run()
 }

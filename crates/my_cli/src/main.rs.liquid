@@ -2,7 +2,7 @@
 //!
 //! TODO Reviewed ??-??-2026.
 
-/// Starts the command-line application and returns its exit status.
+/// Runs the executable command and returns its exit status to the operating system.
 fn main() -> std::process::ExitCode {
     {{cli_package_name | replace: "-", "_"}}::run()
 }

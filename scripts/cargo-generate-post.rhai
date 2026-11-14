@@ -1,3 +1,5 @@
+// TODO Reviewed ??-??-2026.
+
 // Move the rendered crates only after template files and their include patterns have been resolved.
 let cli_folder_name = variable::get("cli_folder_name");
 let lib_folder_name = variable::get("lib_folder_name");

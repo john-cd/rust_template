@@ -18,7 +18,9 @@ struct Args {
     name: String,
 }
 
-/// Parse command-line arguments and print the greeting.
+/// Parses the command line and writes a greeting to stdout.
+///
+/// Returns failure if tracing cannot be installed or stdout rejects the greeting. Clap handles help, version, and usage errors before output starts.
 #[must_use]
 pub fn run() -> ExitCode {
     let args = Args::parse();
@@ -48,7 +50,11 @@ pub fn run() -> ExitCode {
     }
 }
 
-/// Reports a failed stdout write through tracing or directly to stderr when filtered out.
+/// Reports the stdout `error` through tracing when `tracing_enabled` is true. Otherwise writes the diagnostic to `fallback_stderr`.
+///
+/// # Errors
+///
+/// Returns the I/O error if the fallback writer rejects the diagnostic.
 fn report_greeting_error(
     error: &std::io::Error,
     tracing_enabled: bool,
@@ -62,7 +68,11 @@ fn report_greeting_error(
     }
 }
 
-/// Writes the library greeting to the supplied output stream.
+/// Formats a greeting for `name` and writes it, followed by a newline, to `writer`.
+///
+/// # Errors
+///
+/// Returns the I/O error from the destination writer.
 fn write_greeting(mut writer: impl Write, name: &str) -> std::io::Result<()> {
     writeln!(writer, "{}", {{lib_package_name | replace: "-", "_"}}::greeting(name))
 }
@@ -84,7 +94,7 @@ mod tests {
             Err(std::io::ErrorKind::BrokenPipe.into())
         }
 
-        /// Accepts flushes so the simulated write failure stays focused.
+        /// Returns success so the test writer isolates failure to writes.
         fn flush(&mut self) -> std::io::Result<()> {
             Ok(())
         }

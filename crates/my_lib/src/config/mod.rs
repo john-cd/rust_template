@@ -1,5 +1,4 @@
 //! Configuration loading and application settings.
-//!
 //! Settings are layered, from lowest to highest priority:
 //! built-in defaults, an optional TOML file, then `MY_LIB_*` environment
 //! variables (for example `MY_LIB_NAME=Ada`).
@@ -31,10 +30,7 @@ pub struct Config {
 }
 
 impl Default for Config {
-    /// Constructs a usable initial config value with the defaults required by the mod component.
-    ///
-    /// # Returns
-    /// The self computed for the calling workflow.
+    /// Uses `world` as the greeting name and disables verbose output.
     fn default() -> Self {
         Self {
             name: "world".to_owned(),
@@ -44,13 +40,7 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Constructs a usable initial config value with the defaults required by the mod component.
-    ///
-    /// # Arguments
-    /// * `name` - Human-readable value used to identify or display the selected config.
-    ///
-    /// # Returns
-    /// The self computed for the calling workflow.
+    /// Creates settings with the supplied greeting `name` and verbose output disabled.
     #[must_use]
     pub fn new(name: impl Into<String>) -> Self {
         Self {
@@ -59,29 +49,24 @@ impl Config {
         }
     }
 
-    /// (a missing file is not an error), and `MY_LIB_*` environment variables.
-    /// Files larger than 1 MiB are rejected before parsing.
-    /// # Errors
-    /// Returns an error if the file or environment values cannot be parsed.
+    /// Loads settings from defaults, an optional TOML `file`, and `MY_LIB_*` environment variables,
+    /// in increasing precedence. A missing file uses the remaining sources.
     ///
-    /// # Arguments
-    /// * `file` - Filesystem location used as the source or destination for this mod operation.
+    /// # Errors
+    ///
+    /// Returns an error for unreadable files, files over 1 MiB, invalid UTF-8 or TOML, and settings
+    /// that cannot be deserialized.
     pub fn load(file: Option<&Path>) -> Result<Self> {
         Self::load_with_environment(file, config::Environment::with_prefix(ENV_PREFIX))
     }
-    /// Keeping the source injectable lets tests exercise configuration layering without reading
-    /// unrelated `MY_LIB_*` values from the test runner's process environment.
-    ///
-    /// # Arguments
-    /// * `file` - Filesystem location used as the source or destination for this mod operation.
-    /// * `environment` - Environment carrying the environment information consumed by the config workflow.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
+
+    /// Layers the supplied `environment` over defaults and settings read from `file` when
+    /// available. Tests supply an isolated source.
     ///
     /// # Errors
-    /// Returns an error if a fallible operation cannot complete.
-
+    ///
+    /// Returns an error if the optional file cannot be read or parsed or if the merged settings are
+    /// invalid.
     fn load_with_environment(
         file: Option<&Path>,
         environment: config::Environment,
@@ -103,26 +88,31 @@ impl Config {
         Ok(settings.try_deserialize()?)
     }
 
+    /// Serializes the current settings as pretty-printed TOML.
+    ///
     /// # Errors
-    /// Returns an error if serialization fails.
+    ///
+    /// Returns the TOML serialization error.
     pub fn to_toml(&self) -> Result<String> {
         Ok(toml::to_string_pretty(self)?)
     }
-    /// The complete serialized file is written using the library's atomic file replacement helper.
-    /// # Errors
-    /// Returns an error if serialization or writing the file fails.
-    ///
-    /// # Arguments
-    /// * `path` - Filesystem location used as the source or destination for this mod operation.
 
+    /// Serializes the settings and atomically replaces the file at `path`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if serialization, staging, or replacement fails.
     pub fn save(&self, path: &Path) -> Result<()> {
         let contents = self.to_toml()?;
         crate::atomic_file::write_atomic(path, contents.as_bytes())
     }
 }
 
-/// Reads an optional TOML file without allowing an unbounded input allocation.
-/// Reads an optional UTF-8 TOML file with a fixed upper bound on allocated input.
+/// Reads UTF-8 text from `path` with a bounded allocation. Returns `None` when the file is absent.
+///
+/// # Errors
+///
+/// Returns a path-aware error for failed reads, invalid UTF-8, or input larger than 1 MiB.
 fn read_optional_config_file(path: &Path) -> Result<Option<String>> {
     let file = match File::open(path) {
         Ok(file) => file,
@@ -165,13 +155,7 @@ mod tests {
     use std::sync::atomic::Ordering;
 
     use super::*;
-
-    ///
-    /// # Arguments
-    /// * `values` - [(str, str)] carrying the values information consumed by the config workflow.
-    ///
-    /// # Returns
-    /// The environment computed for the calling workflow.
+    /// Creates an isolated environment source from the supplied key-value pairs.
     fn environment_source(values: &[(&str, &str)]) -> config::Environment {
         let source = values
             .iter()
@@ -180,13 +164,7 @@ mod tests {
         config::Environment::with_prefix(ENV_PREFIX).source(Some(source))
     }
 
-    /// Returns a unique temporary directory path for one configuration test.
-    ///
-    /// # Arguments
-    /// * `label` - Human-readable value used to identify or display the selected config.
-    ///
-    /// # Returns
-    /// The path buf computed for the calling workflow.
+    /// Builds a process-unique temporary path using `label` to identify the case.
     fn test_directory(label: &str) -> PathBuf {
         /// Allocates distinct suffixes for tests running in parallel in this process.
         static NEXT_TEST_DIR_ID: AtomicU64 = AtomicU64::new(0);
@@ -198,13 +176,7 @@ mod tests {
         ))
     }
 
-    /// Persists the then load round trips produced by the mod workflow so later operations can retrieve it.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
-    ///
-    /// # Errors
-    /// An error is returned if save, load_with_environment fails.
+    /// Checks that saving and reloading settings preserves every field.
     #[test]
     fn save_then_load_round_trips() -> Result<()> {
         let dir = test_directory("round_trip");
@@ -223,12 +195,6 @@ mod tests {
     }
 
     /// Uses built-in settings when the optional configuration file is missing.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
-    ///
-    /// # Errors
-    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn missing_file_yields_defaults() -> Result<()> {
         let path = test_directory("missing").join("absent.toml");
@@ -240,12 +206,6 @@ mod tests {
     }
 
     /// Applies supplied TOML fields while retaining defaults for omitted fields.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
-    ///
-    /// # Errors
-    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn partial_file_keeps_defaults() -> Result<()> {
         let dir = test_directory("partial");
@@ -260,12 +220,6 @@ mod tests {
     }
 
     /// Applies environment values after file values so they take precedence.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
-    ///
-    /// # Errors
-    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn environment_values_override_file_values() -> Result<()> {
         let dir = test_directory("environment");
@@ -290,12 +244,6 @@ mod tests {
     }
 
     /// Reports parse failures with their paths for malformed TOML and invalid field types.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
-    ///
-    /// # Errors
-    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn malformed_file_error_includes_its_path() -> Result<()> {
         let dir = test_directory("load_error");
@@ -317,12 +265,6 @@ mod tests {
     }
 
     /// Rejects oversized files after reading no more than the configured limit plus one byte.
-    ///
-    /// # Returns
-    /// The successful result value produced by this operation.
-    ///
-    /// # Errors
-    /// Returns an error if a fallible operation cannot complete.
     #[test]
     fn oversized_file_is_rejected_after_a_bounded_read() -> Result<()> {
         let dir = test_directory("oversized");

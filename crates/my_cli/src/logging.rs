@@ -21,13 +21,12 @@ type InitResult<T> = Result<T, Box<dyn Error + Send + Sync>>;
 /// Maximum number of log events buffered before the application waits for the file writer.
 const LOG_BUFFERED_LINES_LIMIT: usize = 1024;
 
-/// Installs stderr and daily-file tracing layers, returning the guard that flushes file events.
-///
-/// # Returns
-/// The successful init result value produced by this operation.
+/// Installs stderr tracing and, when available, daily rotating file logs. Returns the guard that
+/// keeps the file writer alive and flushes it on drop, or `None` for stderr-only tracing.
 ///
 /// # Errors
-/// Returns an error if error when a request is rejected.
+///
+/// Returns an error if the global tracing subscriber cannot be installed.
 pub(crate) fn init() -> InitResult<Option<WorkerGuard>> {
     let filter = env_filter();
     let Some(directory) = log_directory() else {
@@ -83,16 +82,11 @@ pub(crate) fn init() -> InitResult<Option<WorkerGuard>> {
     Ok(Some(guard))
 }
 
-/// Installs a stderr-only subscriber when persistent logging is unavailable.
-///
-/// # Arguments
-/// * `filter` - Env filter carrying the filter information consumed by the logging workflow.
-///
-/// # Returns
-/// The successful init result value produced by this operation.
+/// Installs stderr tracing using the given `filter`.
 ///
 /// # Errors
-/// Returns an error if a fallible operation cannot complete.
+///
+/// Returns an error if the global tracing subscriber cannot be installed.
 fn init_stderr_only(filter: EnvFilter) -> InitResult<()> {
     let stderr_layer = tracing_subscriber::fmt::layer()
         .with_writer(std::io::stderr)
@@ -105,10 +99,8 @@ fn init_stderr_only(filter: EnvFilter) -> InitResult<()> {
 
     Ok(())
 }
-
-///
-/// # Returns
-/// The env filter computed for the calling workflow.
+/// Reads tracing directives from `RUST_LOG`. Uses info-level logging if the value is absent,
+/// invalid UTF-8, or rejected by the filter parser.
 fn env_filter() -> EnvFilter {
     let Some(directives) = env::var_os("RUST_LOG") else {
         return EnvFilter::new("info");
@@ -125,10 +117,8 @@ fn env_filter() -> EnvFilter {
         EnvFilter::new("info")
     }
 }
-
-///
-/// # Returns
-/// The matching value when available; `None` when no value satisfies the lookup or selection rules.
+/// Returns the nonempty `APP_LOG_DIR` override or the platform default. Returns `None` if neither
+/// is available.
 fn log_directory() -> Option<PathBuf> {
     if let Some(directory) = env::var_os("APP_LOG_DIR").filter(|value| !value.is_empty()) {
         return Some(PathBuf::from(directory));
@@ -137,8 +127,8 @@ fn log_directory() -> Option<PathBuf> {
     default_log_directory()
 }
 
-#[cfg(windows)]
 /// Places Windows logs under the current user's local application data directory.
+#[cfg(windows)]
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("LOCALAPPDATA")
         .map(PathBuf::from)
@@ -146,10 +136,6 @@ fn default_log_directory() -> Option<PathBuf> {
         .map(|base| base.join(env!("CARGO_PKG_NAME")).join("logs"))
 }
 /// Places macOS logs under the user's standard Library/Logs directory.
-///
-/// # Returns
-/// The matching value when available; `None` when no value satisfies the lookup or selection rules.
-
 #[cfg(target_os = "macos")]
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("HOME")
@@ -162,8 +148,8 @@ fn default_log_directory() -> Option<PathBuf> {
         })
 }
 
-#[cfg(not(any(windows, target_os = "macos")))]
 /// Places Unix logs under XDG state storage or the user's local state directory.
+#[cfg(not(any(windows, target_os = "macos")))]
 fn default_log_directory() -> Option<PathBuf> {
     env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)
