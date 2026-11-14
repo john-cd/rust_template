@@ -10,7 +10,7 @@
 [build]
 # Cargo Make supplies absolute per-worktree paths from CODE_TARGET_ROOT and CODE_BUILD_ROOT;
 # direct Cargo uses checkout-local target/build links created by `cargo make setup-build`.
-rustc-wrapper = "sccache"
+# The repository task runner or CI can enable sccache after provisioning it.
 target-dir = "target"
 build-dir = "build"
 incremental = false
@@ -34,10 +34,6 @@ tools = "run --profile tools --locked --package tools --"
 # Favor compiler-cache reuse during local development by using the same settings for most profiles.
 
 # The "dev" profile is the default for local development, and the "ci" profile is used for CI builds.
-
-[env.SCCACHE_CACHE_SIZE]
-value = "45G"
-force = true
 
 [profile.dev]
 debug = 0

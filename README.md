@@ -20,6 +20,10 @@ appends `_lib` to form the library package. `cargo-generate` also prompts for th
 package names; accept `auto` for package names to keep these defaults. Follow the
 [adoption guide](docs/guides/adopting-template.md) to replace the sample behavior and metadata.
 
+## Local Rust checks
+
+Install the toolchain from `rust-toolchain.toml` with `rustup show` in the checkout. From the repository root, run `cargo make check` and `cargo make test`. For formatting, use the nightly pin in `rustfmt-toolchain.toml`.
+
 ## Branch workflow
 
 Use `develop` as the integration branch. Integrate reviewed work there, then promote a release to `main` when it is ready. Create feature branches from `develop`.
