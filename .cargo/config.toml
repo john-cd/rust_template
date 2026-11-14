@@ -10,8 +10,10 @@ incremental = false
 
 # Direct Cargo normalizes paths against this checkout. Cargo Make replaces the value with the
 # registered main checkout and worktree paths.
+
 [env]
 SCCACHE_BASEDIRS = { value = ".", relative = true }
+
 [term]
 # Less token usage and output clutter.
 quiet = true
@@ -25,35 +27,42 @@ tools = "run --profile tools --locked --package tools --"
 # Favor compiler-cache reuse during local development by using the same settings for most profiles.
 
 # The "dev" profile is the default for local development, and the "ci" profile is used for CI builds.
+
+[env.SCCACHE_CACHE_SIZE]
+value = "45G"
+force = true
+
 [profile.dev]
-debug = 0 # No debug to save space. If you need debugger support, use "line-tables-only".
-incremental = false # Required for sccache.
+debug = 0
+incremental = false
 
 [profile.dev.package."*"]
+opt-level = 1
 debug = 0
-opt-level = 1 # Some optimization to reduce size and improve performance, but still fast compile times. This should build once.
 
-# The "debug" profile is used for workspace crates when debugging is needed.
 [profile.debug]
-inherits = "dev"
 debug = 2
 
-# The standard "test" profile is used for running tests, and inherits from "dev" by default.
+[profile.debug.package."*"]
+opt-level = 1
+debug = 0
 
-# The CI profile uses the same quick compile settings as development.
 [profile.ci]
 inherits = "dev"
 
-# The "tools" profile is used for building repository-local developer commands with modest optimization.
 [profile.tools]
 inherits = "dev"
 opt-level = 2
 
-# Cargo defaults reference (Cargo 1.100.0). These values are intentionally comments only.
+
+# Cargo defaults reference (Cargo 1.100.0). Comments only.
+#
 # [build]
-# target-dir = "target"              # workspace-root target directory
-# incremental = <profile default>    # profile-dependent; false in CI when CI is set
-# rustc-wrapper = <unset>            # invoke rustc directly
+# target = <host>
+# target-dir = "target"
+# build-dir = <unset; defaults to target-dir>
+# rustc-wrapper = <unset>
+# incremental = <profile default>
 #
 # [env]
 # <variable> = <unset>
@@ -80,23 +89,33 @@ opt-level = 2
 # t = "test"
 # r = "run"
 # rm = "remove"
-# <other aliases> = <unset>
 #
 # [profile.dev]
 # opt-level = 0
 # debug = true
+# split-debuginfo = <platform default>
 # strip = "none"
 # debug-assertions = true
 # overflow-checks = true
 # lto = false
 # panic = "unwind"
 # incremental = true
-# codegen-units = 256
+# codegen-units = 256 when incremental is enabled; otherwise 16
 # rpath = false
-# split-debuginfo = <platform default>
 #
 # [profile.dev.package."*"]
-# opt-level = <profile default: 0>
+# opt-level = 0
+#
+# [profile.dev.build-override]
+# opt-level = 0
+# debug = false when possible
+# codegen-units = 256
+#
+# [profile.debug]
+# inherits = "dev"
+#
+# [profile.test]
+# inherits = "dev"
 #
 # [profile.release]
 # opt-level = 3
@@ -112,25 +131,12 @@ opt-level = 2
 # rpath = false
 #
 # [profile.release.package."*"]
-# opt-level = <profile default: 3>
+# opt-level = 3
 #
-# [profile.test]
-# inherits = "dev"
+# [profile.release.build-override]
 # opt-level = 0
-# debug = true
-# strip = "none"
-# debug-assertions = true
-# overflow-checks = true
-# lto = false
-# panic = "unwind"
-# incremental = false
+# debug = false when possible
 # codegen-units = 256
-# rpath = false
-# split-debuginfo = <platform default>
 #
-# [profile.test.package."*"]
-# opt-level = <profile default: 0>
-
-[env.SCCACHE_CACHE_SIZE]
-value = "45G"
-force = true
+# [profile.bench]
+# inherits = "release"
