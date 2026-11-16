@@ -117,7 +117,7 @@ cargo make machete   # Review potentially unused dependencies
 cargo make coverage  # Measure test coverage
 cargo make coverage-html # Generate an HTML coverage report
 cargo make zizmor    # Audit GitHub Actions workflows
-cargo make pre       # Pre-commit formatting, check, and Clippy
+cargo make pre       # Run the manual formatting, build-check, and Clippy tasks
 cargo make doc       # Build API documentation
 cargo make web       # Build the website
 cargo make hooks-install # Install prek Git hooks
