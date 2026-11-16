@@ -100,6 +100,7 @@ mod tests {
             Ok(())
         }
     }
+
     /// Propagates a broken-pipe error from the output writer.
     #[test]
     fn write_greeting_returns_output_errors_to_the_caller() {

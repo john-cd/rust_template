@@ -16,7 +16,10 @@ type TestResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 static NEXT_LOG_DIRECTORY: AtomicUsize = AtomicUsize::new(0);
 
 /// Temporary log directory removed when the test fixture is dropped.
-struct TestLogDirectory(PathBuf);
+struct TestLogDirectory(
+    /// Isolated destination for the child process's log files.
+    PathBuf,
+);
 
 impl Drop for TestLogDirectory {
     /// Removes the fixture log directory and reports unexpected cleanup failures.

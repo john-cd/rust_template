@@ -16,6 +16,7 @@ use crate::error::Result;
 
 /// Prefix of the environment variables that override file settings.
 const ENV_PREFIX: &str = "MY_LIB";
+
 /// Maximum configuration file size read into memory.
 const MAX_CONFIG_FILE_BYTES: usize = 1024 * 1024;
 

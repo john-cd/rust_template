@@ -21,7 +21,9 @@ static NEXT_TEMP_FILE_ID: AtomicU64 = AtomicU64::new(0);
 /// its target is not followed. On Unix, the containing directory is synced after replacement on a
 /// best-effort basis. Other platforms rely on atomic rename and synced file contents, so a power
 /// loss can still lose the directory-entry update where portable directory sync is unavailable.
+///
 /// # Errors
+///
 /// Returns an error with the destination path and failed operation if staging or replacement
 /// fails. The prior destination is left unchanged when failure occurs before replacement.
 pub(crate) fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
@@ -30,7 +32,12 @@ pub(crate) fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
     })
 }
 
-/// Stages a complete file and delegates the final replacement operation.
+/// Builds the replacement in the destination directory so the final rename stays on the same
+/// filesystem. The `replace` callback lets tests inject a failure at the commit point.
+///
+/// # Errors
+///
+/// Returns the destination path and failing operation if inspection, staging, or replacement fails.
 fn write_atomic_with<F>(path: &Path, contents: &[u8], replace: F) -> Result<()>
 where
     F: FnOnce(&Path, &Path) -> std::io::Result<()>,
@@ -45,6 +52,7 @@ where
         source,
     })?;
 
+    // Read the directory entry itself so replacing a symlink leaves its target alone.
     let destination_permissions = match std::fs::symlink_metadata(path) {
         Ok(metadata) if metadata.file_type().is_file() => Some(metadata.permissions()),
         Ok(metadata) if metadata.file_type().is_symlink() => None,
@@ -86,6 +94,7 @@ where
         source,
     })?;
     if let Some(permissions) = destination_permissions {
+        // Apply permissions after writing so a read-only destination can still be staged.
         std::fs::set_permissions(temporary_file.path(), permissions).map_err(|source| {
             MyError::AtomicWrite {
                 path: path.to_owned(),
@@ -171,6 +180,7 @@ fn create_temporary_file(
         ));
     };
 
+    // Exclusive creation handles collisions with files left by an earlier process.
     for _ in 0..128 {
         let id = NEXT_TEMP_FILE_ID.fetch_add(1, Ordering::Relaxed);
         let mut temporary_name = std::ffi::OsString::from(".");
@@ -227,7 +237,10 @@ mod tests {
     use super::write_atomic_with;
 
     /// Temporary test directory removed automatically at the end of each case.
-    struct TestDirectory(PathBuf);
+    struct TestDirectory(
+        /// Directory reserved for one replacement scenario.
+        PathBuf,
+    );
 
     impl TestDirectory {
         /// Builds a process-unique temporary directory path named for the test `label`.
@@ -244,6 +257,7 @@ mod tests {
     }
 
     impl Drop for TestDirectory {
+        /// Removes files created for the scenario when the fixture leaves scope.
         fn drop(&mut self) {
             let _ = std::fs::remove_dir_all(&self.0);
         }
