@@ -1,9 +1,8 @@
-<!-- TODO Reviewed ??-??-2026. -->
-
 {% extends "base.html" %}
 {% block description %}{{ page.description | default(value=config.description) }}{% endblock description %}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block content %}
+<!-- TODO Reviewed ??-??-2026. -->
 <!-- Render the current content page inside the shared site shell. -->
 <article><h1>{{ page.title }}</h1>{{ page.content | safe }}</article>
 {% endblock content %}

@@ -90,6 +90,9 @@ jobs:
       - name: Install cargo-binstall
         run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
         shell: bash
+        env:
+          RUSTC_WRAPPER: ""
+          CARGO_BUILD_RUSTC_WRAPPER: ""
       - name: Install development tools
         # Install pinned prebuilt tools used by the Rust task aliases.
         run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "cargo-nextest@$CARGO_NEXTEST_VERSION" "cargo-deny@$CARGO_DENY_VERSION"
@@ -148,6 +151,9 @@ jobs:
       - name: Install cargo-binstall
         run: cargo install --locked cargo-binstall --version "$CARGO_BINSTALL_VERSION"
         shell: bash
+        env:
+          RUSTC_WRAPPER: ""
+          CARGO_BUILD_RUSTC_WRAPPER: ""
       - name: Install documentation tools
         run: cargo binstall --locked --no-confirm "cargo-make@$CARGO_MAKE_VERSION" "dprint@$DPRINT_VERSION" "lychee@$LYCHEE_VERSION" "typos-cli@$TYPOS_VERSION" "zizmor@$ZIZMOR_VERSION"
         shell: bash

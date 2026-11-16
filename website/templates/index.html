@@ -1,8 +1,8 @@
-<!-- TODO Reviewed ??-??-2026. -->
-
 {% extends "base.html" %}
+
 {% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
 {% block content %}
+<!-- TODO Reviewed ??-??-2026. -->
 <!-- Landing page introduction and links to child guides. -->
 <h1>{{ section.title }}</h1>
 {{ section.content | safe }}
