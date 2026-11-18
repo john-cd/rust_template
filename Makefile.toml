@@ -44,7 +44,7 @@ home = get_home_dir
 if ${windows}
     target_root = root_default CODE_TARGET_ROOT D:/target
     build_root = root_default CODE_BUILD_ROOT D:/code_build
-    cache_default = set D:/sccache
+    cache_default = set D:/cache/sccache
     separator = set ";"
 else
     cache_home = root_default XDG_CACHE_HOME "${home}/.cache"

@@ -31,7 +31,7 @@ directory, in a subdirectory named after the CLI package:
 Set `APP_LOG_DIR` to choose another directory. For example, in PowerShell:
 
 ```powershell
-$env:APP_LOG_DIR = 'D:\temp\{{cli_package_name}}-logs'
+$env:APP_LOG_DIR = 'C:\temp\{{cli_package_name}}-logs'
 cargo run -p {{cli_package_name}} -- Alice
 ```
 
