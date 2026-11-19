@@ -1,0 +1,11 @@
+# CI-only BuildKit cache settings for the production image.
+# Pass this file after compose.production.yaml when building in GitHub Actions.
+# TODO Reviewed ??-??-2026.
+
+services:
+  rust-template-app:
+    build:
+      cache_from:
+        - type=gha,scope=rust-template-app
+      cache_to:
+        - type=gha,mode=max,scope=rust-template-app,ignore-error=true

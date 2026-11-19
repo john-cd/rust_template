@@ -1,0 +1,11 @@
+# CI-only BuildKit cache settings for the development container image.
+# Pass this file after compose.devcontainer.yaml when building in GitHub Actions.
+# TODO Reviewed ??-??-2026.
+
+services:
+  rust-template-devcontainer:
+    build:
+      cache_from:
+        - type=gha,scope=rust-template-devcontainer
+      cache_to:
+        - type=gha,mode=max,scope=rust-template-devcontainer,ignore-error=true

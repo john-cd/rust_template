@@ -19,15 +19,34 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Build development image
         # Build the standalone editor environment used by VS Code.
-        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.devcontainer.yaml build devcontainer
+        run: >-
+          docker compose --env-file .devcontainer/.env
+          -f .devcontainer/compose.devcontainer.yaml
+          -f .devcontainer/compose.devcontainer.ci.yaml
+          build rust-template-devcontainer
       - name: Smoke test pinned development tools
         # Confirm representative tools are present and launchable inside the built image.
-        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.devcontainer.yaml run --rm --no-deps devcontainer bash -lc 'rustc --version && cargo nextest --version && sccache --version && dprint --version && lychee --version && typos --version'
+        run: >-
+          docker compose --env-file .devcontainer/.env
+          -f .devcontainer/compose.devcontainer.yaml
+          -f .devcontainer/compose.devcontainer.ci.yaml
+          run --rm --no-deps rust-template-devcontainer
+          bash -lc 'rustc --version && cargo nextest --version && sccache --version && dprint --version && lychee --version && typos --version'
       - name: Build production image
         # Build the production service from its standalone Compose file.
-        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.production.yaml build app
+        run: >-
+          docker compose --env-file .devcontainer/.env
+          -f .devcontainer/compose.production.yaml
+          -f .devcontainer/compose.production.ci.yaml
+          build rust-template-app
       - name: Smoke test production executable
         # Verify the image entry point starts and returns its help text.
-        run: docker compose --env-file .devcontainer/.env -f .devcontainer/compose.production.yaml run --rm app --help
+        run: >-
+          docker compose --env-file .devcontainer/.env
+          -f .devcontainer/compose.production.yaml
+          -f .devcontainer/compose.production.ci.yaml
+          run --rm rust-template-app --help
