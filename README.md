@@ -9,7 +9,7 @@ and a Zola website.
 Create a project with `cargo-generate` 0.24 or newer:
 
 ```sh
-cargo generate `
+``
   --git https://github.com/john-cd/rust_template.git `
   --branch develop `
   --name myproject
@@ -198,7 +198,9 @@ set -a
 . .devcontainer/.env
 set +a
 docker build -f .devcontainer/Dockerfile --target production \
-  --build-arg RUST_VERSION --build-arg DEBIAN_VERSION --build-arg CARGO_BINSTALL_VERSION \
+  --build-arg RUST_VERSION \
+  --build-arg DEBIAN_VERSION \
+  --build-arg CARGO_BINSTALL_VERSION \
   --build-arg CARGO_CHEF_VERSION \
   --build-arg CARGO_PACKAGE_NAME={{cli_package_name}} -t {{project-name}} .
 docker run --rm {{project-name}} Alice
