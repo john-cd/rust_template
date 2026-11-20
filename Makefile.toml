@@ -326,6 +326,7 @@ echo SCCACHE_BASEDIRS=${bases}
 [tasks.setup-build]
 description = "Link direct Cargo outputs to this checkout's external slot (Windows)"
 category = "Build"
+condition = { platforms = ["windows"] }
 command = "pwsh"
 args = ["-NoLogo", "-NoProfile", "-File", "${CARGO_MAKE_WORKING_DIRECTORY}/scripts/setup-build.ps1"]
 
